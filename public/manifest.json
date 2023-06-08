@@ -1,0 +1,19 @@
+{
+  "name": "Beyond Ys",
+  "short_name": "Beyond Ys",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#00b0ff",
+  "background_color": "#22252f",
+  "display": "standalone"
+}
