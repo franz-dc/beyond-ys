@@ -14,6 +14,8 @@ export const theme = createTheme({
     background: {
       default: '#22252f',
       paper: '#161a22',
+      // @ts-ignore
+      header: '#3c4151',
     },
     primary: {
       main: '#00b0ff',
@@ -48,6 +50,9 @@ export const theme = createTheme({
     h6: {
       fontSize: 12,
       fontWeight: 700,
+    },
+    body1: {
+      lineHeight: 1.4,
     },
   },
   components: {

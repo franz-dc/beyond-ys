@@ -113,8 +113,8 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'individual-games',
-    name: 'Individual Games',
+    id: 'others',
+    name: 'Others',
     items: [
       {
         name: 'Galactic Wars',

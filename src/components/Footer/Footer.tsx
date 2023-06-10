@@ -12,10 +12,14 @@ import Image from 'next/image';
 import { MdEmail } from 'react-icons/md';
 import { SiDiscord, SiGithub, SiReddit, SiYoutube } from 'react-icons/si';
 
+import { useMusicPlayer } from '~/hooks';
+
 import logo from '../../../public/assets/logo.png';
 import Link from '../Link';
 
 const Footer = () => {
+  const { nowPlaying } = useMusicPlayer();
+
   const textLinks = [
     {
       name: 'About',
@@ -75,7 +79,7 @@ const Footer = () => {
           <Grid item xs={12} md={6}>
             <Grid container spacing={2}>
               <Grid item>
-                <Image src={logo} width={64} alt='Logo' />
+                <Image src={logo} width={64} alt='Logo' unoptimized />
               </Grid>
               <Grid item>
                 <Typography variant='h2'>Beyond Ys</Typography>
@@ -129,7 +133,14 @@ const Footer = () => {
           </Grid>
         </Grid>
         <Divider light sx={{ mb: 2 }} />
-        <Grid container sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+        <Grid
+          container
+          sx={{
+            color: 'text.secondary',
+            fontSize: '0.75rem',
+            mb: !!nowPlaying ? '72px' : 0,
+          }}
+        >
           <Grid item xs={12} md>
             Site made with 🤍 by{' '}
             <Link

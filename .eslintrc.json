@@ -1,6 +1,7 @@
 {
   "extends": [
     "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "plugin:import/recommended"
   ],
@@ -61,6 +62,27 @@
           "order": "asc",
           "caseInsensitive": true
         }
+      }
+    ],
+    // react
+    "react/jsx-indent": ["warn", 2],
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    // react-hooks
+    "react-hooks/exhaustive-deps": "error",
+    // typescript-eslint
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    // ! temporarily turned off for now
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
       }
     ]
   }

@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react';
 
-import { Box, Container, Toolbar } from '@mui/material';
+import { Box, Container } from '@mui/material';
 import Head from 'next/head';
 
 import { SITE_NAME } from '~/constants';
@@ -28,7 +28,6 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
     </Head>
     <Navbar />
     <Container component='main' maxWidth='md' sx={{ flexGrow: 1 }}>
-      <Toolbar sx={{ mb: 3 }} />
       {children}
     </Container>
     <Footer />

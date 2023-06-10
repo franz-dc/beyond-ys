@@ -6,11 +6,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import NextTopLoader from 'nextjs-toploader';
 
+import { MusicPlayer } from '~/components';
 import { theme } from '~/constants';
+import { MusicPlayerContextProps, MusicPlayerProvider } from '~/contexts';
 import { createEmotionCache } from '~/utils';
 
-// Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export interface MyAppProps extends AppProps {
@@ -19,15 +21,41 @@ export interface MyAppProps extends AppProps {
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+
+  const [nowPlaying, setNowPlaying] =
+    React.useState<MusicPlayerContextProps['nowPlaying']>(null);
+
+  const [queue, setQueue] = React.useState<MusicPlayerContextProps['queue']>(
+    []
+  );
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
+        <NextTopLoader showSpinner={false} color={theme.palette.primary.main} />
         <CssBaseline />
-        <Component {...pageProps} />
+        <MusicPlayerProvider
+          value={{
+            nowPlaying,
+            setNowPlaying,
+            queue,
+            setQueue,
+          }}
+        >
+          {nowPlaying && (
+            <MusicPlayer
+              title={nowPlaying.title}
+              artists={nowPlaying.artists}
+              youtubeId={nowPlaying.youtubeId}
+              albumName={nowPlaying.albumName}
+              albumUrl={nowPlaying.albumUrl}
+            />
+          )}
+          <Component {...pageProps} />
+        </MusicPlayerProvider>
       </ThemeProvider>
     </CacheProvider>
   );

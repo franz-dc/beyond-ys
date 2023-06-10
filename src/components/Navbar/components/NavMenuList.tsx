@@ -41,9 +41,8 @@ const NavMenuList: FC<NavMenuListProps> = ({ labelPrefix, subcategory }) => {
         '& .MuiListItem-root': {
           mb: 1,
         },
-        // ml: -1,
         '& li': {
-          pl: '1rem',
+          pl: 2,
           textIndent: '-1rem',
         },
       }}
@@ -74,8 +73,8 @@ const NavMenuList: FC<NavMenuListProps> = ({ labelPrefix, subcategory }) => {
           disablePadding
           sx={{
             borderRadius: 1,
-            // mx: -1,
             mb: '0 !important',
+            py: 0.1,
             transition: (theme) =>
               theme.transitions.create(['color', 'background-color'], {
                 duration: theme.transitions.duration.shortest,

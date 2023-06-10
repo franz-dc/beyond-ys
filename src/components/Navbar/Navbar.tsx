@@ -114,23 +114,25 @@ const Navbar = () => {
     {
       id: 'other-games',
       name: 'Other Games',
-      href: '/games#other-games',
+      href: '/games',
       MenuComponent: <OtherGamesMenu />,
     },
     {
       id: 'explore',
       name: 'Explore',
-      href: '/#',
+      href: '#',
       MenuComponent: <ExploreMenu />,
     },
   ];
 
   return (
-    <AppBar component='nav'>
+    <AppBar component='nav' position='relative'>
       <Container maxWidth='md'>
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1 }}>
-            <Image src={logo} width={40} alt='Logo' />
+            <Link href='/'>
+              <Image src={logo} width={40} alt='Logo' unoptimized />
+            </Link>
           </Box>
           <Stack
             spacing={2}
