@@ -4,7 +4,12 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 
-import { MainLayout, MusicItem, MusicItemProps } from '~/components';
+import {
+  MainLayout,
+  MusicItem,
+  MusicItemProps,
+  StoryTimeline,
+} from '~/components';
 import { gamesCollection, staffCollection, storage } from '~/configs';
 import { CATEGORIES_WITH_TIMELINE, PLATFORMS } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
@@ -15,6 +20,7 @@ type ExtendedStaffSchema = StaffSchema & {
 };
 
 type ExtendedGameSchema = GameSchema & {
+  id: string;
   staffDocs: Record<string, ExtendedStaffSchema>;
 };
 
@@ -81,11 +87,12 @@ export const getServerSideProps: GetServerSideProps<
   }, {});
 
   return {
-    props: { ...data, staffDocs },
+    props: { ...data, staffDocs, id: String(gameId) },
   };
 };
 
 const GamePage = ({
+  id,
   name,
   category,
   bannerUrl,
@@ -321,7 +328,7 @@ const GamePage = ({
           <Typography component='h2' variant='h2' gutterBottom>
             Story Timeline
           </Typography>
-          UNDER CONSTRUCTION
+          <StoryTimeline id={id} category={category} />
         </Box>
       )}
       {formattedSoundtracks.length > 0 && (
