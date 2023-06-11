@@ -29,6 +29,9 @@ export default function MyApp(props: MyAppProps) {
     []
   );
 
+  const [isPlaying, setIsPlaying] =
+    React.useState<MusicPlayerContextProps['isPlaying']>(false);
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -43,6 +46,8 @@ export default function MyApp(props: MyAppProps) {
             setNowPlaying,
             queue,
             setQueue,
+            isPlaying,
+            setIsPlaying,
           }}
         >
           {nowPlaying && (

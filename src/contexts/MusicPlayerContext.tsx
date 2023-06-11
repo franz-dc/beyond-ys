@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import { Dispatch, SetStateAction, createContext } from 'react';
 
 export interface NowPlaying {
@@ -17,15 +18,17 @@ export interface MusicPlayerContextProps {
   setNowPlaying: Dispatch<SetStateAction<NowPlaying | null>>;
   queue: NowPlaying[];
   setQueue: Dispatch<SetStateAction<NowPlaying[]>>;
+  isPlaying: boolean;
+  setIsPlaying: Dispatch<SetStateAction<boolean>>;
 }
 
 export const MusicPlayerContext = createContext<MusicPlayerContextProps>({
   nowPlaying: null,
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setNowPlaying: () => {},
   queue: [],
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setQueue: () => {},
+  isPlaying: false,
+  setIsPlaying: () => {},
 });
 
 export const MusicPlayerProvider = MusicPlayerContext.Provider;

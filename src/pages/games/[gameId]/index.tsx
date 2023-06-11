@@ -95,7 +95,7 @@ const GamePage = ({
   cachedSoundtracks,
   staffDocs,
 }: ExtendedGameSchema) => {
-  const { setNowPlaying } = useMusicPlayer();
+  const { setNowPlaying, setQueue } = useMusicPlayer();
 
   const formattedSoundtracks = cachedSoundtracks.map((soundtrack) => ({
     ...soundtrack,
@@ -329,7 +329,7 @@ const GamePage = ({
           <Typography component='h2' variant='h2' gutterBottom>
             Soundtracks
           </Typography>
-          <Stack spacing={2}>
+          <Stack spacing={1}>
             {formattedSoundtracks.map((soundtrack, idx) => (
               <MusicItem
                 key={idx}
@@ -350,6 +350,16 @@ const GamePage = ({
                           // TODO: albumName
                           // TODO: albumUrl
                         });
+                        setQueue(
+                          formattedSoundtracks.map((s) => ({
+                            id: s.id,
+                            title: s.title,
+                            youtubeId: s.youtubeId,
+                            artists: s.artists,
+                            // TODO: albumName
+                            // TODO: albumUrl
+                          }))
+                        );
                       }
                     : undefined
                 }

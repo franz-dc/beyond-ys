@@ -73,7 +73,7 @@ const MusicItem: FC<MusicItemProps> = ({
         >
           <Typography
             sx={{
-              color: 'text.secondary',
+              color: nowPlaying?.id === id ? 'primary.main' : 'text.secondary',
               opacity: isHovered || nowPlaying?.id === id ? 0 : 1,
               userSelect: 'none',
             }}
@@ -135,7 +135,12 @@ const MusicItem: FC<MusicItemProps> = ({
             sx={{
               fontWeight: 'medium',
               userSelect: 'none',
-              color: !!youtubeId ? 'text.primary' : 'text.secondary',
+              color:
+                nowPlaying?.id === id
+                  ? 'primary.main'
+                  : !!youtubeId
+                  ? 'text.primary'
+                  : 'text.secondary',
             }}
           >
             {title}
@@ -143,15 +148,22 @@ const MusicItem: FC<MusicItemProps> = ({
           <Typography
             sx={{ fontSize: 14, color: 'text.secondary', userSelect: 'none' }}
           >
-            {artists.length > 1
+            {artists.length !== 0
               ? artists.map((artist, idx) => (
                   // eslint-disable-next-line react/jsx-indent
-                  <Typography component='span' key={artist.name}>
+                  <Typography
+                    component='span'
+                    key={artist.name}
+                    sx={{ fontSize: 'inherit' }}
+                  >
                     <Link
                       href={artist.link}
                       sx={{
                         color: 'text.secondary',
                         textDecoration: 'none',
+                        '&:hover': {
+                          textDecoration: 'underline',
+                        },
                       }}
                     >
                       {artist.name}
