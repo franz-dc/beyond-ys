@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 
-import { Box, ButtonBase, Stack, Typography } from '@mui/material';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import { MdPlayArrow } from 'react-icons/md';
 import { parse } from 'tinyduration';
@@ -80,28 +80,31 @@ const MusicItem: FC<MusicItemProps> = ({
           >
             {trackNumber}
           </Typography>
-          <ButtonBase
-            disableRipple
-            disableTouchRipple
-            disabled={nowPlaying?.id === id}
-            onClick={() => {
-              if (nowPlaying?.id === id) return;
-              onPlay?.();
-            }}
+          <Box
             sx={{
               position: 'absolute',
               display: isHovered || nowPlaying?.id === id ? 'block' : 'none',
             }}
           >
-            <Box
-              component={MdPlayArrow}
-              sx={{
-                color: nowPlaying?.id === id ? 'primary.main' : 'text.primary',
-                width: 28,
-                height: 28,
+            <IconButton
+              size='small'
+              disabled={nowPlaying?.id === id}
+              onClick={() => {
+                if (nowPlaying?.id === id) return;
+                onPlay?.();
               }}
-            />
-          </ButtonBase>
+            >
+              <Box
+                component={MdPlayArrow}
+                sx={{
+                  color:
+                    nowPlaying?.id === id ? 'primary.main' : 'text.primary',
+                  width: 28,
+                  height: 28,
+                }}
+              />
+            </IconButton>
+          </Box>
         </Box>
         <Box
           sx={{

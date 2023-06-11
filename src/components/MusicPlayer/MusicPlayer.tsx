@@ -58,6 +58,7 @@ const StyledSlider = styled(Slider)(({ theme }) => ({
   height: 4,
   '& .MuiSlider-thumb': {
     // transition: 'box-shadow 0.1s, color 0.1s, width 0.1s, height 0.1s',
+    transition: 'all 0.1s',
     width: 0,
     height: 0,
     '&:before': {
@@ -77,7 +78,7 @@ const StyledSlider = styled(Slider)(({ theme }) => ({
     opacity: 0.2,
   },
   '& .MuiSlider-track': {
-    // transition: 'color 0.1s',
+    transition: 'all 0.1s',
   },
 }));
 
@@ -100,7 +101,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   const [lastRecordedCurrentTime, setLastRecordedCurrentTime] = useState(0);
 
   const {
-    playerDetails: { id: currentId, currentTime, duration, volume, state },
+    playerDetails: { currentTime, duration, volume, state },
     actions: { playVideo, pauseVideo, seekTo, setVolume },
   } = useYoutube({
     id: youtubeId,
@@ -111,6 +112,33 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     events: {
       onReady: () => {
         setIsReady(true);
+        setWasPlaying(true);
+        playVideo();
+      },
+      onStateChange: (e) => {
+        const currentTime = e.target.getCurrentTime();
+        setActualCurrentTime(currentTime);
+        setLastRecordedCurrentTime(currentTime);
+        setTimeLastUpdated(new Date().getTime());
+
+        if (!('mediaSession' in navigator)) return;
+        switch (e.data) {
+          case PlayerState.PLAYING:
+            navigator.mediaSession.playbackState = 'playing';
+            break;
+          case PlayerState.PAUSED:
+            navigator.mediaSession.playbackState = 'paused';
+            break;
+          case PlayerState.BUFFERING:
+            navigator.mediaSession.playbackState = 'paused';
+            break;
+          case PlayerState.UNSTARTED:
+            navigator.mediaSession.playbackState = 'none';
+            break;
+          case PlayerState.ENDED:
+            navigator.mediaSession.playbackState = 'none';
+            break;
+        }
       },
     },
   });
@@ -120,8 +148,6 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   // we use a separate state for volume because there are bugs with the volume
   // api where it doesn't update the volume properly on initial load
   const [clientVolume, setClientVolume] = useState(100);
-
-  const [triggeredPlay, setTriggeredPlay] = useState(false);
 
   const [isMuted, setIsMuted] = useState(false);
   const [unmutedVolume, setUnmutedVolume] = useState(100);
@@ -143,16 +169,17 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   }, [currentTime, lastRecordedCurrentTime]);
 
   // add the time elapsed since the last time currentTime was updated and
-  // update this value every second
+  // update this value every 250ms
   useEffect(() => {
     const interval = setInterval(() => {
       if (state === PlayerState.PLAYING) {
-        setActualCurrentTime(
+        const newActualCurrentTime =
           lastRecordedCurrentTime +
-            (new Date().getTime() - timeLastUpdated) / 1000
-        );
+          (new Date().getTime() - timeLastUpdated) / 1000;
+
+        setActualCurrentTime(newActualCurrentTime);
       }
-    }, 1000);
+    }, 500);
 
     return () => clearInterval(interval);
   }, [lastRecordedCurrentTime, state, timeLastUpdated]);
@@ -194,14 +221,80 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     setIsVolumeInitialized(true);
   }, [isVolumeInitialized, isReady]);
 
-  // instantly play the video when currentId changes
+  // media session api
   useEffect(() => {
-    if (currentId && !triggeredPlay && playVideo) {
+    if (!('mediaSession' in navigator)) return;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: 'test',
+      artist: artists.map((artist) => artist.name).join(', '),
+      // TODO: add album name
+      // album: albumName,
+      // TODO: add album art
+      // artwork: [],
+    });
+
+    navigator.mediaSession.setActionHandler('play', () => {
       setWasPlaying(true);
-      setTriggeredPlay(true);
       playVideo();
-    }
-  }, [triggeredPlay, setTriggeredPlay, currentId, playVideo]);
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+      setWasPlaying(false);
+      pauseVideo();
+    });
+
+    navigator.mediaSession.setActionHandler('seekbackward', () => {
+      let newTime = currentTime - 10;
+      if (newTime < 0) newTime = 0;
+
+      seekTo(newTime, true);
+      setActualCurrentTime(newTime);
+      setLastRecordedCurrentTime(newTime);
+      setTimeLastUpdated(new Date().getTime());
+    });
+
+    navigator.mediaSession.setActionHandler('seekforward', () => {
+      let newTime = currentTime + 10;
+      if (newTime > duration) newTime = duration;
+
+      seekTo(newTime, true);
+      setActualCurrentTime(newTime);
+      setLastRecordedCurrentTime(newTime);
+      setTimeLastUpdated(new Date().getTime());
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+      // TODO: Implement this
+      // eslint-disable-next-line no-console
+      console.log('Previous track');
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+      // TODO: Implement this
+      // eslint-disable-next-line no-console
+      console.log('Next track');
+    });
+
+    return () => {
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.setActionHandler('play', null);
+      navigator.mediaSession.setActionHandler('pause', null);
+      navigator.mediaSession.setActionHandler('seekbackward', null);
+      navigator.mediaSession.setActionHandler('seekforward', null);
+      navigator.mediaSession.setActionHandler('previoustrack', null);
+      navigator.mediaSession.setActionHandler('nexttrack', null);
+    };
+  }, [
+    title,
+    artists,
+    albumName,
+    playVideo,
+    pauseVideo,
+    seekTo,
+    currentTime,
+    duration,
+  ]);
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -405,21 +498,29 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                 <MdSkipPrevious />
               </IconButton>
             </Box>
-            <IconButton
-              onClick={() => {
-                if (isPaused) {
-                  setWasPlaying(true);
-                  playVideo();
-                } else {
-                  setWasPlaying(false);
-                  pauseVideo();
-                }
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
               }}
-              aria-label={isPaused ? 'play' : 'pause'}
-              sx={{ p: 0, fontSize: 42 }}
             >
-              {isPaused ? <MdPlayArrow /> : <MdPause />}
-            </IconButton>
+              <IconButton
+                size='small'
+                onClick={() => {
+                  if (isPaused) {
+                    setWasPlaying(true);
+                    playVideo();
+                  } else {
+                    setWasPlaying(false);
+                    pauseVideo();
+                  }
+                }}
+                aria-label={isPaused ? 'play' : 'pause'}
+                sx={{ m: '-8px !important', fontSize: 42 }}
+              >
+                {isPaused ? <MdPlayArrow /> : <MdPause />}
+              </IconButton>
+            </Box>
             <Box
               sx={{
                 display: 'flex',
