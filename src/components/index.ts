@@ -1,5 +1,8 @@
 export { default as Footer } from './Footer';
 
+export { default as GenericHeader } from './GenericHeader';
+export * from './GenericHeader';
+
 export { default as Link } from './Link';
 export * from './Link';
 

@@ -11,7 +11,7 @@ import {
   StoryTimeline,
 } from '~/components';
 import { gamesCollection, staffCollection, storage } from '~/configs';
-import { CATEGORIES_WITH_TIMELINE, PLATFORMS } from '~/constants';
+import { CATEGORIES_WITH_TIMELINE, GAME_PLATFORMS } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { GameSchema, StaffSchema } from '~/schemas';
 
@@ -251,7 +251,7 @@ const GamePage = ({
                 }}
               >
                 {platforms.map((platform) => {
-                  const platformObj = PLATFORMS[platform];
+                  const platformObj = GAME_PLATFORMS[platform];
 
                   if (!platformObj) return null;
 

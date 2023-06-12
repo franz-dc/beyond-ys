@@ -11,7 +11,7 @@ import {
 
 import PspLogo from '../../public/assets/psp-logo.svg';
 
-export const PLATFORMS: Record<
+export const GAME_PLATFORMS: Record<
   string,
   {
     name: string;

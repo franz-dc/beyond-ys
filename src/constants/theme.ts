@@ -72,5 +72,12 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTypography: {
+      styleOverrides: {
+        gutterBottom: {
+          marginBottom: '0.75em',
+        },
+      },
+    },
   },
 });
