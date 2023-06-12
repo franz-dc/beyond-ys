@@ -169,7 +169,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   }, [currentTime, lastRecordedCurrentTime]);
 
   // add the time elapsed since the last time currentTime was updated and
-  // update this value every 250ms
+  // update this value every 1 second
   useEffect(() => {
     const interval = setInterval(() => {
       if (state === PlayerState.PLAYING) {
@@ -179,7 +179,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
 
         setActualCurrentTime(newActualCurrentTime);
       }
-    }, 500);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [lastRecordedCurrentTime, state, timeLastUpdated]);
@@ -330,12 +330,22 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
         zIndex: 1,
       }}
     >
-      <Stack direction='row' spacing={1} sx={{ mt: -1, mb: 1 }}>
+      <Stack
+        direction='row'
+        spacing={1}
+        sx={{
+          mt: -1,
+          mb: {
+            xs: 0,
+            md: 1,
+          },
+        }}
+      >
         <Box
           sx={{
             display: {
               xs: 'none',
-              sm: 'flex',
+              md: 'flex',
             },
             alignItems: 'center',
             width: 40,
@@ -361,7 +371,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           sx={{
             ml: {
               xs: '0!important',
-              sm: '8px!important',
+              md: '8px!important',
             },
           }}
         />
@@ -369,7 +379,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           sx={{
             display: {
               xs: 'none',
-              sm: 'flex',
+              md: 'flex',
             },
             alignItems: 'center',
             justifyContent: 'flex-end',
@@ -465,7 +475,16 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           </Stack>
         </Grid>
         <Grid item xs='auto'>
-          <Stack direction='row' spacing={1}>
+          <Stack
+            direction='row'
+            spacing={1}
+            sx={{
+              mr: {
+                xs: -2.5,
+                md: 0,
+              },
+            }}
+          >
             <Box
               sx={{
                 display: 'flex',
@@ -477,6 +496,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                 onClick={() => setIsShuffleOn((prev) => !prev)}
                 aria-label='shuffle'
                 sx={{
+                  display: {
+                    xs: 'none',
+                    md: 'flex',
+                  },
                   fontSize: 24,
                   color: isShuffleOn ? 'primary.main' : 'text.secondary',
                 }}
@@ -552,6 +575,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                     : 'disable repeat'
                 }
                 sx={{
+                  display: {
+                    xs: 'none',
+                    md: 'flex',
+                  },
                   fontSize: 24,
                   color:
                     repeatMode !== 'none' ? 'primary.main' : 'text.secondary',
@@ -562,12 +589,21 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
             </Box>
           </Stack>
         </Grid>
-        <Grid item xs>
+        <Grid
+          item
+          xs
+          sx={{
+            display: {
+              xs: 'none',
+              md: 'flex',
+            },
+          }}
+        >
           <Box
             sx={{
+              display: 'flex',
               width: '100%',
               height: '100%',
-              display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
             }}

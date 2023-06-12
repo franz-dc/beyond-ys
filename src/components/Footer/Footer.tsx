@@ -138,7 +138,12 @@ const Footer = () => {
           sx={{
             color: 'text.secondary',
             fontSize: '0.75rem',
-            mb: !!nowPlaying ? '97px' : 0,
+            mb: !!nowPlaying
+              ? {
+                  xs: '89px',
+                  md: '97px',
+                }
+              : 0,
           }}
         >
           <Grid item xs={12} md>
