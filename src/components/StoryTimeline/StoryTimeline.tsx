@@ -26,7 +26,9 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
   const mdUp = useMediaQuery(theme.breakpoints.up('md'));
 
   if (category === 'Ys Series') {
-    const gameIndex = ysStoryTimeline.findIndex((game) => game.id === id);
+    const gameIndex = ysStoryTimeline.findIndex((game) =>
+      game.ids.includes(id)
+    );
 
     if (gameIndex === -1) return null;
 
@@ -34,11 +36,14 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
     const preTimelineLength = gameIndex - 1;
     const postTimelineLength = timelineLength - gameIndex - 2;
     const hasPrevGame = gameIndex > 0;
+    const prevGameHasPrevGame = gameIndex > 1;
     const hasNextGame = gameIndex < timelineLength - 1;
+    const nextGameHasNextGame = gameIndex < timelineLength - 2;
 
+    // only show 3 games on the timeline at a time, including the current game
     const shortenedTimeline = ysStoryTimeline.slice(
-      hasPrevGame ? gameIndex - 1 : gameIndex,
-      hasNextGame ? gameIndex + 2 : gameIndex + 1
+      hasPrevGame ? gameIndex - (prevGameHasPrevGame ? 2 : 1) : gameIndex,
+      hasNextGame ? gameIndex + (nextGameHasNextGame ? 3 : 2) : gameIndex + 1
     );
 
     return (
@@ -54,6 +59,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
               <StepButton
                 component={Link}
                 href='/ys-timeline'
+                aria-label='previous games'
                 sx={{
                   color: 'text.primary',
                   '&:hover': {
@@ -83,8 +89,8 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
             </Step>
           )}
           {shortenedTimeline.map((game) => (
-            <Step key={game.id}>
-              {game.id === id ? (
+            <Step key={game.ids[0]}>
+              {game.ids.includes(id) ? (
                 <StepLabel
                   StepIconComponent={() => (
                     <StepIcon icon={game.stepLabel} active />
@@ -106,7 +112,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
               ) : (
                 <StepButton
                   component={Link}
-                  href={`/games/${game.id}`}
+                  href={`/games/${game.ids[0]}`}
                   sx={{
                     color: 'text.primary',
                     '&:hover': {
@@ -139,6 +145,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
               <StepButton
                 component={Link}
                 href='/ys-timeline'
+                aria-label='future games'
                 sx={{
                   color: 'text.primary',
                   '&:hover': {
