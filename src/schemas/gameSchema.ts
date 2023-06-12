@@ -13,9 +13,8 @@ export const gameSchema = z.object({
   descriptionSourceUrl: z.string(),
   characters: z.string().array(),
   characterSpoilers: z.string().array(),
-  bannerPath: z.string(),
-  coverPath: z.string(),
   soundtrackIds: z.string().array(),
+  updatedAt: z.any(),
   // for getting the download url from firebase storage
   bannerUrl: z.string().optional(),
   coverUrl: z.string().optional(),

@@ -27,9 +27,11 @@ type ExtendedGameSchema = GameSchema & {
 export const getServerSideProps: GetServerSideProps<
   ExtendedGameSchema
 > = async (context) => {
-  const { gameId } = context.query;
+  const { gameId: gameIdRaw } = context.query;
 
-  const docRef = doc(gamesCollection, String(gameId));
+  const gameId = String(gameIdRaw);
+
+  const docRef = doc(gamesCollection, gameId);
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
@@ -39,35 +41,38 @@ export const getServerSideProps: GetServerSideProps<
 
   const data = docSnap.data();
 
-  if (data.bannerPath) {
-    try {
-      const bannerUrl = await getDownloadURL(ref(storage, data.bannerPath));
-      data.bannerUrl = bannerUrl;
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    const bannerUrl = await getDownloadURL(
+      ref(storage, `game-banners/${gameId}`)
+    );
+    data.bannerUrl = bannerUrl;
+  } catch (error) {
+    console.error(error);
   }
 
-  if (data.coverPath) {
-    try {
-      const coverUrl = await getDownloadURL(ref(storage, data.coverPath));
-      data.coverUrl = coverUrl;
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    const coverUrl = await getDownloadURL(
+      ref(storage, `game-covers/${gameId}`)
+    );
+    data.coverUrl = coverUrl;
+  } catch (error) {
+    console.error(error);
   }
 
   // aggregate soundtrack staff
-  const staffIds = data.cachedSoundtracks.reduce(
-    (acc: string[], soundtrack) => {
-      return [
-        ...soundtrack.composerIds,
-        ...soundtrack.arrangerIds,
-        ...soundtrack.otherArtists.map((a) => a.staffId),
-      ];
-    },
-    []
-  );
+  const staffIds = [
+    // @ts-ignore
+    ...new Set<string>(
+      data.cachedSoundtracks.reduce((acc: string[], soundtrack) => {
+        return [
+          ...acc,
+          ...soundtrack.composerIds,
+          ...soundtrack.arrangerIds,
+          ...soundtrack.otherArtists.map((a) => a.staffId),
+        ];
+      }, [])
+    ),
+  ];
 
   const staffDocsPromise = await Promise.allSettled(
     staffIds.map((staffId) => getDoc(doc(staffCollection, staffId)))
@@ -87,7 +92,12 @@ export const getServerSideProps: GetServerSideProps<
   }, {});
 
   return {
-    props: { ...data, staffDocs, id: String(gameId) },
+    props: {
+      ...data,
+      staffDocs,
+      id: gameId,
+      updatedAt: data.updatedAt.toMillis(),
+    },
   };
 };
 
@@ -187,7 +197,7 @@ const GamePage = ({
             xs: 2,
             md: 3,
           },
-          mb: 3,
+          mb: 4,
         }}
       >
         <Grid
@@ -243,10 +253,10 @@ const GamePage = ({
                 direction='row'
                 spacing={2}
                 sx={{
-                  mt: 0.5,
+                  mt: 1,
                   mb: {
                     xs: 0,
-                    md: 1,
+                    md: 1.5,
                   },
                 }}
               >
@@ -257,7 +267,7 @@ const GamePage = ({
 
                   if (platformObj.iconType === 'component') {
                     return (
-                      <Tooltip key={platform} title={platformObj.name}>
+                      <Tooltip key={platform} title={platformObj.name} arrow>
                         <SvgIcon
                           sx={{
                             width: platformObj.width,
@@ -308,7 +318,7 @@ const GamePage = ({
             xs: 'block',
             md: 'none',
           },
-          mb: 3,
+          mb: 4,
         }}
       >
         <Typography component='h2' variant='h2' gutterBottom>
@@ -316,7 +326,7 @@ const GamePage = ({
         </Typography>
         <Typography>{description}</Typography>
       </Box>
-      <Box component='section' sx={{ mb: 3 }}>
+      <Box component='section' sx={{ mb: 4 }}>
         <Typography component='h2' variant='h2' gutterBottom>
           Characters
         </Typography>
@@ -324,7 +334,7 @@ const GamePage = ({
       </Box>
       {/* @ts-ignore */}
       {CATEGORIES_WITH_TIMELINE.includes(category) && (
-        <Box component='section' sx={{ mb: 3 }}>
+        <Box component='section' sx={{ mb: 4 }}>
           <Typography component='h2' variant='h2' sx={{ mb: 2 }}>
             Story Timeline
           </Typography>
@@ -332,7 +342,7 @@ const GamePage = ({
         </Box>
       )}
       {formattedSoundtracks.length > 0 && (
-        <Box component='section' sx={{ mb: 3 }}>
+        <Box component='section' sx={{ mb: 4 }}>
           <Typography component='h2' variant='h2' gutterBottom>
             Soundtracks
           </Typography>
