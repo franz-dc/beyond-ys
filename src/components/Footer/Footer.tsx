@@ -34,7 +34,7 @@ const Footer = () => {
   const iconLinks = [
     {
       name: 'Email',
-      href: 'mailto:franzdc@beyondys.com',
+      href: 'mailto:hello@beyondys.com',
       icon: MdEmail,
       type: 'email',
     },
@@ -107,10 +107,8 @@ const Footer = () => {
                   <Link
                     href={link.href}
                     sx={{ color: 'text.primary' }}
-                    {...(link.type === 'link' && {
-                      target: '_blank',
-                      rel: 'noopener noreferrer',
-                    })}
+                    target='_blank'
+                    rel='noopener noreferrer'
                   >
                     <SvgIcon
                       component={link.icon}
@@ -149,7 +147,9 @@ const Footer = () => {
           <Grid item xs={12} md>
             Site made with 🤍 by{' '}
             <Link
-              href='mailto:franzdc@beyondys.com'
+              href='mailto:hello@beyondys.com'
+              target='_blank'
+              rel='noopener noreferrer'
               color='text.secondary'
               fontWeight='medium'
               fontSize='inherit'
