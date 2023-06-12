@@ -1,19 +1,28 @@
 import { FC } from 'react';
 
 import { Box, Typography } from '@mui/material';
+import type { BoxProps } from '@mui/material';
 
-export interface GenericHeaderProps {
+export interface GenericHeaderProps extends BoxProps {
   title: string;
+  gutterBottom?: boolean;
 }
 
-const GenericHeader: FC<GenericHeaderProps> = ({ title }) => {
+const GenericHeader: FC<GenericHeaderProps> = ({
+  title,
+  gutterBottom,
+  ...rest
+}) => {
   return (
     <Box
       sx={{
         height: 100,
         backgroundColor: 'background.header',
         borderRadius: 4,
+        mb: gutterBottom ? 3 : 0,
+        ...rest.sx,
       }}
+      {...rest}
     >
       <Typography
         variant='h1'
