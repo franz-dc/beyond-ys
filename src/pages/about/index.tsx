@@ -38,7 +38,7 @@ export const getStaticProps: GetStaticProps<AboutProps> = async () => ({
       {
         name: 'Franz DC',
         description:
-          'Creator of this site. Fan of the Ys series and Falcom music since 2008. ',
+          'Creator of Beyond Ys. Fan of the Ys series and Falcom music since 2008. ',
         avatar: franzdcAvatar,
         platforms: {
           github: {
@@ -306,8 +306,8 @@ const About = ({ description, contributors }: AboutProps) => (
       <Typography>
         This website contains links to external websites for informational
         purposes only. The owner of this site has no control over the content or
-        privacy practices of these external sites and are not responsible for
-        any consequences that may arise from visiting them.
+        privacy practices of these external sites and is not responsible for any
+        consequences that may arise from visiting them.
       </Typography>
     </Box>
   </MainLayout>
