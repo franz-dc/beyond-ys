@@ -300,12 +300,7 @@ const GamePage = ({
       </Box>
       {/* @ts-ignore */}
       {CATEGORIES_WITH_TIMELINE.includes(category) && (
-        <Box component='section' sx={{ mb: 4 }}>
-          <Typography component='h2' variant='h2' sx={{ mb: 2 }}>
-            Story Timeline
-          </Typography>
-          <StoryTimeline id={id} category={category} />
-        </Box>
+        <StoryTimeline id={id} category={category} />
       )}
       {formattedSoundtracks.length > 0 && (
         <Box component='section' sx={{ mb: 4 }}>

@@ -47,7 +47,19 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
     );
 
     return (
-      <Box>
+      <Box component='section' sx={{ mb: 4 }}>
+        <Typography
+          component='h2'
+          variant='h2'
+          sx={{
+            mb: {
+              xs: 1,
+              md: 3,
+            },
+          }}
+        >
+          Story Timeline
+        </Typography>
         <Stepper
           nonLinear
           activeStep={gameIndex}
