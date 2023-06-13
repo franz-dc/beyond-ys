@@ -12,17 +12,17 @@ export const staffInfoSchema = z.object({
     .object({
       gameId: z.string().min(1),
       roles: z.string().array(),
-      // cached name (to reduce reads)
-      name: z.string().optional(),
     })
     .array(),
+  updatedAt: z.any(),
+  // for getting the download url from firebase storage
+  avatarUrl: z.string().optional(),
   // doing this to reduce reads
   cachedMusic: z.array(
     musicSchema.extend({
       id: z.string(),
     })
   ),
-  updatedAt: z.any(),
 });
 
 export type StaffInfoSchema = z.infer<typeof staffInfoSchema>;
