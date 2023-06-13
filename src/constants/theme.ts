@@ -72,6 +72,16 @@ export const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+        },
+      },
+    },
     MuiTypography: {
       styleOverrides: {
         gutterBottom: {

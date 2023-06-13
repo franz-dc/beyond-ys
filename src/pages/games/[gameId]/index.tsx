@@ -10,18 +10,14 @@ import {
   MusicItemProps,
   StoryTimeline,
 } from '~/components';
-import { gamesCollection, staffCollection, storage } from '~/configs';
+import { cacheCollection, gamesCollection, storage } from '~/configs';
 import { CATEGORIES_WITH_TIMELINE, GAME_PLATFORMS } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
-import { GameSchema, StaffSchema } from '~/schemas';
-
-type ExtendedStaffSchema = StaffSchema & {
-  id: string;
-};
+import { GameSchema } from '~/schemas';
 
 type ExtendedGameSchema = GameSchema & {
   id: string;
-  staffDocs: Record<string, ExtendedStaffSchema>;
+  staffNames: Record<string, string>;
 };
 
 export const getServerSideProps: GetServerSideProps<
@@ -59,42 +55,12 @@ export const getServerSideProps: GetServerSideProps<
     console.error(error);
   }
 
-  // aggregate soundtrack staff
-  const staffIds = [
-    // @ts-ignore
-    ...new Set<string>(
-      data.cachedSoundtracks.reduce((acc: string[], soundtrack) => {
-        return [
-          ...acc,
-          ...soundtrack.composerIds,
-          ...soundtrack.arrangerIds,
-          ...soundtrack.otherArtists.map((a) => a.staffId),
-        ];
-      }, [])
-    ),
-  ];
-
-  const staffDocsPromise = await Promise.allSettled(
-    staffIds.map((staffId) => getDoc(doc(staffCollection, staffId)))
-  );
-
-  const staffDocs = (
-    staffDocsPromise
-      .map((res) =>
-        res.status === 'fulfilled'
-          ? { ...res.value.data(), id: res.value.id }
-          : null
-      )
-      .filter(Boolean) as ExtendedStaffSchema[]
-  ).reduce((acc: ExtendedGameSchema['staffDocs'], staff) => {
-    acc[staff!.id] = staff;
-    return acc;
-  }, {});
+  const staffNames = await getDoc(doc(cacheCollection, 'staffNames'));
 
   return {
     props: {
       ...data,
-      staffDocs,
+      staffNames: staffNames.data() || {},
       id: gameId,
       updatedAt: data.updatedAt.toMillis(),
     },
@@ -110,7 +76,7 @@ const GamePage = ({
   platforms,
   description = 'No description available.',
   cachedSoundtracks,
-  staffDocs,
+  staffNames,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -119,27 +85,27 @@ const GamePage = ({
     artists: [
       // populate composers
       ...soundtrack.composerIds.map((c) =>
-        staffDocs[c]
+        staffNames[c]
           ? {
-              name: staffDocs[c].name,
+              name: staffNames[c],
               link: `/staff/${c}`,
             }
           : null
       ),
       // populate arrangers
       ...soundtrack.arrangerIds.map((a) =>
-        staffDocs[a]
+        staffNames[a]
           ? {
-              name: `${staffDocs[a].name} (Arr.)`,
+              name: `${staffNames[a]} (Arr.)`,
               link: `/staff/${a}`,
             }
           : null
       ),
       // populate other artists
       ...soundtrack.otherArtists.map((a) =>
-        staffDocs[a.staffId]
+        staffNames[a.staffId]
           ? {
-              name: `${staffDocs[a.staffId].name} (${a.role || 'Other'})`,
+              name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
               link: `/staff/${a}`,
             }
           : null

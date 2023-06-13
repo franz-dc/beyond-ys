@@ -226,8 +226,8 @@ const About = ({ description, contributors }: AboutProps) => (
       </Typography>
       <Typography gutterBottom>
         As of now, there is no way to directly contribute to the contents of
-        this website yet. In the future, depending on the outcome, it might be
-        implemented. In the meantime, you can contact{' '}
+        this website yet. In the future, depending on the outcome of this
+        project, it might be implemented. In the meantime, you can contact{' '}
         <Link
           href='mailto:hello@beyondys.com'
           target='_blank'
@@ -235,7 +235,7 @@ const About = ({ description, contributors }: AboutProps) => (
         >
           hello@beyondys.com
         </Link>{' '}
-        for suggestions for new features or content for this site.
+        for suggestions, new features, or new content for this site.
       </Typography>
       {/* cspell:disable */}
       <Typography>
