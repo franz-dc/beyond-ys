@@ -5,11 +5,13 @@ import type { BoxProps } from '@mui/material';
 
 export interface GenericHeaderProps extends BoxProps {
   title: string;
+  subtitle?: string;
   gutterBottom?: boolean;
 }
 
 const GenericHeader: FC<GenericHeaderProps> = ({
   title,
+  subtitle,
   gutterBottom,
   ...rest
 }) => {
@@ -24,8 +26,7 @@ const GenericHeader: FC<GenericHeaderProps> = ({
       }}
       {...rest}
     >
-      <Typography
-        variant='h1'
+      <Box
         sx={{
           display: 'flex',
           alignItems: 'flex-end',
@@ -34,8 +35,9 @@ const GenericHeader: FC<GenericHeaderProps> = ({
           pb: 1,
         }}
       >
-        {title}
-      </Typography>
+        <Typography variant='h1'>{title}</Typography>
+        {subtitle && <Typography variant='subtitle1'>{subtitle}</Typography>}
+      </Box>
     </Box>
   );
 };
