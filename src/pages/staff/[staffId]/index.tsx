@@ -174,7 +174,7 @@ const StaffInfo = ({
                   sx={{
                     width: 128,
                     height: 128,
-                    backgroundColor: '#acbbe9',
+                    backgroundColor: 'background.avatar',
                     border: ({ palette }) =>
                       `8px solid ${palette.background.default}`,
                   }}
