@@ -66,6 +66,21 @@ export const theme = createTheme({
         },
       },
     },
+    MuiButton: {
+      defaultProps: {
+        variant: 'contained',
+        disableElevation: true,
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          '&.MuiButton-containedPrimary': {
+            backgroundColor: '#0277bd',
+            color: 'inherit',
+          },
+        },
+      },
+    },
     MuiLink: {
       styleOverrides: {
         root: {
