@@ -32,11 +32,13 @@ const GenericHeader: FC<GenericHeaderProps> = ({
           alignItems: 'flex-end',
           height: '100%',
           px: 3,
-          pb: 1,
+          pb: 2,
         }}
       >
-        <Typography variant='h1'>{title}</Typography>
-        {subtitle && <Typography variant='subtitle1'>{subtitle}</Typography>}
+        <Box>
+          <Typography variant='h1'>{title}</Typography>
+          {subtitle && <Typography variant='subtitle1'>{subtitle}</Typography>}
+        </Box>
       </Box>
     </Box>
   );
