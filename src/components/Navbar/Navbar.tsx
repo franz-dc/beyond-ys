@@ -4,8 +4,6 @@ import { AppBar, Box, Container, Stack, Toolbar, Tooltip } from '@mui/material';
 import Image from 'next/image';
 import { FiChevronDown } from 'react-icons/fi';
 
-import { useWindowDimensions } from '~/hooks';
-
 import logo from '../../../public/assets/logo.png';
 import Link, { LinkProps } from '../Link';
 
@@ -29,23 +27,12 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
   href,
   MenuComponent,
 }) => {
-  const { height } = useWindowDimensions();
-
   // used for chevron icon rotation
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Tooltip
-      title={
-        <Box
-          sx={{
-            maxHeight: height ? `calc(${height}px - 120px)` : 'unset',
-            overflowY: height > 720 ? 'unset' : 'auto',
-          }}
-        >
-          {MenuComponent}
-        </Box>
-      }
+      title={MenuComponent}
       arrow
       onOpen={() => setIsOpen(true)}
       onClose={() => setIsOpen(false)}
@@ -64,6 +51,10 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
             color: 'background.paper',
           },
         },
+      }}
+      PopperProps={{
+        keepMounted: true,
+        disablePortal: true,
       }}
     >
       <Link
