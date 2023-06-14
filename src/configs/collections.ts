@@ -13,5 +13,4 @@ const createCollection = <T = DocumentData>(
 export const gamesCollection = createCollection<GameSchema>('games');
 export const staffInfosCollection =
   createCollection<StaffInfoSchema>('staffInfo');
-export const cacheCollection =
-  createCollection<Record<string, string>>('cache');
+export const cacheCollection = createCollection<Record<string, any>>('cache');

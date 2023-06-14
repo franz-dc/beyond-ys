@@ -9,13 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import {
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc,
-  writeBatch,
-} from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
@@ -171,40 +165,44 @@ const Staff = ({ initialStaffNames, gameNames }: Props) => {
     try {
       const staffInfoDocRef = doc(staffInfosCollection, id);
 
-      if (currentStaffData?.name === values.name) {
-        await updateDoc(staffInfoDocRef, {
-          ...values,
-          roles: values.roles.map((role) => role.value),
-          updatedAt: serverTimestamp(),
-        });
-      } else {
-        const batch = writeBatch(db);
+      const batch = writeBatch(db);
 
-        batch.update(staffInfoDocRef, {
-          ...values,
-          roles: values.roles.map((role) => role.value),
-          updatedAt: serverTimestamp(),
-        });
+      batch.update(staffInfoDocRef, {
+        ...values,
+        roles: values.roles.map((role) => role.value),
+        updatedAt: serverTimestamp(),
+      });
 
+      if (currentStaffData?.name !== values.name) {
         const staffNamesDocRef = doc(cacheCollection, 'staffNames');
 
         batch.update(staffNamesDocRef, {
           [id]: values.name,
         });
-
-        await batch.commit();
-
-        setCurrentStaffData((prev) => ({
-          ...prev!,
-          ...values,
-          roles: values.roles.map((role) => role.value),
-        }));
-
-        setStaffNames((prev) => ({
-          ...prev,
-          [id]: values.name,
-        }));
       }
+
+      if (
+        JSON.stringify(currentStaffData?.roles) !== JSON.stringify(values.roles)
+      ) {
+        const StaffRolesDocRef = doc(cacheCollection, 'staffRoles');
+
+        batch.update(StaffRolesDocRef, {
+          [id]: values.roles.map((role) => role.value),
+        });
+      }
+
+      await batch.commit();
+
+      setCurrentStaffData((prev) => ({
+        ...prev!,
+        ...values,
+        roles: values.roles.map((role) => role.value),
+      }));
+
+      setStaffNames((prev) => ({
+        ...prev,
+        [id]: values.name,
+      }));
 
       alert('Changes saved');
     } catch (err) {
