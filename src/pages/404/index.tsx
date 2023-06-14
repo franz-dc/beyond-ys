@@ -23,10 +23,17 @@ const NotFound = () => {
           src={Img}
           alt='404'
           sx={{
-            width: 250,
+            width: {
+              xs: 250,
+              sm: 320,
+            },
+            maxWidth: 'calc(100vw - 32px)',
             height: 'auto',
-            ml: '80px',
             mb: 3,
+            pl: {
+              xs: '56px',
+              sm: '80px',
+            },
           }}
           unoptimized
         />
