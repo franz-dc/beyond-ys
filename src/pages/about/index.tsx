@@ -227,7 +227,7 @@ const About = ({ description, contributors }: AboutProps) => (
       <Typography gutterBottom>
         As of now, there is no way to directly contribute to the contents of
         this website yet. In the future, depending on the outcome of this
-        project, it might be implemented. In the meantime, you can contact{' '}
+        project, it might be implemented. In the meantime, you can email at{' '}
         <Link
           href='mailto:hello@beyondys.com'
           target='_blank'

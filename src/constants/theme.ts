@@ -16,6 +16,8 @@ export const theme = createTheme({
       paper: '#161a22',
       // @ts-ignore
       header: '#3c4151',
+      // @ts-ignore
+      avatar: '#acbbe9',
     },
     primary: {
       main: '#00b0ff',
