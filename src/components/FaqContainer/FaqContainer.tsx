@@ -7,7 +7,6 @@ export type FaqContainerProps = PropsWithChildren<{ question: string }>;
 
 const FaqContainer: FC<FaqContainerProps> = ({ question, children }) => (
   <Accordion
-    defaultExpanded
     disableGutters
     square
     sx={{
