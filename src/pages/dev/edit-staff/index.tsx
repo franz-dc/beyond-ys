@@ -24,12 +24,14 @@ import { GenericHeader, MainLayout } from '~/components';
 import { cacheCollection, db, staffInfosCollection } from '~/configs';
 import { StaffInfoSchema, staffInfoSchema } from '~/schemas';
 
-interface Props {
+interface EditStaffProps {
   initialStaffNames: Record<string, string>;
   gameNames: Record<string, string>;
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getServerSideProps: GetServerSideProps<
+  EditStaffProps
+> = async () => {
   const staffNamesDocSnap = await getDoc(doc(cacheCollection, 'staffNames'));
   const gameNamesDocSnap = await getDoc(doc(cacheCollection, 'gameNames'));
 
@@ -41,7 +43,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
   };
 };
 
-const Staff = ({ initialStaffNames, gameNames }: Props) => {
+const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
   const schema = staffInfoSchema
     .omit({
       cachedMusic: true,
@@ -397,4 +399,4 @@ const Staff = ({ initialStaffNames, gameNames }: Props) => {
   );
 };
 
-export default Staff;
+export default EditStaff;
