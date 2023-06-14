@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
 import {
   Box,
@@ -20,6 +20,24 @@ export interface StoryTimelineProps {
   id: string;
   category: string;
 }
+
+const StoryTimelineWrapper: FC<PropsWithChildren> = ({ children }) => (
+  <Box component='section' sx={{ mb: 4 }}>
+    <Typography
+      component='h2'
+      variant='h2'
+      sx={{
+        mb: {
+          xs: 1,
+          md: 3,
+        },
+      }}
+    >
+      Story Timeline
+    </Typography>
+    {children}
+  </Box>
+);
 
 const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
   const theme = useTheme();
@@ -47,19 +65,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
     );
 
     return (
-      <Box component='section' sx={{ mb: 4 }}>
-        <Typography
-          component='h2'
-          variant='h2'
-          sx={{
-            mb: {
-              xs: 1,
-              md: 3,
-            },
-          }}
-        >
-          Story Timeline
-        </Typography>
+      <StoryTimelineWrapper>
         <Stepper
           nonLinear
           activeStep={gameIndex}
@@ -187,8 +193,12 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
             </Step>
           )}
         </Stepper>
-      </Box>
+      </StoryTimelineWrapper>
     );
+  }
+
+  if (category === 'Trails Series') {
+    return <StoryTimelineWrapper>UNDER CONSTRUCTION</StoryTimelineWrapper>;
   }
 
   return null;
