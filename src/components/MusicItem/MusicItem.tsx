@@ -145,11 +145,13 @@ const MusicItem: FC<MusicItemProps> = ({
                   ? 'text.primary'
                   : 'text.secondary',
             }}
+            aria-label='title'
           >
             {title}
           </Typography>
           <Typography
             sx={{ fontSize: 14, color: 'text.secondary', userSelect: 'none' }}
+            aria-label='artist'
           >
             {artists.length !== 0
               ? artists.map((artist, idx) => (
@@ -193,6 +195,7 @@ const MusicItem: FC<MusicItemProps> = ({
               color: 'text.secondary',
               userSelect: 'none',
             }}
+            aria-label='duration'
           >
             {!!duration && formattedDuration}
           </Typography>
