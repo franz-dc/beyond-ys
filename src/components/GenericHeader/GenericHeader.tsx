@@ -18,7 +18,9 @@ const GenericHeader: FC<GenericHeaderProps> = ({
   return (
     <Box
       sx={{
-        height: 100,
+        display: 'flex',
+        alignItems: 'flex-end',
+        minHeight: 100,
         backgroundColor: 'background.header',
         borderRadius: 4,
         mb: gutterBottom ? 3 : 0,
@@ -28,17 +30,21 @@ const GenericHeader: FC<GenericHeaderProps> = ({
     >
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'flex-end',
-          height: '100%',
           px: 3,
-          pb: 2,
+          py: 2,
         }}
       >
-        <Box>
-          <Typography variant='h1'>{title}</Typography>
-          {subtitle && <Typography variant='subtitle1'>{subtitle}</Typography>}
-        </Box>
+        <Typography variant='h1'>{title}</Typography>
+        {subtitle && (
+          <Typography
+            variant='subtitle1'
+            sx={{
+              lineHeight: 1.4,
+            }}
+          >
+            {subtitle}
+          </Typography>
+        )}
       </Box>
     </Box>
   );
