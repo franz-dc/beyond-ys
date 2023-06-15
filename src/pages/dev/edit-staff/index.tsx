@@ -11,12 +11,13 @@ import {
 } from '@mui/material';
 import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
-import { useFieldArray, useForm } from 'react-hook-form';
 import {
   AutocompleteElement,
   FormContainer,
   SelectElement,
   TextFieldElement,
+  useFieldArray,
+  useForm,
 } from 'react-hook-form-mui';
 import { z } from 'zod';
 
@@ -169,12 +170,14 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
 
       const batch = writeBatch(db);
 
+      // update staff info
       batch.update(staffInfoDocRef, {
         ...values,
         roles: values.roles.map((role) => role.value),
         updatedAt: serverTimestamp(),
       });
 
+      // update staff names cache if name is changed
       if (currentStaffData?.name !== values.name) {
         const staffNamesDocRef = doc(cacheCollection, 'staffNames');
 
@@ -183,6 +186,7 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
         });
       }
 
+      // update staff roles cache if roles are changed
       if (
         JSON.stringify(currentStaffData?.roles) !== JSON.stringify(values.roles)
       ) {
@@ -355,10 +359,11 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                         'Composer',
                         'Coordinator',
                         'Director',
-                        'Graphic Designer',
+                        'Graphic Artist',
                         'Illustrator',
                         'Producer',
                         'Programmer',
+                        'Public Relations',
                         'Scenario Writer',
                         'Supervisor',
                       ]}
