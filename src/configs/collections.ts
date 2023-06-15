@@ -1,7 +1,7 @@
 import { collection } from 'firebase/firestore';
 import type { CollectionReference, DocumentData } from 'firebase/firestore';
 
-import { GameSchema, StaffInfoSchema } from '~/schemas';
+import { GameSchema, MusicAlbumSchema, StaffInfoSchema } from '~/schemas';
 
 import { db } from './firebaseConfig';
 
@@ -13,4 +13,6 @@ const createCollection = <T = DocumentData>(
 export const gamesCollection = createCollection<GameSchema>('games');
 export const staffInfosCollection =
   createCollection<StaffInfoSchema>('staffInfo');
+export const musicAlbumsCollection =
+  createCollection<MusicAlbumSchema>('musicAlbums');
 export const cacheCollection = createCollection<Record<string, any>>('cache');
