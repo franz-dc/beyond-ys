@@ -319,60 +319,87 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
               </Button>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 3 }}>
-              <Typography variant='h2'>
-                Involvements (under construction)
+              <Typography variant='h2' sx={{ mb: 2 }}>
+                Involvements
               </Typography>
               {games.map((game, idx) => (
-                <Stack direction='row' spacing={2} key={game.id}>
-                  <AutocompleteElement
-                    name={`games.${idx}.gameId`}
-                    label={`Game ${idx + 1}`}
-                    options={Object.entries(gameNames)
-                      .map(([id, label]) => ({
-                        id,
-                        label,
-                      }))
-                      .filter(
-                        ({ id }) =>
-                          // remove games that are already selected
-                          !games.some((g) => g.gameId === id) ||
-                          game.gameId === id
-                      )}
-                    autocompleteProps={{ fullWidth: true }}
-                    textFieldProps={{ margin: 'normal' }}
-                    matchId
-                    required
-                  />
-                  <Button
-                    variant='outlined'
-                    onClick={() => removeGame(idx)}
-                    sx={{ mt: '16px !important', height: 56 }}
-                  >
-                    Remove
-                  </Button>
-                  <Button
-                    variant='outlined'
-                    onClick={() => {
-                      if (idx === 0) return;
-                      swapGame(idx, idx - 1);
-                    }}
-                    disabled={idx === 0}
-                    sx={{ mt: '16px !important', height: 56 }}
-                  >
-                    Up
-                  </Button>
-                  <Button
-                    variant='outlined'
-                    onClick={() => {
-                      if (idx === games.length - 1) return;
-                      swapGame(idx, idx + 1);
-                    }}
-                    disabled={idx === games.length - 1}
-                    sx={{ mt: '16px !important', height: 56 }}
-                  >
-                    Down
-                  </Button>
-                </Stack>
+                <Paper
+                  key={game.id}
+                  sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
+                >
+                  <Stack direction='column' sx={{ mt: -1 }}>
+                    <AutocompleteElement
+                      name={`games.${idx}.gameId`}
+                      label={`Game ${idx + 1}`}
+                      options={Object.entries(gameNames)
+                        .map(([id, label]) => ({
+                          id,
+                          label,
+                        }))
+                        .filter(
+                          ({ id }) =>
+                            // remove games that are already selected
+                            !games.some((g) => g.gameId === id) ||
+                            game.gameId === id
+                        )}
+                      autocompleteProps={{ fullWidth: true }}
+                      textFieldProps={{ margin: 'normal' }}
+                      matchId
+                      required
+                    />
+                    <AutocompleteElement
+                      name={`games.${idx}.roles`}
+                      label={`Game ${idx + 1} Roles`}
+                      options={[
+                        'Composer',
+                        'Arranger',
+                        'Programmer',
+                        'Coordinator',
+                        'Supervisor',
+                        'Producer',
+                        'Director',
+                        'Illustrator',
+                        'Graphic Designer',
+                      ]}
+                      multiple
+                      autocompleteProps={{ fullWidth: true, freeSolo: true }}
+                      textFieldProps={{ margin: 'normal' }}
+                      matchId
+                      required
+                    />
+                    <Stack direction='row' spacing={2} sx={{ mt: 1 }}>
+                      <Button
+                        variant='outlined'
+                        onClick={() => removeGame(idx)}
+                        fullWidth
+                      >
+                        Remove
+                      </Button>
+                      <Button
+                        variant='outlined'
+                        onClick={() => {
+                          if (idx === 0) return;
+                          swapGame(idx, idx - 1);
+                        }}
+                        disabled={idx === 0}
+                        fullWidth
+                      >
+                        Up
+                      </Button>
+                      <Button
+                        variant='outlined'
+                        onClick={() => {
+                          if (idx === games.length - 1) return;
+                          swapGame(idx, idx + 1);
+                        }}
+                        disabled={idx === games.length - 1}
+                        fullWidth
+                      >
+                        Down
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Paper>
               ))}
               <Button
                 variant='outlined'
