@@ -13,10 +13,10 @@ import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import { useDebouncedCallback } from 'use-debounce';
 
 import { GenericHeader, Link, MainLayout } from '~/components';
 import { cacheCollection, storage } from '~/configs';
-
 interface StaffListProps {
   categorizedStaffNames: Record<
     string,
@@ -94,6 +94,10 @@ const StaffList: FC<StaffListProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
+  const debounce = useDebouncedCallback((searchQuery) => {
+    setSearchQuery(searchQuery);
+  }, 500);
+
   return (
     <MainLayout title='Staff'>
       <Head>
@@ -124,7 +128,7 @@ const StaffList: FC<StaffListProps> = ({
             fontSize: 'inherit',
             backgroundColor: 'background.paper',
           }}
-          onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
+          onChange={(e) => debounce(e.target.value.toLowerCase())}
         />
       </Box>
       {
