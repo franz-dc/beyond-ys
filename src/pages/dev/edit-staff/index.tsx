@@ -351,15 +351,16 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                       name={`games.${idx}.roles`}
                       label={`Game ${idx + 1} Roles`}
                       options={[
-                        'Composer',
                         'Arranger',
-                        'Programmer',
+                        'Composer',
                         'Coordinator',
-                        'Supervisor',
-                        'Producer',
                         'Director',
-                        'Illustrator',
                         'Graphic Designer',
+                        'Illustrator',
+                        'Producer',
+                        'Programmer',
+                        'Scenario Writer',
+                        'Supervisor',
                       ]}
                       multiple
                       autocompleteProps={{ fullWidth: true, freeSolo: true }}
