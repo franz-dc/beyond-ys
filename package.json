@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "description": "A fan website dedicated to Nihon Falcom's works.",
   "scripts": {
     "dev": "next dev -p 9000",
     "build": "next build",
