@@ -342,8 +342,7 @@ const EditMusicAlbum = () => {
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Music</Typography>
               <Typography color='text.secondary'>
-                Music that has a different album will be overwritten by this
-                one.
+                Music from a different album will be overwritten by this one.
               </Typography>
               {musicIds.map((musicId, idx) => (
                 <Stack direction='row' spacing={2} key={musicId.id}>
