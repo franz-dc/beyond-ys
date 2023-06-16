@@ -4,12 +4,7 @@ import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 
-import {
-  MainLayout,
-  MusicItem,
-  MusicItemProps,
-  StoryTimeline,
-} from '~/components';
+import { MainLayout, MusicItem, StoryTimeline } from '~/components';
 import { cacheCollection, gamesCollection, storage } from '~/configs';
 import { CATEGORIES_WITH_TIMELINE, GAME_PLATFORMS } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
@@ -35,7 +30,20 @@ export const getServerSideProps: GetServerSideProps<
     return { notFound: true };
   }
 
-  const data = docSnap.data();
+  const data = {
+    ...docSnap.data(),
+    // convert cachedSoundtracks updatedAt to milliseconds
+    cachedSoundtracks: Object.entries(docSnap.data().cachedSoundtracks).reduce(
+      (acc, [key, value]) => ({
+        ...acc,
+        [key]: {
+          ...value,
+          updatedAt: value.updatedAt.toMillis(),
+        },
+      }),
+      {}
+    ),
+  };
 
   try {
     const bannerUrl = await getDownloadURL(
@@ -75,43 +83,53 @@ const GamePage = ({
   coverUrl,
   platforms,
   description = 'No description available.',
+  soundtrackIds,
   cachedSoundtracks,
   staffNames,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
-  const formattedSoundtracks = cachedSoundtracks.map((soundtrack) => ({
-    ...soundtrack,
-    artists: [
-      // populate composers
-      ...soundtrack.composerIds.map((c) =>
-        staffNames[c]
-          ? {
-              name: staffNames[c],
-              link: `/staff/${c}`,
-            }
-          : null
-      ),
-      // populate arrangers
-      ...soundtrack.arrangerIds.map((a) =>
-        staffNames[a]
-          ? {
-              name: `${staffNames[a]} (Arr.)`,
-              link: `/staff/${a}`,
-            }
-          : null
-      ),
-      // populate other artists
-      ...soundtrack.otherArtists.map((a) =>
-        staffNames[a.staffId]
-          ? {
-              name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
-              link: `/staff/${a}`,
-            }
-          : null
-      ),
-    ].filter(Boolean) as MusicItemProps['artists'],
-  }));
+  const formattedSoundtracks = soundtrackIds
+    .map((soundtrackId) => {
+      const soundtrack = cachedSoundtracks[soundtrackId];
+
+      if (!soundtrack) return null;
+
+      return {
+        ...soundtrack,
+        id: soundtrackId,
+        artists: [
+          // populate composers
+          ...soundtrack.composerIds.map((c) =>
+            staffNames[c]
+              ? {
+                  name: staffNames[c],
+                  link: `/staff/${c}`,
+                }
+              : null
+          ),
+          // populate arrangers
+          ...soundtrack.arrangerIds.map((a) =>
+            staffNames[a]
+              ? {
+                  name: `${staffNames[a]} (Arr.)`,
+                  link: `/staff/${a}`,
+                }
+              : null
+          ),
+          // populate other artists
+          ...soundtrack.otherArtists.map((a) =>
+            staffNames[a.staffId]
+              ? {
+                  name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
+                  link: `/staff/${a}`,
+                }
+              : null
+          ),
+        ].filter((a): a is Exclude<typeof a, null> => !!a),
+      };
+    })
+    .filter((s): s is Exclude<typeof s, null> => !!s);
 
   return (
     <MainLayout title={name}>

@@ -16,7 +16,7 @@ export const musicSchema = z.object({
   updatedAt: z.any(),
   // used for editing caches
   // not to be edited in a form directly
-  dependentGames: z.string().array(),
+  dependentGameIds: z.string().array(),
 });
 
 export type MusicSchema = z.infer<typeof musicSchema>;

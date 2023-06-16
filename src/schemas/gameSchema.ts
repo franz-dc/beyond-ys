@@ -19,11 +19,7 @@ export const gameSchema = z.object({
   bannerUrl: z.string().optional(),
   coverUrl: z.string().optional(),
   // for reducing the amount of reads
-  cachedSoundtracks: z.array(
-    musicSchema.extend({
-      id: z.string(),
-    })
-  ),
+  cachedSoundtracks: z.record(musicSchema),
 });
 
 export type GameSchema = z.infer<typeof gameSchema>;
