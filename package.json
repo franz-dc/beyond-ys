@@ -2,6 +2,7 @@
   "name": "beyond-ys",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev -p 9000",
     "build": "next build",
