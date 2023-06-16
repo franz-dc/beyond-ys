@@ -52,13 +52,13 @@ const Faqs = () => (
     <FaqContainer question='Why is there an embedded video while playing music?'>
       All music tracks are from YouTube (Falcom Music Channel) and are embedded
       in this website to provide playback. Videos are shown alongside the music
-      player to comply with YouTube&apos;s{' '}
+      player to comply with{' '}
       <Link
         href='https://developers.google.com/youtube/terms/developer-policies#i.-additional-prohibitions'
         target='_blank'
         rel='noopener noreferrer'
       >
-        API Service Terms of Service.
+        YouTube API Services Terms of Service.
       </Link>
     </FaqContainer>
   </MainLayout>
