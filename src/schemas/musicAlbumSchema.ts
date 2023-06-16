@@ -7,11 +7,8 @@ export const musicAlbumSchema = z.object({
   musicIds: z.string().array(),
   updatedAt: z.any(),
   // for reducing the amount of reads
-  cachedMusic: z.array(
-    musicSchema.extend({
-      id: z.string(),
-    })
-  ),
+  // to be used in the music (albums) page
+  cachedMusic: z.record(musicSchema),
 });
 
 export type MusicAlbumSchema = z.infer<typeof musicAlbumSchema>;

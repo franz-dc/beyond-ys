@@ -89,7 +89,7 @@ const AddMusicAlbum = () => {
       batch.set(albumInfoDocRef, {
         name,
         musicIds: [],
-        cachedMusic: [],
+        cachedMusic: {},
         updatedAt: serverTimestamp(),
       });
 
@@ -117,7 +117,7 @@ const AddMusicAlbum = () => {
         formContext={formContext}
         handleSubmit={handleSubmit(handleSave, (err) => console.error(err))}
       >
-        <Paper sx={{ px: 3, py: 2, mb: 3 }}>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2' sx={{ mb: 1 }}>
             Basic Info
           </Typography>

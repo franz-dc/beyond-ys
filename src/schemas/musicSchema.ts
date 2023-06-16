@@ -13,6 +13,10 @@ export const musicSchema = z.object({
     .array(),
   duration: z.string(),
   youtubeId: z.string(),
+  updatedAt: z.any(),
+  // used for editing caches
+  // not to be edited in a form directly
+  dependentGames: z.string().array(),
 });
 
 export type MusicSchema = z.infer<typeof musicSchema>;
