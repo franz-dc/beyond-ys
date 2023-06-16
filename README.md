@@ -1,34 +1,75 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Beyond Ys
+
+A fan website dedicated to [Nihon Falcom](https://www.falcom.co.jp)'s works. You can find information about Falcom's games, characters, music, staff, and more!
+
+## Features
+
+- **Music player**: Listen to your favorite Falcom music while browsing the site.
+- **Responsive design**: Built with mobile devices in mind.
+- **Dark mode**: Switch between light and dark themes (under construction).
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org): React framework for server-side rendering and static site generation.
+- [Firebase](https://firebase.google.com): Comprehensive development platform providing authentication, real-time database, and hosting services.
+- [MUI](https://mui.com): React UI framework for building responsive web applications.
+- [Vercel](https://vercel.com): Cloud platform for static sites and serverless functions.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- [Node.js](https://nodejs.org/en/download/)
+- [Firebase project](https://firebase.google.com/docs/web/setup) or [Local Firebase Emulator Suite](https://firebase.google.com/docs/emulator-suite/install_and_configure)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+   ```sh
+   git clone https://github.com/franz-dc/beyond-ys.git
+   ```
 
-## Learn More
+2. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```sh
+   npm i
+   # or
+   yarn
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Create `.env.local` by copying `.env` and replace the values with your own:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   ```sh
+   cp .env .env.local
+   ```
 
-## Deploy on Vercel
+4. Run this command to seed the database with sample data:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```sh
+   npm run seed
+   # or
+   yarn seed
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+5. Run the development server:
+
+   ```sh
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+6. Open [localhost:9000](http://localhost:9000) on your browser.
+
+## Contributing
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and ensure they're properly tested.
+4. Commit your changes and push them to your forked repository.
+5. Submit a pull request, explaining the changes you've made.
+
+## License
+
+This project is licensed under the [MIT License](https://github.com/franz-dc/beyond-ys/blob/main/LICENSE).
