@@ -2,11 +2,14 @@ import * as React from 'react';
 
 import { CacheProvider } from '@emotion/react';
 import type { EmotionCache } from '@emotion/react';
+import { IconButton } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import NextTopLoader from 'nextjs-toploader';
+import { SnackbarProvider } from 'notistack';
+import { MdClose } from 'react-icons/md';
 
 import { MusicPlayer } from '~/components';
 import { theme } from '~/constants';
@@ -32,6 +35,12 @@ export default function MyApp(props: MyAppProps) {
   const [isPlaying, setIsPlaying] =
     React.useState<MusicPlayerContextProps['isPlaying']>(false);
 
+  const notistackRef = React.createRef<any>();
+
+  const onClickDismiss = (key: any) => () => {
+    notistackRef?.current?.closeSnackbar(key);
+  };
+
   return (
     <CacheProvider value={emotionCache}>
       <Head>
@@ -40,27 +49,36 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         <NextTopLoader showSpinner={false} color={theme.palette.primary.main} />
         <CssBaseline />
-        <MusicPlayerProvider
-          value={{
-            nowPlaying,
-            setNowPlaying,
-            queue,
-            setQueue,
-            isPlaying,
-            setIsPlaying,
-          }}
-        >
-          {nowPlaying && (
-            <MusicPlayer
-              title={nowPlaying.title}
-              artists={nowPlaying.artists}
-              youtubeId={nowPlaying.youtubeId}
-              albumName={nowPlaying.albumName}
-              albumUrl={nowPlaying.albumUrl}
-            />
+        <SnackbarProvider
+          ref={notistackRef}
+          action={(key) => (
+            <IconButton onClick={onClickDismiss(key)} sx={{ color: 'white' }}>
+              <MdClose />
+            </IconButton>
           )}
-          <Component {...pageProps} />
-        </MusicPlayerProvider>
+        >
+          <MusicPlayerProvider
+            value={{
+              nowPlaying,
+              setNowPlaying,
+              queue,
+              setQueue,
+              isPlaying,
+              setIsPlaying,
+            }}
+          >
+            {nowPlaying && (
+              <MusicPlayer
+                title={nowPlaying.title}
+                artists={nowPlaying.artists}
+                youtubeId={nowPlaying.youtubeId}
+                albumName={nowPlaying.albumName}
+                albumUrl={nowPlaying.albumUrl}
+              />
+            )}
+            <Component {...pageProps} />
+          </MusicPlayerProvider>
+        </SnackbarProvider>
       </ThemeProvider>
     </CacheProvider>
   );
