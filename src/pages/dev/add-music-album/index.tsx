@@ -9,6 +9,7 @@ import {
   serverTimestamp,
   writeBatch,
 } from 'firebase/firestore';
+import { useSnackbar } from 'notistack';
 import {
   FormContainer,
   SwitchElement,
@@ -22,6 +23,8 @@ import { GenericHeader, MainLayout } from '~/components';
 import { cacheCollection, db, musicAlbumsCollection } from '~/configs';
 
 const AddMusicAlbum = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [musicAlbumNames, setMusicAlbumNames] = useState<
     Record<string, string>
   >({});
@@ -77,7 +80,10 @@ const AddMusicAlbum = () => {
     // check if id is already taken (using the musicAlbumNames cache)
     // failsafe in case the user somehow bypasses the form validation
     if (musicAlbumNames[id]) {
-      throw new Error(`Slug '${id}' is already taken.`);
+      enqueueSnackbar(`Slug '${id}' is already taken.`, {
+        variant: 'error',
+      });
+      return;
     }
 
     try {
@@ -104,8 +110,12 @@ const AddMusicAlbum = () => {
       setMusicAlbumNames((prev) => ({ ...prev, [id]: name }));
 
       reset();
-      alert('Music album successfully added.');
+
+      enqueueSnackbar('Music album added successfully.', {
+        variant: 'success',
+      });
     } catch (err) {
+      enqueueSnackbar('Failed to add music album.', { variant: 'error' });
       console.error(err);
     }
   };

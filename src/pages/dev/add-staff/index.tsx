@@ -9,6 +9,7 @@ import {
   serverTimestamp,
   writeBatch,
 } from 'firebase/firestore';
+import { useSnackbar } from 'notistack';
 import {
   FormContainer,
   SwitchElement,
@@ -22,6 +23,8 @@ import { GenericHeader, MainLayout } from '~/components';
 import { cacheCollection, db, staffInfosCollection } from '~/configs';
 
 const AddStaff = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const [staffNames, setStaffNames] = useState<Record<string, string>>({});
 
   // doing this in case someone else added a staff member while the user is
@@ -111,8 +114,10 @@ const AddStaff = () => {
       setStaffNames((prev) => ({ ...prev, [id]: name }));
 
       reset();
-      alert('Staff member successfully added.');
+
+      enqueueSnackbar('Staff member added.', { variant: 'success' });
     } catch (err) {
+      enqueueSnackbar('Failed to add staff member.', { variant: 'error' });
       console.error(err);
     }
   };

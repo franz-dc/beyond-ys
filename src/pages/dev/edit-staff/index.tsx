@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
+import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
   FormContainer,
@@ -45,6 +46,8 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
+  const { enqueueSnackbar } = useSnackbar();
+
   const schema = staffInfoSchema
     .omit({
       cachedMusic: true,
@@ -156,6 +159,9 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
         setLastStaffId(id);
       }
     } catch (err) {
+      enqueueSnackbar('Failed to load staff.', {
+        variant: 'error',
+      });
       setValue('id', lastStaffId);
       console.error(err);
     } finally {
@@ -210,8 +216,13 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
         [id]: values.name,
       }));
 
-      alert('Changes saved');
+      enqueueSnackbar('Staff updated successfully.', {
+        variant: 'success',
+      });
     } catch (err) {
+      enqueueSnackbar('Failed to update staff.', {
+        variant: 'error',
+      });
       console.error(err);
     }
   };

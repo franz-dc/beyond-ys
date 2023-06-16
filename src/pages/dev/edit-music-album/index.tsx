@@ -167,6 +167,9 @@ const EditMusicAlbum = () => {
         setLastMusicAlbumId(id);
       }
     } catch (err) {
+      enqueueSnackbar('Failed to fetch music album data.', {
+        variant: 'error',
+      });
       setValue('id', lastMusicAlbumId);
       console.error(err);
     } finally {
@@ -292,8 +295,13 @@ const EditMusicAlbum = () => {
         [id]: values.name,
       }));
 
-      enqueueSnackbar('Saved successfully', { variant: 'success' });
+      enqueueSnackbar('Music album updated successfully.', {
+        variant: 'success',
+      });
     } catch (err) {
+      enqueueSnackbar('Failed to update music album.', {
+        variant: 'error',
+      });
       console.error(err);
     }
   };
