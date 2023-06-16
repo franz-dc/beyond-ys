@@ -20,3 +20,5 @@ export const musicSchema = z.object({
 });
 
 export type MusicSchema = z.infer<typeof musicSchema>;
+
+export type MusicCacheSchema = Pick<MusicSchema, 'title' | 'albumId'>;

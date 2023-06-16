@@ -37,7 +37,11 @@ import {
   musicAlbumsCollection,
   musicCollection,
 } from '~/configs';
-import { MusicAlbumSchema, MusicSchema, musicAlbumSchema } from '~/schemas';
+import {
+  MusicAlbumSchema,
+  MusicCacheSchema,
+  musicAlbumSchema,
+} from '~/schemas';
 
 const EditMusicAlbum = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -45,7 +49,6 @@ const EditMusicAlbum = () => {
   const [musicAlbumNames, setMusicAlbumNames] = useState<
     Record<string, string>
   >({});
-
   const [isLoadingMusicAlbumNames, setIsLoadingMusicAlbumNames] =
     useState(true);
 
@@ -64,12 +67,14 @@ const EditMusicAlbum = () => {
   }, []);
 
   const [musicCache, setMusicCache] = useState<
-    Record<string, Pick<MusicSchema, 'title' | 'albumId'>>
+    Record<string, MusicCacheSchema>
   >({});
+  const [isLoadingMusicCache, setIsLoadingMusicCache] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(doc(cacheCollection, 'music'), (docSnap) => {
       setMusicCache(docSnap.data() || {});
+      setIsLoadingMusicCache(false);
     });
 
     return () => unsubscribe();
@@ -194,10 +199,7 @@ const EditMusicAlbum = () => {
       // update music cache if musicIds is changed
       const musicCacheDocRef = doc(cacheCollection, 'music');
 
-      const changedMusicCacheItems: Record<
-        string,
-        Pick<MusicSchema, 'title' | 'albumId'>
-      > = {};
+      const changedMusicCacheItems: Record<string, MusicCacheSchema> = {};
 
       // check if a music is removed from the musicIds array
       // if it is, make the albumId from the music doc and the albumId from
@@ -370,6 +372,7 @@ const EditMusicAlbum = () => {
                       )}
                     autocompleteProps={{ fullWidth: true }}
                     textFieldProps={{ margin: 'normal' }}
+                    loading={isLoadingMusicCache}
                     matchId
                     required
                   />
@@ -407,6 +410,10 @@ const EditMusicAlbum = () => {
               <Button
                 variant='outlined'
                 onClick={() => appendMusic({ value: '' })}
+                disabled={
+                  isLoadingMusicCache ||
+                  musicIds.length === Object.keys(musicCache).length
+                }
                 fullWidth
                 sx={{ mt: 1 }}
               >
