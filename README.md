@@ -1,3 +1,6 @@
+<!-- markdownlint-disable-next-line -->
+<img width="150" src="/public/assets/logo.png" alt="Beyond Ys logo">
+
 # Beyond Ys
 
 A fan website dedicated to [Nihon Falcom](https://www.falcom.co.jp)'s works. You can find information about Falcom's games, characters, music, staff, and more!
