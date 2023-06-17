@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { musicSchema } from './musicSchema';
 
 export const musicAlbumSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1),
   musicIds: z.string().array(),
   updatedAt: z.any(),
   // for reducing the amount of reads

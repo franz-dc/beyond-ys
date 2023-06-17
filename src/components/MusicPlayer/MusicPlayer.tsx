@@ -26,6 +26,8 @@ import {
 } from 'react-icons/md';
 import { PlayerState, useYoutube } from 'react-youtube-music-player';
 
+import { formatSeconds } from '~/utils';
+
 import Link from '../Link';
 
 export interface MusicPlayerProps {
@@ -296,15 +298,6 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     duration,
   ]);
 
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutesLeft = Math.floor((seconds - hours * 3600) / 60);
-    const secondsLeft = Math.floor(seconds - hours * 3600 - minutesLeft * 60);
-    return `${hours ? `${hours}:` : ''}${minutesLeft}:${secondsLeft
-      .toString()
-      .padStart(2, '0')}`;
-  };
-
   // TODO: add ended state (with logic for last item in queue)
   const isPaused =
     (!wasPlaying && state === PlayerState.UNSTARTED) ||
@@ -353,7 +346,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
             color: 'text.secondary',
           }}
         >
-          {formatDuration(actualCurrentTime)}
+          {formatSeconds(actualCurrentTime)}
         </Box>
         <StyledSlider
           aria-label='time-indicator'
@@ -389,7 +382,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
             textAlign: 'right',
           }}
         >
-          {formatDuration(
+          {formatSeconds(
             duration - actualCurrentTime > 0 ? duration - actualCurrentTime : 0
           )}
         </Box>

@@ -3485,11 +3485,6 @@ through@^2.3.8:
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
 
-tinyduration@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/tinyduration/-/tinyduration-3.2.4.tgz#c0b7e1a2dbe026a19f52df4385fb0c5f0bae5095"
-  integrity sha512-LkcGUKYZiFG+J8ydqEaxLenVacAKgdUajDAv9FhZpAx6xiVQOUSk48/Y1BHxybkRh2X1LOw9/vyvwU6WmOQ92g==
-
 titleize@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/titleize/-/titleize-3.0.0.tgz#71c12eb7fdd2558aa8a44b0be83b8a76694acd53"

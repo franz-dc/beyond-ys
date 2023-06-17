@@ -3,9 +3,9 @@ import { FC, useState } from 'react';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import { MdPlayArrow } from 'react-icons/md';
-import { parse } from 'tinyduration';
 
 import { useMusicPlayer } from '~/hooks';
+import { formatSeconds } from '~/utils';
 
 import Link from '../Link';
 
@@ -16,7 +16,7 @@ export interface MusicItemProps {
     name: string;
     link: string;
   }[];
-  duration: string; // ISO 8601 duration
+  duration: number;
   trackNumber: number;
   youtubeId?: string;
   albumName?: string;
@@ -41,11 +41,6 @@ const MusicItem: FC<MusicItemProps> = ({
   const { nowPlaying } = useMusicPlayer();
 
   const [isHovered, setIsHovered] = useState(false);
-
-  const durationObj = parse(duration || 'PT0S');
-  const formattedDuration = `${
-    (durationObj.hours || 0) * 60 + (durationObj.minutes || 0)
-  }:${(durationObj.seconds || 0).toString().padStart(2, '0')}`;
 
   return (
     <Box
@@ -197,7 +192,7 @@ const MusicItem: FC<MusicItemProps> = ({
             }}
             aria-label='duration'
           >
-            {!!duration && formattedDuration}
+            {duration > 0 && formatSeconds(duration)}
           </Typography>
         </Box>
       </Stack>
