@@ -20,6 +20,9 @@ export const gameSchema = z.object({
   coverUrl: z.string().optional(),
   // for reducing the amount of reads
   cachedSoundtracks: z.record(musicSchema),
+  // for editing cache
+  // not to be edited in a form directly
+  dependentCharacterIds: z.string().array(),
 });
 
 export type GameSchema = z.infer<typeof gameSchema>;
