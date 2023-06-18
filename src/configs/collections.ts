@@ -2,6 +2,7 @@ import { collection } from 'firebase/firestore';
 import type { CollectionReference, DocumentData } from 'firebase/firestore';
 
 import {
+  CharacterSchema,
   GameSchema,
   MusicAlbumSchema,
   MusicSchema,
@@ -15,6 +16,8 @@ const createCollection = <T = DocumentData>(
 ): CollectionReference<T> =>
   collection(db, collectionName) as CollectionReference<T>;
 
+export const charactersCollection =
+  createCollection<CharacterSchema>('characters');
 export const gamesCollection = createCollection<GameSchema>('games');
 export const staffInfosCollection =
   createCollection<StaffInfoSchema>('staffInfo');

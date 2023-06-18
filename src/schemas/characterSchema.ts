@@ -15,7 +15,8 @@ export const characterSchema = z.object({
     { message: 'Accent color must be a valid hex color code' }
   ),
   gameIds: z.string().min(1).array(),
-  imagePaths: z.string().min(1).array(),
+  imageGalleryPaths: z.string().min(1).array(),
+  imageDirection: z.enum(['left', 'right']),
   updatedAt: z.any(),
   // for getting the download url from firebase storage
   imageUrls: z.string().optional(),
@@ -24,3 +25,8 @@ export const characterSchema = z.object({
 });
 
 export type CharacterSchema = z.infer<typeof characterSchema>;
+
+export type CharacterCacheSchema = Pick<
+  CharacterSchema,
+  'name' | 'accentColor' | 'imageDirection'
+>;

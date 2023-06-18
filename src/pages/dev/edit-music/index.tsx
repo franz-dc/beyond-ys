@@ -199,6 +199,9 @@ const EditMusic = () => {
         dependentGameIds,
       };
 
+      // update the music doc
+      batch.update(doc(musicCollection, id), newData);
+
       // update all game docs that depend on this music
       dependentGameIds.forEach((gameId) => {
         batch.update(doc(gamesCollection, gameId), {
@@ -206,16 +209,18 @@ const EditMusic = () => {
         });
       });
 
-      // update the music doc
-      batch.update(doc(musicCollection, id), newData);
-
-      // update the music cache
-      batch.update(doc(cacheCollection, 'music'), {
-        [id]: {
-          title,
-          albumId,
-        },
-      });
+      // update the music cache if the title or albumId has changed
+      if (
+        currentMusicData?.albumId !== albumId ||
+        currentMusicData?.title !== title
+      ) {
+        batch.update(doc(cacheCollection, 'music'), {
+          [id]: {
+            title,
+            albumId,
+          },
+        });
+      }
 
       // update the music album docs if the albumId has changed
       if (currentMusicData?.albumId !== albumId) {
@@ -238,7 +243,13 @@ const EditMusic = () => {
 
       await batch.commit();
 
-      reset();
+      setCurrentMusicData((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          ...newData,
+        };
+      });
 
       enqueueSnackbar('Music updated successfully.', { variant: 'success' });
     } catch (err) {
