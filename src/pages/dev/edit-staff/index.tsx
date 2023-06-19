@@ -264,7 +264,6 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
               <TextFieldElement
                 name='description'
                 label='Description'
-                required
                 fullWidth
                 multiline
                 minRows={3}
