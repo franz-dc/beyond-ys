@@ -148,7 +148,10 @@ const AddMusicAlbum = () => {
             margin='normal'
             onChange={(e) => {
               const name = e.target.value;
-              const id = slugify(name, { lower: true });
+              const id = slugify(name, {
+                lower: true,
+                remove: /[*+~.()'"!:@]/g,
+              });
 
               setValue('id', id, { shouldValidate: true });
             }}

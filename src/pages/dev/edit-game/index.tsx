@@ -223,7 +223,6 @@ const EditGame = () => {
       const formattedCharacterIds = characterIds.map(({ value }) => value);
 
       const newData = {
-        id,
         name,
         category,
         subcategory,
@@ -510,7 +509,7 @@ const EditGame = () => {
                 <Stack direction='row' spacing={2} key={platformId.id}>
                   <AutocompleteElement
                     name={`platforms.${idx}.value`}
-                    label={`Music ${idx + 1}`}
+                    label={`Platform ${idx + 1}`}
                     options={Object.entries(GAME_PLATFORMS)
                       .map(([id, { name }]) => ({ id, label: name }))
                       .filter(
