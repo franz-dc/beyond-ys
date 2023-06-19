@@ -234,18 +234,20 @@ const AddGame = () => {
       // get all the soundtrack docs
       const cachedSoundtracks: Record<string, MusicSchema> = {};
 
-      const newSoundtracksQuery = query(
-        musicCollection,
-        where(documentId(), 'in', formattedSoundtrackIds)
-      );
-      const newSoundtracksQuerySnap = await getDocs(newSoundtracksQuery);
+      if (formattedSoundtrackIds.length > 0) {
+        const newSoundtracksQuery = query(
+          musicCollection,
+          where(documentId(), 'in', formattedSoundtrackIds)
+        );
+        const newSoundtracksQuerySnap = await getDocs(newSoundtracksQuery);
 
-      newSoundtracksQuerySnap.forEach((docSnap) => {
-        if (!docSnap.exists()) return;
-        // we don't care if dependentGames are not updated for cache
-        // that would be another write operation just to get the game id
-        cachedSoundtracks[docSnap.id] = docSnap.data();
-      });
+        newSoundtracksQuerySnap.forEach((docSnap) => {
+          if (!docSnap.exists()) return;
+          // we don't care if dependentGames are not updated for cache
+          // that would be another write operation just to get the game id
+          cachedSoundtracks[docSnap.id] = docSnap.data();
+        });
+      }
 
       const newData = {
         name,
