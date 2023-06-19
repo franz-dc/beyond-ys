@@ -10,16 +10,11 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
-import {
-  FormContainer,
-  SwitchElement,
-  TextFieldElement,
-  useForm,
-} from 'react-hook-form-mui';
+import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui';
 import slugify from 'slugify';
 import { z } from 'zod';
 
-import { GenericHeader, MainLayout } from '~/components';
+import { GenericHeader, MainLayout, SwitchElement } from '~/components';
 import { cacheCollection, db, musicAlbumsCollection } from '~/configs';
 
 const AddMusicAlbum = () => {
@@ -70,6 +65,7 @@ const AddMusicAlbum = () => {
 
   const {
     watch,
+    getValues,
     setValue,
     reset,
     formState: { isSubmitting },
@@ -120,6 +116,8 @@ const AddMusicAlbum = () => {
     }
   };
 
+  const customSlug = watch('customSlug');
+
   return (
     <MainLayout title='Add Music Album'>
       <GenericHeader title='Add Music Album' gutterBottom />
@@ -128,18 +126,39 @@ const AddMusicAlbum = () => {
         handleSubmit={handleSubmit(handleSave, (err) => console.error(err))}
       >
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-          <Typography variant='h2' sx={{ mb: 1 }}>
-            Basic Info
+          <Typography variant='h2'>Slug</Typography>
+          <Typography color='text.secondary'>
+            Make sure the slug is correct. This cannot be changed later.
           </Typography>
-          <SwitchElement name='customSlug' label='Use custom slug' />
+          <Typography color='text.secondary' sx={{ mb: 1 }}>
+            By default, the slug will be automatically generated from the name.
+          </Typography>
+          <SwitchElement
+            name='customSlug'
+            label='Use custom slug'
+            onChange={(e) => {
+              if (e.target.checked) return;
+              setValue(
+                'id',
+                slugify(getValues('name'), {
+                  lower: true,
+                  remove: /[*+~.()'"!:@]/g,
+                })
+              );
+            }}
+          />
           <TextFieldElement
             name='id'
             label='Slug'
             required
             fullWidth
             margin='normal'
-            disabled={!watch('customSlug')}
+            disabled={!customSlug}
+            helperText='Slug can only contain lowercase letters, numbers, and dashes.'
           />
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>Basic Info</Typography>
           <TextFieldElement
             name='name'
             label='Name'
@@ -147,6 +166,7 @@ const AddMusicAlbum = () => {
             fullWidth
             margin='normal'
             onChange={(e) => {
+              if (customSlug) return;
               const name = e.target.value;
               const id = slugify(name, {
                 lower: true,

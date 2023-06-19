@@ -5,7 +5,6 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Paper, Stack, Typography } from '@mui/material';
 import { formatISO } from 'date-fns';
 import {
-  addDoc,
   arrayUnion,
   doc,
   documentId,
@@ -21,7 +20,6 @@ import {
   AutocompleteElement,
   DatePickerElement,
   FormContainer,
-  SwitchElement,
   TextFieldElement,
   useFieldArray,
   useForm,
@@ -29,7 +27,7 @@ import {
 import slugify from 'slugify';
 import { z } from 'zod';
 
-import { GenericHeader, MainLayout } from '~/components';
+import { GenericHeader, MainLayout, SwitchElement } from '~/components';
 import {
   cacheCollection,
   charactersCollection,
@@ -128,9 +126,23 @@ const AddGame = () => {
       soundtrackIds: true,
     })
     .extend({
-      id: z.string().refine((value) => !gameNames[value], {
-        message: 'Slug is already taken.',
-      }),
+      id: z
+        .string()
+        .min(1)
+        .refine((value) => !gameNames[value], {
+          message: 'Slug is already taken.',
+        })
+        .refine(
+          (value) => {
+            // regex to check if the slug is valid: lowercase letters, numbers, dashes
+            const regex = /^[a-z0-9-]+$/;
+            return regex.test(value);
+          },
+          {
+            message:
+              'Slug can only contain lowercase letters, numbers, and dashes.',
+          }
+        ),
       customSlug: z.boolean(),
       platforms: z.object({ value: z.string().min(1) }).array(),
       characterIds: z.object({ value: z.string().min(1) }).array(),
@@ -162,6 +174,7 @@ const AddGame = () => {
   const {
     control,
     reset,
+    getValues,
     watch,
     setValue,
     formState: { isSubmitting },
@@ -243,9 +256,10 @@ const AddGame = () => {
 
         newSoundtracksQuerySnap.forEach((docSnap) => {
           if (!docSnap.exists()) return;
-          // we don't care if dependentGames are not updated for cache
-          // that would be another write operation just to get the game id
-          cachedSoundtracks[docSnap.id] = docSnap.data();
+          cachedSoundtracks[docSnap.id] = {
+            ...docSnap.data(),
+            dependentGameIds: [...docSnap.data().dependentGameIds, id],
+          };
         });
       }
 
@@ -268,9 +282,7 @@ const AddGame = () => {
       };
 
       // update the game doc
-      const gameDocRef = await addDoc(gamesCollection, newData);
-
-      const id = gameDocRef.id;
+      batch.set(doc(gamesCollection, id), newData);
 
       // update all character docs that depend on this game
       currentGameData?.characterIds.forEach((characterId) => {
@@ -280,7 +292,7 @@ const AddGame = () => {
       });
 
       // update the gameName cache
-      batch.update(doc(cacheCollection, 'game'), {
+      batch.update(doc(cacheCollection, 'gameNames'), {
         [id]: name,
       });
 
@@ -316,6 +328,8 @@ const AddGame = () => {
     }
   };
 
+  const customSlug = watch('customSlug');
+
   return (
     <MainLayout title='Add Game'>
       <GenericHeader title='Add Game' gutterBottom />
@@ -324,22 +338,44 @@ const AddGame = () => {
         handleSubmit={handleSubmit(handleSave, (err) => console.error(err))}
       >
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-          <Typography variant='h2' sx={{ mb: 1 }}>
-            General Info
+          <Typography variant='h2'>Slug</Typography>
+          <Typography color='text.secondary'>
+            Make sure the slug is correct. This cannot be changed later.
           </Typography>
-          <SwitchElement name='customSlug' label='Use custom slug' />
+          <Typography color='text.secondary' sx={{ mb: 1 }}>
+            By default, the slug will be automatically generated from the name.
+          </Typography>
+          <SwitchElement
+            name='customSlug'
+            label='Use custom slug'
+            onChange={(e) => {
+              if (e.target.checked) return;
+              setValue(
+                'id',
+                slugify(getValues('name'), {
+                  lower: true,
+                  remove: /[*+~.()'"!:@]/g,
+                })
+              );
+            }}
+          />
           <TextFieldElement
             name='id'
             label='Slug'
             required
             fullWidth
             margin='normal'
-            disabled={!watch('customSlug')}
+            disabled={!customSlug}
+            helperText='Slug can only contain lowercase letters, numbers, and dashes.'
           />
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>General Info</Typography>
           <TextFieldElement
             name='name'
             label='Name'
             onChange={(e) => {
+              if (customSlug) return;
               const name = e.target.value;
               const id = slugify(name, {
                 lower: true,
@@ -383,7 +419,6 @@ const AddGame = () => {
           <TextFieldElement
             name='description'
             label='Description'
-            required
             fullWidth
             multiline
             minRows={3}

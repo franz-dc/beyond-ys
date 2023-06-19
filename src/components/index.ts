@@ -21,3 +21,6 @@ export { default as Navbar } from './Navbar';
 
 export { default as StoryTimeline } from './StoryTimeline';
 export * from './StoryTimeline';
+
+export { default as SwitchElement } from './SwitchElement';
+export * from './SwitchElement';

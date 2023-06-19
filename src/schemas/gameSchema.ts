@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { musicSchema } from './musicSchema';
 
 export const gameSchema = z.object({
-  name: z.string(),
+  name: z.string().min(1),
   category: z.string(),
   subcategory: z.string(),
   platforms: z.string().min(1).array(),

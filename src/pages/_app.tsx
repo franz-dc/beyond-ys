@@ -12,6 +12,7 @@ import Head from 'next/head';
 import NextTopLoader from 'nextjs-toploader';
 import { SnackbarProvider } from 'notistack';
 import { MdClose } from 'react-icons/md';
+import { z } from 'zod';
 
 import { MusicPlayer } from '~/components';
 import { theme } from '~/constants';
@@ -22,6 +23,13 @@ const clientSideEmotionCache = createEmotionCache();
 export interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
 }
+
+z.setErrorMap((issue, ctx) => {
+  if (issue.code === 'too_small' && issue.minimum === 1) {
+    return { message: 'This field is required.' };
+  }
+  return { message: ctx.defaultError };
+});
 
 export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
