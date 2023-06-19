@@ -163,7 +163,6 @@ const AddStaff = () => {
           <Typography variant='h2' sx={{ mb: 1 }}>
             Basic Info
           </Typography>
-          <SwitchElement name='customSlug' label='Use custom slug' />
           <TextFieldElement
             name='id'
             label='Slug'
