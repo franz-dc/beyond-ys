@@ -721,6 +721,7 @@ const EditGame = () => {
             <LoadingButton
               type='submit'
               variant='contained'
+              disabled={isLoadingGame}
               loading={isSubmitting}
               fullWidth
             >
