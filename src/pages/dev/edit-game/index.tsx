@@ -558,7 +558,7 @@ const EditGame = () => {
                 variant='outlined'
                 onClick={() => appendPlatform({ value: '' })}
                 disabled={
-                  platforms.length === Object.keys(GAME_PLATFORMS).length
+                  platforms.length >= Object.keys(GAME_PLATFORMS).length
                 }
                 fullWidth
                 sx={{ mt: 1 }}
@@ -628,7 +628,7 @@ const EditGame = () => {
                 onClick={() => appendCharacter({ value: '' })}
                 disabled={
                   isLoadingMusicCache ||
-                  characterIds.length === Object.keys(musicCache).length
+                  characterIds.length >= Object.keys(charactersCache).length
                 }
                 fullWidth
                 sx={{ mt: 1 }}
@@ -710,7 +710,7 @@ const EditGame = () => {
                 onClick={() => appendSoundtrack({ value: '' })}
                 disabled={
                   isLoadingMusicCache ||
-                  soundtrackIds.length === Object.keys(musicCache).length
+                  soundtrackIds.length >= Object.keys(musicCache).length
                 }
                 fullWidth
                 sx={{ mt: 1 }}

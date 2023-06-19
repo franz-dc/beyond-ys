@@ -419,7 +419,7 @@ const EditMusicAlbum = () => {
                 onClick={() => appendMusic({ value: '' })}
                 disabled={
                   isLoadingMusicCache ||
-                  musicIds.length === Object.keys(musicCache).length
+                  musicIds.length >= Object.keys(musicCache).length
                 }
                 fullWidth
                 sx={{ mt: 1 }}

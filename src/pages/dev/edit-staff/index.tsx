@@ -421,7 +421,7 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                 variant='outlined'
                 onClick={() => appendGame({ gameId: '', roles: [] })}
                 fullWidth
-                disabled={games.length === Object.keys(gameNames).length}
+                disabled={games.length >= Object.keys(gameNames).length}
               >
                 Add Game
               </Button>

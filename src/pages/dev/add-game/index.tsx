@@ -496,7 +496,7 @@ const AddGame = () => {
           <Button
             variant='outlined'
             onClick={() => appendPlatform({ value: '' })}
-            disabled={platforms.length === Object.keys(GAME_PLATFORMS).length}
+            disabled={platforms.length >= Object.keys(GAME_PLATFORMS).length}
             fullWidth
             sx={{ mt: 1 }}
           >
@@ -565,7 +565,7 @@ const AddGame = () => {
             onClick={() => appendCharacter({ value: '' })}
             disabled={
               isLoadingMusicCache ||
-              characterIds.length === Object.keys(musicCache).length
+              characterIds.length === Object.keys(charactersCache).length
             }
             fullWidth
             sx={{ mt: 1 }}
@@ -647,7 +647,7 @@ const AddGame = () => {
             onClick={() => appendSoundtrack({ value: '' })}
             disabled={
               isLoadingMusicCache ||
-              soundtrackIds.length === Object.keys(musicCache).length
+              soundtrackIds.length >= Object.keys(musicCache).length
             }
             fullWidth
             sx={{ mt: 1 }}
