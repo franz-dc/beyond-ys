@@ -160,9 +160,7 @@ const AddStaff = () => {
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 3 }}>
-          <Typography variant='h2' sx={{ mb: 1 }}>
-            Basic Info
-          </Typography>
+          <Typography variant='h2'>Basic Info</Typography>
           <TextFieldElement
             name='id'
             label='Slug'
