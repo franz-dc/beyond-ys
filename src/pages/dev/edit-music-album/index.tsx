@@ -338,7 +338,7 @@ const EditMusicAlbum = () => {
         {!!currentId && !isLoadingMusicAlbum && (
           <>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-              <Typography variant='h2'>General</Typography>
+              <Typography variant='h2'>General Info</Typography>
               <TextFieldElement
                 name='name'
                 label='Name'

@@ -111,7 +111,7 @@ const Navbar = () => {
     {
       id: 'explore',
       name: 'Explore',
-      href: '#',
+      href: '/',
       MenuComponent: <ExploreMenu />,
     },
   ];

@@ -2,20 +2,36 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Stack, Typography } from '@mui/material';
 import {
   doc,
+  documentId,
+  getDocs,
   onSnapshot,
+  query,
   serverTimestamp,
+  where,
   writeBatch,
 } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
-import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui';
+import {
+  AutocompleteElement,
+  FormContainer,
+  TextFieldElement,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form-mui';
 import slugify from 'slugify';
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
-import { cacheCollection, db, musicAlbumsCollection } from '~/configs';
+import {
+  cacheCollection,
+  db,
+  musicAlbumsCollection,
+  musicCollection,
+} from '~/configs';
+import { MusicCacheSchema, MusicSchema, musicAlbumSchema } from '~/schemas';
 
 const AddMusicAlbum = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -23,32 +39,52 @@ const AddMusicAlbum = () => {
   const [musicAlbumNames, setMusicAlbumNames] = useState<
     Record<string, string>
   >({});
+  const [isLoadingMusicAlbumNames, setIsLoadingMusicAlbumNames] =
+    useState(true);
 
-  // doing this in case someone else added an album while the user is
-  // filling this form. this will update the validation in real time
   useEffect(() => {
     const unsubscribe = onSnapshot(
       doc(cacheCollection, 'musicAlbumNames'),
       (docSnap) => {
         setMusicAlbumNames(docSnap.data() || {});
+        setIsLoadingMusicAlbumNames(false);
       }
     );
 
     return () => unsubscribe();
   }, []);
 
-  const schema = z
-    .object({
+  const [musicCache, setMusicCache] = useState<
+    Record<string, MusicCacheSchema>
+  >({});
+  const [isLoadingMusicCache, setIsLoadingMusicCache] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(doc(cacheCollection, 'music'), (docSnap) => {
+      setMusicCache(docSnap.data() || {});
+      setIsLoadingMusicCache(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const schema = musicAlbumSchema
+    .omit({
+      cachedMusic: true,
+      updatedAt: true,
+      // doing this to fulfill useFieldArray's requirement
+      musicIds: true,
+    })
+    .extend({
+      customSlug: z.boolean(),
       id: z
         .string()
         .min(1)
         .refine((id) => !musicAlbumNames[id], {
           message: 'Slug is already taken.',
         }),
-      name: z.string().min(1),
-      customSlug: z.boolean(),
-    })
-    .passthrough();
+      musicIds: z.object({ value: z.string().min(1) }).array(),
+    });
 
   type Schema = z.infer<typeof schema> & {
     id: string | null;
@@ -64,6 +100,7 @@ const AddMusicAlbum = () => {
   });
 
   const {
+    control,
     watch,
     getValues,
     setValue,
@@ -72,7 +109,17 @@ const AddMusicAlbum = () => {
     handleSubmit,
   } = formContext;
 
-  const handleSave = async ({ id, name }: Schema) => {
+  const {
+    fields: musicIds,
+    append: appendMusic,
+    remove: removeMusic,
+    swap: swapMusic,
+  } = useFieldArray({
+    control,
+    name: 'musicIds',
+  });
+
+  const handleSave = async ({ id, name, musicIds }: Schema) => {
     // check if id is already taken (using the musicAlbumNames cache)
     // failsafe in case the user somehow bypasses the form validation
     if (musicAlbumNames[id]) {
@@ -87,13 +134,30 @@ const AddMusicAlbum = () => {
 
       const batch = writeBatch(db);
 
-      // create the music album doc and fill the rest with blank data
-      batch.set(albumInfoDocRef, {
-        name,
-        musicIds: [],
-        cachedMusic: {},
-        updatedAt: serverTimestamp(),
+      // populate cachedMusic from musicIds
+      const formattedMusicIds = musicIds.map(({ value }) => value);
+      const newMusicQuery = query(
+        musicCollection,
+        where(documentId(), 'in', formattedMusicIds)
+      );
+      const newMusicQuerySnap = await getDocs(newMusicQuery);
+
+      const cachedMusic: Record<string, MusicSchema> = {};
+
+      newMusicQuerySnap.forEach((doc) => {
+        if (!doc.exists()) return;
+        cachedMusic[doc.id] = doc.data();
       });
+
+      const newData = {
+        name,
+        musicIds: formattedMusicIds,
+        cachedMusic,
+        updatedAt: serverTimestamp(),
+      };
+
+      // create the music album doc and fill the rest with blank data
+      batch.set(albumInfoDocRef, newData);
 
       // update the musicAlbumNames cache
       batch.update(doc(cacheCollection, 'musicAlbumNames'), {
@@ -158,7 +222,7 @@ const AddMusicAlbum = () => {
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-          <Typography variant='h2'>Basic Info</Typography>
+          <Typography variant='h2'>General Info</Typography>
           <TextFieldElement
             name='name'
             label='Name'
@@ -177,9 +241,90 @@ const AddMusicAlbum = () => {
             }}
           />
         </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>Music</Typography>
+          <Typography color='text.secondary'>
+            Music from a different album will be overwritten by this one.
+          </Typography>
+          {musicIds.map((musicId, idx) => (
+            <Stack direction='row' spacing={2} key={musicId.id}>
+              <AutocompleteElement
+                name={`musicIds.${idx}.value`}
+                label={`Music ${idx + 1}`}
+                options={Object.entries(musicCache)
+                  .map(([id, { title, albumId }]) => {
+                    const foundAlbum = musicAlbumNames[albumId];
+
+                    const albumName =
+                      albumId === ''
+                        ? 'No album'
+                        : foundAlbum || 'Unknown album';
+
+                    return {
+                      id,
+                      label: `${title} (${albumName})`,
+                    };
+                  })
+                  .filter(
+                    ({ id }) =>
+                      // remove music that are already added
+                      !musicIds.some((m) => m.value === id) ||
+                      musicId.value === id
+                  )}
+                autocompleteProps={{ fullWidth: true }}
+                textFieldProps={{ margin: 'normal' }}
+                loading={isLoadingMusicCache}
+                matchId
+                required
+              />
+              <Button
+                variant='outlined'
+                onClick={() => removeMusic(idx)}
+                sx={{ mt: '16px !important', height: 56 }}
+              >
+                Remove
+              </Button>
+              <Button
+                variant='outlined'
+                onClick={() => {
+                  if (idx === 0) return;
+                  swapMusic(idx, idx - 1);
+                }}
+                disabled={idx === 0}
+                sx={{ mt: '16px !important', height: 56 }}
+              >
+                Up
+              </Button>
+              <Button
+                variant='outlined'
+                onClick={() => {
+                  if (idx === musicIds.length - 1) return;
+                  swapMusic(idx, idx + 1);
+                }}
+                disabled={idx === musicIds.length - 1}
+                sx={{ mt: '16px !important', height: 56 }}
+              >
+                Down
+              </Button>
+            </Stack>
+          ))}
+          <Button
+            variant='outlined'
+            onClick={() => appendMusic({ value: '' })}
+            disabled={
+              isLoadingMusicCache ||
+              musicIds.length >= Object.keys(musicCache).length
+            }
+            fullWidth
+            sx={{ mt: 1 }}
+          >
+            Add Music
+          </Button>
+        </Paper>
         <LoadingButton
           type='submit'
           variant='contained'
+          disabled={isLoadingMusicAlbumNames}
           loading={isSubmitting}
           fullWidth
         >
