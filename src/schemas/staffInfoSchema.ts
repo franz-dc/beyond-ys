@@ -17,12 +17,10 @@ export const staffInfoSchema = z.object({
   updatedAt: z.any(),
   // for getting the download url from firebase storage
   avatarUrl: z.string().optional(),
+  // musicIds and cachedMusic are not to be edited directly
   // doing this to reduce reads
-  cachedMusic: z.array(
-    musicSchema.extend({
-      id: z.string(),
-    })
-  ),
+  musicIds: z.string().min(1).array(),
+  cachedMusic: z.record(musicSchema),
 });
 
 export type StaffInfoSchema = z.infer<typeof staffInfoSchema>;

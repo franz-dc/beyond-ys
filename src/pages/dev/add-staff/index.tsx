@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Stack, Typography } from '@mui/material';
 import {
   doc,
   onSnapshot,
@@ -10,33 +10,62 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
-import { FormContainer, TextFieldElement, useForm } from 'react-hook-form-mui';
+import {
+  AutocompleteElement,
+  FormContainer,
+  TextFieldElement,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form-mui';
 import slugify from 'slugify';
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
 import { cacheCollection, db, staffInfosCollection } from '~/configs';
+import { staffInfoSchema } from '~/schemas';
 
 const AddStaff = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
+  const [gameNames, setGameNames] = useState<Record<string, string>>({});
+  const [isLoadingGameNames, setIsLoadingGameNames] = useState(true);
 
-  // doing this in case someone else added a staff member while the user is
-  // filling this form. this will update the validation in real time
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'staffNames'),
+      doc(cacheCollection, 'gameNames'),
       (docSnap) => {
-        setStaffNames(docSnap.data() || {});
+        setGameNames(docSnap.data() || {});
+        setIsLoadingGameNames(false);
       }
     );
 
     return () => unsubscribe();
   }, []);
 
-  const schema = z
-    .object({
+  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
+  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(cacheCollection, 'staffNames'),
+      (docSnap) => {
+        setStaffNames(docSnap.data() || {});
+        setIsLoadingStaffNames(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  const schema = staffInfoSchema
+    .omit({
+      cachedMusic: true,
+      musicIds: true,
+      updatedAt: true,
+      // doing this to fulfill useFieldArray's requirement
+      roles: true,
+    })
+    .extend({
       id: z
         .string()
         .min(1)
@@ -45,8 +74,12 @@ const AddStaff = () => {
         }),
       name: z.string().min(1),
       customSlug: z.boolean(),
-    })
-    .passthrough();
+      roles: z
+        .object({
+          value: z.string(),
+        })
+        .array(),
+    });
 
   type Schema = z.infer<typeof schema> & {
     id: string | null;
@@ -55,13 +88,19 @@ const AddStaff = () => {
   const formContext = useForm<Schema>({
     defaultValues: {
       id: '',
-      name: '',
       customSlug: false,
+      name: '',
+      description: '',
+      descriptionSourceName: '',
+      descriptionSourceUrl: '',
+      roles: [],
+      games: [],
     },
     resolver: zodResolver(schema),
   });
 
   const {
+    control,
     watch,
     getValues,
     setValue,
@@ -70,7 +109,27 @@ const AddStaff = () => {
     handleSubmit,
   } = formContext;
 
-  const handleSave = async ({ id, name }: Schema) => {
+  const {
+    fields: roles,
+    append: appendRole,
+    remove: removeRole,
+    swap: swapRole,
+  } = useFieldArray({
+    control,
+    name: 'roles',
+  });
+
+  const {
+    fields: games,
+    append: appendGame,
+    remove: removeGame,
+    swap: swapGame,
+  } = useFieldArray({
+    control,
+    name: 'games',
+  });
+
+  const handleSave = async ({ id, name, roles, ...rest }: Schema) => {
     // check if id is already taken (using the staffNames cache)
     // failsafe in case the user somehow bypasses the form validation
     if (staffNames[id]) {
@@ -85,13 +144,11 @@ const AddStaff = () => {
       // create the staff info doc and fill the rest with blank data
       batch.set(staffInfoDocRef, {
         name,
-        description: '',
-        descriptionSourceName: '',
-        descriptionSourceUrl: '',
-        roles: [],
-        games: [],
+        roles: roles.map(({ value }) => value),
         updatedAt: serverTimestamp(),
-        cachedMusic: [],
+        cachedMusic: {},
+        musicIds: [],
+        ...rest,
       });
 
       // update the staffNames cache
@@ -159,16 +216,8 @@ const AddStaff = () => {
             helperText='Slug can only contain lowercase letters, numbers, and dashes.'
           />
         </Paper>
-        <Paper sx={{ px: 3, py: 2, mb: 3 }}>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>Basic Info</Typography>
-          <TextFieldElement
-            name='id'
-            label='Slug'
-            required
-            fullWidth
-            margin='normal'
-            disabled={!watch('customSlug')}
-          />
           <TextFieldElement
             name='name'
             label='Name'
@@ -187,10 +236,188 @@ const AddStaff = () => {
             }}
           />
         </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>General Info</Typography>
+          <TextFieldElement
+            name='name'
+            label='Name'
+            required
+            fullWidth
+            margin='normal'
+          />
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>Description</Typography>
+          <TextFieldElement
+            name='description'
+            label='Description'
+            fullWidth
+            multiline
+            minRows={3}
+            margin='normal'
+          />
+          <TextFieldElement
+            name='descriptionSourceName'
+            label='Description Source Name'
+            fullWidth
+            margin='normal'
+          />
+          <TextFieldElement
+            name='descriptionSourceUrl'
+            label='Description Source URL'
+            fullWidth
+            margin='normal'
+          />
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>Roles</Typography>
+          {roles.map((role, idx) => (
+            <Stack direction='row' spacing={2} key={role.id}>
+              <TextFieldElement
+                name={`roles.${idx}.value`}
+                label={`Role ${idx + 1}`}
+                fullWidth
+                margin='normal'
+                required
+              />
+              <Button
+                variant='outlined'
+                onClick={() => removeRole(idx)}
+                sx={{ mt: '16px !important', height: 56 }}
+              >
+                Remove
+              </Button>
+              <Button
+                variant='outlined'
+                onClick={() => {
+                  if (idx === 0) return;
+                  swapRole(idx, idx - 1);
+                }}
+                disabled={idx === 0}
+                sx={{ mt: '16px !important', height: 56 }}
+              >
+                Up
+              </Button>
+              <Button
+                variant='outlined'
+                onClick={() => {
+                  if (idx === roles.length - 1) return;
+                  swapRole(idx, idx + 1);
+                }}
+                disabled={idx === roles.length - 1}
+                sx={{ mt: '16px !important', height: 56 }}
+              >
+                Down
+              </Button>
+            </Stack>
+          ))}
+          <Button
+            variant='outlined'
+            onClick={() => appendRole({ value: '' })}
+            fullWidth
+          >
+            Add Role
+          </Button>
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2' sx={{ mb: 2 }}>
+            Involvements
+          </Typography>
+          {games.map((game, idx) => (
+            <Paper
+              key={game.id}
+              sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
+            >
+              <Stack direction='column' sx={{ mt: -1 }}>
+                <AutocompleteElement
+                  name={`games.${idx}.gameId`}
+                  label={`Game ${idx + 1}`}
+                  options={Object.entries(gameNames)
+                    .map(([id, label]) => ({
+                      id,
+                      label,
+                    }))
+                    .filter(
+                      ({ id }) =>
+                        // remove games that are already selected
+                        !games.some((g) => g.gameId === id) ||
+                        game.gameId === id
+                    )}
+                  loading={isLoadingGameNames}
+                  autocompleteProps={{ fullWidth: true }}
+                  textFieldProps={{ margin: 'normal' }}
+                  matchId
+                  required
+                />
+                <AutocompleteElement
+                  name={`games.${idx}.roles`}
+                  label={`Game ${idx + 1} Roles`}
+                  options={[
+                    'Arranger',
+                    'Composer',
+                    'Coordinator',
+                    'Director',
+                    'Graphic Artist',
+                    'Illustrator',
+                    'Producer',
+                    'Programmer',
+                    'Public Relations',
+                    'Scenario Writer',
+                    'Supervisor',
+                  ]}
+                  multiple
+                  autocompleteProps={{ fullWidth: true, freeSolo: true }}
+                  textFieldProps={{ margin: 'normal' }}
+                  matchId
+                  required
+                />
+                <Stack direction='row' spacing={2} sx={{ mt: 1 }}>
+                  <Button
+                    variant='outlined'
+                    onClick={() => removeGame(idx)}
+                    fullWidth
+                  >
+                    Remove
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === 0) return;
+                      swapGame(idx, idx - 1);
+                    }}
+                    disabled={idx === 0}
+                    fullWidth
+                  >
+                    Up
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === games.length - 1) return;
+                      swapGame(idx, idx + 1);
+                    }}
+                    disabled={idx === games.length - 1}
+                    fullWidth
+                  >
+                    Down
+                  </Button>
+                </Stack>
+              </Stack>
+            </Paper>
+          ))}
+          <Button
+            variant='outlined'
+            onClick={() => appendGame({ gameId: '', roles: [] })}
+            fullWidth
+            disabled={games.length >= Object.keys(gameNames).length}
+          >
+            Add Game
+          </Button>
+        </Paper>
         <LoadingButton
           type='submit'
           variant='contained'
-          loading={isSubmitting}
+          loading={isSubmitting || isLoadingStaffNames}
           fullWidth
         >
           Submit

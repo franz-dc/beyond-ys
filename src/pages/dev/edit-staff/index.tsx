@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
@@ -9,13 +9,17 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
-import type { GetServerSideProps } from 'next';
+import {
+  doc,
+  getDoc,
+  onSnapshot,
+  serverTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
   FormContainer,
-  SelectElement,
   TextFieldElement,
   useFieldArray,
   useForm,
@@ -26,31 +30,43 @@ import { GenericHeader, MainLayout } from '~/components';
 import { cacheCollection, db, staffInfosCollection } from '~/configs';
 import { StaffInfoSchema, staffInfoSchema } from '~/schemas';
 
-interface EditStaffProps {
-  initialStaffNames: Record<string, string>;
-  gameNames: Record<string, string>;
-}
-
-export const getServerSideProps: GetServerSideProps<
-  EditStaffProps
-> = async () => {
-  const staffNamesDocSnap = await getDoc(doc(cacheCollection, 'staffNames'));
-  const gameNamesDocSnap = await getDoc(doc(cacheCollection, 'gameNames'));
-
-  return {
-    props: {
-      initialStaffNames: staffNamesDocSnap.data() || {},
-      gameNames: gameNamesDocSnap.data() || {},
-    },
-  };
-};
-
-const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
+const EditStaff = () => {
   const { enqueueSnackbar } = useSnackbar();
+
+  const [gameNames, setGameNames] = useState<Record<string, string>>({});
+  const [isLoadingGameNames, setIsLoadingGameNames] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(cacheCollection, 'gameNames'),
+      (docSnap) => {
+        setGameNames(docSnap.data() || {});
+        setIsLoadingGameNames(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
+  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(cacheCollection, 'staffNames'),
+      (docSnap) => {
+        setStaffNames(docSnap.data() || {});
+        setIsLoadingStaffNames(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const schema = staffInfoSchema
     .omit({
       cachedMusic: true,
+      musicIds: true,
       updatedAt: true,
       roles: true,
     })
@@ -68,8 +84,6 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
   type Schema = z.infer<typeof schema> & {
     id: string | null;
   };
-
-  const [staffNames, setStaffNames] = useState(initialStaffNames);
 
   const [lastStaffId, setLastStaffId] = useState<string | null>(null);
   const [isLoadingStaff, setIsLoadingStaff] = useState(false);
@@ -144,7 +158,8 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
           descriptionSourceUrl: '',
           roles: [],
           games: [],
-          cachedMusic: [],
+          musicIds: [],
+          cachedMusic: {},
           updatedAt: null,
         });
         reset({
@@ -234,26 +249,32 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
         formContext={formContext}
         handleSubmit={handleSubmit(handleSave, (err) => console.error(err))}
       >
-        <Paper sx={{ px: 3, py: 2, mb: 3 }}>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>Select Staff</Typography>
-          <SelectElement
+          <AutocompleteElement
             name='id'
             label='Staff'
             options={Object.entries(staffNames).map(([id, label]) => ({
               id,
               label,
             }))}
-            onChange={changeStaff}
+            loading={isLoadingStaffNames}
+            autocompleteProps={{
+              onChange: (_, v) => changeStaff(v.id),
+              fullWidth: true,
+            }}
+            textFieldProps={{
+              margin: 'normal',
+            }}
             required
-            fullWidth
-            margin='normal'
+            matchId
           />
         </Paper>
         {isLoadingStaff && <CircularProgress />}
         {!!currentId && !isLoadingStaff && (
           <>
-            <Paper sx={{ px: 3, py: 2, mb: 3 }}>
-              <Typography variant='h2'>General</Typography>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>General Info</Typography>
               <TextFieldElement
                 name='name'
                 label='Name'
@@ -261,6 +282,9 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                 fullWidth
                 margin='normal'
               />
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Description</Typography>
               <TextFieldElement
                 name='description'
                 label='Description'
@@ -282,7 +306,7 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                 margin='normal'
               />
             </Paper>
-            <Paper sx={{ px: 3, py: 2, mb: 3 }}>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Roles</Typography>
               {roles.map((role, idx) => (
                 <Stack direction='row' spacing={2} key={role.id}>
@@ -332,7 +356,7 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                 Add Role
               </Button>
             </Paper>
-            <Paper sx={{ px: 3, py: 2, mb: 3 }}>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2' sx={{ mb: 2 }}>
                 Involvements
               </Typography>
@@ -356,6 +380,7 @@ const EditStaff = ({ initialStaffNames, gameNames }: EditStaffProps) => {
                             !games.some((g) => g.gameId === id) ||
                             game.gameId === id
                         )}
+                      loading={isLoadingGameNames}
                       autocompleteProps={{ fullWidth: true }}
                       textFieldProps={{ margin: 'normal' }}
                       matchId
