@@ -21,7 +21,12 @@ import {
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout } from '~/components';
-import { cacheCollection, charactersCollection, db } from '~/configs';
+import {
+  cacheCollection,
+  charactersCollection,
+  db,
+  gamesCollection,
+} from '~/configs';
 import {
   CharacterCacheSchema,
   CharacterSchema,
@@ -127,12 +132,22 @@ const EditCharacter = () => {
         currentCharacterData?.imageDirection !== imageDirection ||
         currentCharacterData?.accentColor !== accentColor
       ) {
+        const newCharacterCacheData = {
+          name,
+          imageDirection,
+          accentColor,
+        };
+
+        // cache collection
         batch.update(doc(cacheCollection, 'characters'), {
-          [id]: {
-            name,
-            imageDirection,
-            accentColor,
-          },
+          [id]: newCharacterCacheData,
+        });
+
+        // game collection
+        currentCharacterData?.gameIds.forEach((gameId) => {
+          batch.update(doc(gamesCollection, gameId), {
+            [`cachedCharacters.${id}`]: newCharacterCacheData,
+          });
         });
       }
 
