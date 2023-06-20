@@ -136,6 +136,7 @@ const GamePage = ({
   bannerUrl,
   coverUrl,
   // platforms,
+  // releaseDate: releaseDateRaw,
   description = 'No description available.',
   characterIds,
   characterSpoilerIds,
@@ -148,6 +149,10 @@ const GamePage = ({
   albumNames,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
+
+  // const releaseYear = releaseDateRaw
+  //   ? new Date(releaseDateRaw).getFullYear()
+  //   : null;
 
   const formattedSoundtracks = soundtrackIds
     .map((soundtrackId) => {

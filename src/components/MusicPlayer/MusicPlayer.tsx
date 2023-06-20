@@ -1,5 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 
+import { keyframes } from '@emotion/react';
 import {
   Box,
   Grid,
@@ -306,6 +307,16 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     (!wasPlaying && state === PlayerState.BUFFERING) ||
     state === PlayerState.CUED;
 
+  const slideUp = keyframes`
+    from {
+      transform: translateY(100%);
+    }
+
+    to {
+      transform: translateY(0);
+    }
+  `;
+
   return (
     <Box
       sx={{
@@ -321,6 +332,8 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
         borderTopStyle: 'solid',
         borderTopColor: (t) => alpha(t.palette.divider, 0.05),
         zIndex: 1,
+        // animate the player on render
+        animation: `${slideUp} 0.3s ease`,
       }}
     >
       <Stack

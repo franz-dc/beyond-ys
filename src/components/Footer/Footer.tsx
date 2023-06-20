@@ -142,6 +142,7 @@ const Footer = () => {
                   md: '97px',
                 }
               : 0,
+            transition: 'margin-bottom 0.3s ease',
           }}
         >
           <Grid item xs={12} md>
