@@ -1,6 +1,20 @@
 import { createTheme } from '@mui/material/styles';
 import { Urbanist } from 'next/font/google';
 
+declare module '@mui/material/styles' {
+  interface Palette {
+    headerBackground: string;
+    avatarBackground: string;
+  }
+  interface PaletteOptions {
+    headerBackground: string;
+    avatarBackground: string;
+  }
+  interface BreakpointOverrides {
+    xs2: true;
+  }
+}
+
 export const urbanist = Urbanist({
   weight: ['400', '700', '900'],
   subsets: ['latin'],
@@ -9,20 +23,28 @@ export const urbanist = Urbanist({
 });
 
 export const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      xs2: 450,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   palette: {
     mode: 'dark',
     background: {
       default: '#22252f',
       paper: '#161a22',
-      // @ts-ignore
-      header: '#3c4151',
-      // @ts-ignore
-      avatar: '#acbbe9',
     },
     primary: {
       main: '#00b0ff',
       dark: '#0277bd',
     },
+    headerBackground: '#3c4151',
+    avatarBackground: '#acbbe9',
   },
   typography: {
     fontFamily: urbanist.style.fontFamily,

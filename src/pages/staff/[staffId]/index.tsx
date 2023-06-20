@@ -119,7 +119,7 @@ const StaffInfo = ({
           borderRadius: {
             sm: 4,
           },
-          backgroundColor: 'background.header',
+          backgroundColor: 'headerBackground',
         }}
       />
       <Box
@@ -174,7 +174,7 @@ const StaffInfo = ({
                   sx={{
                     width: 128,
                     height: 128,
-                    backgroundColor: 'background.avatar',
+                    backgroundColor: 'avatarBackground',
                     border: ({ palette }) =>
                       `8px solid ${palette.background.default}`,
                   }}

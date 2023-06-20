@@ -1,3 +1,6 @@
+export { default as CharacterItem } from './CharacterItem';
+export * from './CharacterItem';
+
 export { default as Footer } from './Footer';
 
 export { default as FaqContainer } from './FaqContainer';
@@ -5,6 +8,9 @@ export * from './FaqContainer';
 
 export { default as GenericHeader } from './GenericHeader';
 export * from './GenericHeader';
+
+export { default as ImageWithFallback } from './ImageWithFallback';
+export * from './ImageWithFallback';
 
 export { default as Link } from './Link';
 export * from './Link';

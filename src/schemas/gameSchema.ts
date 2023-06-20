@@ -21,6 +21,8 @@ export const gameSchema = z.object({
   // for getting the download url from firebase storage
   bannerUrl: z.string().optional(),
   coverUrl: z.string().optional(),
+  characterImageUrls: z.record(z.string()).optional(),
+  albumArtUrls: z.record(z.string()).optional(),
   // for reducing the amount of reads
   cachedSoundtracks: z.record(musicSchema),
   cachedCharacters: z.record(characterCacheSchema),

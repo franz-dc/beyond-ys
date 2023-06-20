@@ -33,7 +33,7 @@ const MusicItem: FC<MusicItemProps> = ({
   artists,
   duration,
   trackNumber,
-  albumName,
+  albumName = 'Unknown album',
   albumUrl,
   youtubeId,
   onPlay,
@@ -114,11 +114,11 @@ const MusicItem: FC<MusicItemProps> = ({
           {albumUrl && (
             <Image
               src={albumUrl}
-              alt={albumName!}
+              alt={albumName}
               width={42}
               height={42}
               style={{
-                borderRadius: 1,
+                borderRadius: 4,
                 width: 42,
                 height: 42,
                 objectFit: 'cover',

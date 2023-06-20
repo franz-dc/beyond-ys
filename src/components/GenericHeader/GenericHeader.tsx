@@ -21,7 +21,7 @@ const GenericHeader: FC<GenericHeaderProps> = ({
         display: 'flex',
         alignItems: 'flex-end',
         minHeight: 100,
-        backgroundColor: 'background.header',
+        backgroundColor: 'headerBackground',
         borderRadius: 4,
         mb: gutterBottom ? 3 : 0,
         ...rest.sx,

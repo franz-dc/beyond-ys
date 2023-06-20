@@ -1,18 +1,37 @@
-import { Box, Grid, Stack, SvgIcon, Tooltip, Typography } from '@mui/material';
+import { useState } from 'react';
+
+import {
+  Box,
+  ButtonBase,
+  Grid,
+  Stack,
+  // SvgIcon,
+  // Tooltip,
+  Typography,
+} from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 
-import { MainLayout, MusicItem, StoryTimeline } from '~/components';
+import {
+  CharacterItem,
+  MainLayout,
+  MusicItem,
+  StoryTimeline,
+} from '~/components';
 import { cacheCollection, gamesCollection, storage } from '~/configs';
-import { CATEGORIES_WITH_TIMELINE, GAME_PLATFORMS } from '~/constants';
+import {
+  CATEGORIES_WITH_TIMELINE,
+  // GAME_PLATFORMS,
+} from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { GameSchema } from '~/schemas';
 
 type ExtendedGameSchema = GameSchema & {
   id: string;
   staffNames: Record<string, string>;
+  albumNames: Record<string, string>;
 };
 
 export const getServerSideProps: GetServerSideProps<
@@ -30,8 +49,10 @@ export const getServerSideProps: GetServerSideProps<
     return { notFound: true };
   }
 
-  const data = {
+  const data: GameSchema = {
     ...docSnap.data(),
+    characterImageUrls: {},
+    albumArtUrls: {},
     // convert cachedSoundtracks updatedAt to milliseconds
     cachedSoundtracks: Object.entries(docSnap.data().cachedSoundtracks).reduce(
       (acc, [key, value]) => ({
@@ -45,30 +66,63 @@ export const getServerSideProps: GetServerSideProps<
     ),
   };
 
-  try {
-    const bannerUrl = await getDownloadURL(
-      ref(storage, `game-banners/${gameId}`)
-    );
-    data.bannerUrl = bannerUrl;
-  } catch (error) {
-    console.error(error);
+  const soundtrackAlbums = [
+    ...new Set(Object.values(data.cachedSoundtracks).map((s) => s.albumId)),
+  ].filter(Boolean);
+
+  // doing it this way to parallelize the requests and save time
+  const res = await Promise.allSettled([
+    getDownloadURL(ref(storage, `game-banners/${gameId}`)),
+    getDownloadURL(ref(storage, `game-covers/${gameId}`)),
+    ...data.characterIds.map((characterId) =>
+      getDownloadURL(ref(storage, `character-avatars/${characterId}`))
+    ),
+    ...soundtrackAlbums.map((albumId) =>
+      getDownloadURL(ref(storage, `album-arts/${albumId}`))
+    ),
+  ]);
+
+  const characterIdsLength = data.characterIds.length;
+  const soundtrackAlbumsLength = soundtrackAlbums.length;
+
+  const bannerUrlRes = res[0];
+  const coverUrlRes = res[1];
+  const characterImageUrlsRes = res.slice(2, 2 + characterIdsLength);
+  const soundtrackAlbumImageUrlsRes = res.slice(
+    2 + characterIdsLength,
+    2 + characterIdsLength + soundtrackAlbumsLength
+  );
+
+  if (bannerUrlRes.status === 'fulfilled') {
+    data.bannerUrl = bannerUrlRes.value;
   }
 
-  try {
-    const coverUrl = await getDownloadURL(
-      ref(storage, `game-covers/${gameId}`)
-    );
-    data.coverUrl = coverUrl;
-  } catch (error) {
-    console.error(error);
+  if (coverUrlRes.status === 'fulfilled') {
+    data.coverUrl = coverUrlRes.value;
   }
+
+  characterImageUrlsRes.forEach((characterImageUrlRes, idx) => {
+    if (characterImageUrlRes.status === 'fulfilled') {
+      data.characterImageUrls![data.characterIds[idx]] =
+        characterImageUrlRes.value;
+    }
+  });
+
+  soundtrackAlbumImageUrlsRes.forEach((albumImageUrlRes, idx) => {
+    if (albumImageUrlRes.status === 'fulfilled') {
+      data.albumArtUrls![soundtrackAlbums[idx]] = albumImageUrlRes.value;
+    }
+  });
 
   const staffNames = await getDoc(doc(cacheCollection, 'staffNames'));
+
+  const albumNames = await getDoc(doc(cacheCollection, 'albumNames'));
 
   return {
     props: {
       ...data,
       staffNames: staffNames.data() || {},
+      albumNames: albumNames.data() || {},
       id: gameId,
       updatedAt: data.updatedAt.toMillis(),
     },
@@ -81,13 +135,17 @@ const GamePage = ({
   category,
   bannerUrl,
   coverUrl,
-  platforms,
+  // platforms,
   description = 'No description available.',
   characterIds,
-  // cachedCharacters,
+  characterSpoilerIds,
+  cachedCharacters,
+  characterImageUrls,
   soundtrackIds,
+  albumArtUrls,
   cachedSoundtracks,
   staffNames,
+  albumNames,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -133,6 +191,9 @@ const GamePage = ({
     })
     .filter((s): s is Exclude<typeof s, null> => !!s);
 
+  const [isCharacterSpoilersShown, setIsCharacterSpoilersShown] =
+    useState(false);
+
   return (
     <MainLayout title={name}>
       <Head>
@@ -150,7 +211,7 @@ const GamePage = ({
             md: 200,
           },
           borderRadius: 4,
-          backgroundColor: 'background.header',
+          backgroundColor: 'headerBackground',
         }}
       >
         {bannerUrl && (
@@ -167,8 +228,8 @@ const GamePage = ({
               },
               objectFit: 'cover',
               borderRadius: 4,
-              backgroundColor: 'background.header',
-              color: 'background.header',
+              backgroundColor: 'headerBackground',
+              color: 'headerBackground',
             }}
           />
         )}
@@ -183,7 +244,10 @@ const GamePage = ({
             xs: 2,
             md: 3,
           },
-          mb: 4,
+          mb: {
+            xs: 2,
+            md: 3,
+          },
         }}
       >
         <Grid
@@ -216,7 +280,7 @@ const GamePage = ({
                     md: 175,
                   },
                   height: {
-                    xs: 150,
+                    xs: 160,
                     md: 250,
                   },
                   borderRadius: 2,
@@ -235,7 +299,10 @@ const GamePage = ({
               }}
             >
               <Typography variant='h1'>{name}</Typography>
-              <Stack
+              <Typography fontSize={18} color='text.secondary' mb={2}>
+                {category}
+              </Typography>
+              {/* <Stack
                 direction='row'
                 spacing={2}
                 sx={{
@@ -271,7 +338,7 @@ const GamePage = ({
                     <Tooltip key={platform} title={platformObj.name}>
                       <Box
                         component='img'
-                        src={platformObj.icon}
+                        src={platformObj.icon.src}
                         alt={platformObj.name}
                         sx={{
                           width: platformObj.width,
@@ -282,7 +349,7 @@ const GamePage = ({
                     </Tooltip>
                   );
                 })}
-              </Stack>
+              </Stack> */}
               <Typography
                 sx={{
                   display: {
@@ -307,24 +374,69 @@ const GamePage = ({
           mb: 4,
         }}
       >
-        <Typography component='h2' variant='h2' gutterBottom>
+        <Typography component='h2' variant='h2' mb={1}>
           Description
         </Typography>
         <Typography>{description}</Typography>
       </Box>
-      <Box component='section' sx={{ mb: 4 }}>
-        <Typography component='h2' variant='h2' gutterBottom>
-          Characters
-        </Typography>
-        {JSON.stringify(characterIds)}
-      </Box>
+      {characterIds.length > 0 && (
+        <Box component='section' sx={{ mb: 1 }}>
+          <Box
+            sx={{
+              mb: characterSpoilerIds.length > 0 ? 2 : 4,
+            }}
+          >
+            <Typography component='h2' variant='h2'>
+              Characters
+            </Typography>
+            {characterSpoilerIds.length > 0 && (
+              <ButtonBase
+                onClick={() => {
+                  setIsCharacterSpoilersShown((prev) => !prev);
+                }}
+                focusRipple
+                sx={{ mt: -1 }}
+              >
+                <Typography color='text.secondary' fontSize={14}>
+                  {isCharacterSpoilersShown ? 'Hide spoilers' : 'Show spoilers'}
+                </Typography>
+              </ButtonBase>
+            )}
+          </Box>
+          <Grid container spacing={2}>
+            {characterIds.map((characterId) => {
+              const foundCharacterCache = cachedCharacters[characterId];
+              if (!foundCharacterCache) return null;
+
+              const foundCharacterImageUrl = characterImageUrls?.[characterId];
+
+              return (
+                <Grid item xs={12} xs2={6} sm={4} md={3} key={characterId}>
+                  <CharacterItem
+                    id={characterId}
+                    name={foundCharacterCache.name}
+                    accentColor={foundCharacterCache.accentColor}
+                    image={foundCharacterImageUrl}
+                    imageDirection={foundCharacterCache.imageDirection}
+                    isSpoiler={characterSpoilerIds.includes(characterId)}
+                    isSpoilerShown={isCharacterSpoilersShown}
+                    sx={{
+                      mb: 3,
+                    }}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Box>
+      )}
       {/* @ts-ignore */}
       {CATEGORIES_WITH_TIMELINE.includes(category) && (
         <StoryTimeline id={id} category={category} />
       )}
       {formattedSoundtracks.length > 0 && (
         <Box component='section' sx={{ mb: 4 }}>
-          <Typography component='h2' variant='h2' gutterBottom>
+          <Typography component='h2' variant='h2' mb={2}>
             Soundtracks
           </Typography>
           <Stack spacing={1}>
@@ -337,6 +449,8 @@ const GamePage = ({
                 youtubeId={soundtrack.youtubeId}
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
+                albumName={albumNames[soundtrack.albumId]}
+                albumUrl={albumArtUrls![soundtrack.albumId]}
                 onPlay={
                   !!soundtrack.youtubeId
                     ? () => {
@@ -345,8 +459,8 @@ const GamePage = ({
                           title: soundtrack.title,
                           youtubeId: soundtrack.youtubeId,
                           artists: soundtrack.artists,
-                          // TODO: albumName
-                          // TODO: albumUrl
+                          albumName: albumNames[soundtrack.albumId],
+                          albumUrl: albumArtUrls![soundtrack.albumId],
                         });
                         setQueue(
                           formattedSoundtracks.map((s) => ({
@@ -354,8 +468,8 @@ const GamePage = ({
                             title: s.title,
                             youtubeId: s.youtubeId,
                             artists: s.artists,
-                            // TODO: albumName
-                            // TODO: albumUrl
+                            albumName: albumNames[soundtrack.albumId],
+                            albumUrl: albumArtUrls![soundtrack.albumId],
                           }))
                         );
                       }
