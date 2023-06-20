@@ -14,9 +14,13 @@ import {
   arrayRemove,
   arrayUnion,
   doc,
+  documentId,
   getDoc,
+  getDocs,
   onSnapshot,
+  query,
   serverTimestamp,
+  where,
   writeBatch,
 } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
@@ -120,6 +124,7 @@ const EditGame = () => {
     .omit({
       updatedAt: true,
       cachedSoundtracks: true,
+      cachedCharacters: true,
       dependentCharacterIds: true,
       // conform to useFieldArray's format
       platforms: true,
@@ -222,7 +227,7 @@ const EditGame = () => {
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
       const formattedCharacterIds = characterIds.map(({ value }) => value);
 
-      const newData = {
+      const newData: GameSchema = {
         name,
         category,
         subcategory,
@@ -237,10 +242,9 @@ const EditGame = () => {
         characterSpoilerIds: characterSpoilerIds.map(({ value }) => value),
         soundtrackIds: formattedSoundtrackIds,
         updatedAt: serverTimestamp(),
+        cachedSoundtracks: currentGameData?.cachedSoundtracks || {},
+        cachedCharacters: currentGameData?.cachedCharacters || {},
       };
-
-      // update the game doc
-      batch.update(doc(gamesCollection, id), newData);
 
       // update these if the name has changed
       if (currentGameData?.name !== name) {
@@ -268,6 +272,9 @@ const EditGame = () => {
           batch.update(doc(musicCollection, soundtrackId), {
             dependentGameIds: arrayRemove(id),
           });
+
+          // remove the soundtrack from the game's cachedSoundtracks
+          delete newData.cachedSoundtracks[soundtrackId];
         });
       }
 
@@ -282,6 +289,18 @@ const EditGame = () => {
             dependentGameIds: arrayUnion(id),
           });
         });
+
+        // add the soundtrack to the game's cachedSoundtracks
+        const newMusicQuery = query(
+          musicCollection,
+          where(documentId(), 'in', addedSoundtrackIds)
+        );
+        const newMusicQuerySnap = await getDocs(newMusicQuery);
+
+        newMusicQuerySnap.forEach((doc) => {
+          if (!doc.exists()) return;
+          newData.cachedSoundtracks[doc.id] = doc.data();
+        });
       }
 
       // update gameId from character docs if the characterIds have changed
@@ -295,6 +314,9 @@ const EditGame = () => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayRemove(id),
           });
+
+          // remove the character from the game's cachedCharacters
+          delete newData.cachedCharacters[characterId];
         });
       }
 
@@ -308,8 +330,18 @@ const EditGame = () => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayUnion(id),
           });
+
+          // add the character to the game's cachedCharacters
+          const foundCharacterCache = charactersCache[characterId];
+          if (foundCharacterCache) {
+            newData.cachedCharacters[characterId] = foundCharacterCache;
+          }
         });
       }
+
+      // update the game doc
+      // batch.update throws a type error
+      batch.set(doc(gamesCollection, id), newData);
 
       await batch.commit();
 
@@ -380,6 +412,7 @@ const EditGame = () => {
           soundtrackIds: [],
           updatedAt: null,
           cachedSoundtracks: {},
+          cachedCharacters: {},
         });
         reset({
           id,
@@ -635,6 +668,9 @@ const EditGame = () => {
               >
                 Add Character
               </Button>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Character Spoilers</Typography>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Soundtracks</Typography>

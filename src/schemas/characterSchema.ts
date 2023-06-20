@@ -28,7 +28,10 @@ export const characterSchema = z.object({
 
 export type CharacterSchema = z.infer<typeof characterSchema>;
 
-export type CharacterCacheSchema = Pick<
-  CharacterSchema,
-  'name' | 'accentColor' | 'imageDirection'
->;
+export const characterCacheSchema = characterSchema.pick({
+  name: true,
+  accentColor: true,
+  imageDirection: true,
+});
+
+export type CharacterCacheSchema = z.infer<typeof characterCacheSchema>;

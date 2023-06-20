@@ -83,6 +83,8 @@ const GamePage = ({
   coverUrl,
   platforms,
   description = 'No description available.',
+  characterIds,
+  // cachedCharacters,
   soundtrackIds,
   cachedSoundtracks,
   staffNames,
@@ -314,7 +316,7 @@ const GamePage = ({
         <Typography component='h2' variant='h2' gutterBottom>
           Characters
         </Typography>
-        UNDER CONSTRUCTION
+        {JSON.stringify(characterIds)}
       </Box>
       {/* @ts-ignore */}
       {CATEGORIES_WITH_TIMELINE.includes(category) && (

@@ -118,6 +118,7 @@ const AddGame = () => {
     .omit({
       updatedAt: true,
       cachedSoundtracks: true,
+      cachedCharacters: true,
       dependentCharacterIds: true,
       // conform to useFieldArray's format
       platforms: true,
@@ -263,6 +264,17 @@ const AddGame = () => {
         });
       }
 
+      // get all characterCache from characterIds
+      const cachedCharacters = formattedCharacterIds.reduce<
+        Record<string, CharacterCacheSchema>
+      >((acc, characterId) => {
+        const cachedCharacter = charactersCache[characterId];
+        if (cachedCharacter) {
+          acc[characterId] = cachedCharacter;
+        }
+        return acc;
+      }, {});
+
       const newData = {
         name,
         category,
@@ -279,6 +291,7 @@ const AddGame = () => {
         soundtrackIds: formattedSoundtrackIds,
         updatedAt: serverTimestamp(),
         cachedSoundtracks,
+        cachedCharacters,
       };
 
       // update the game doc

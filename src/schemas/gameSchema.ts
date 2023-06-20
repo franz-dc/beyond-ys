@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { characterCacheSchema } from './characterSchema';
 import { musicSchema } from './musicSchema';
 
 export const gameSchema = z.object({
@@ -22,6 +23,7 @@ export const gameSchema = z.object({
   coverUrl: z.string().optional(),
   // for reducing the amount of reads
   cachedSoundtracks: z.record(musicSchema),
+  cachedCharacters: z.record(characterCacheSchema),
 });
 
 export type GameSchema = z.infer<typeof gameSchema>;
