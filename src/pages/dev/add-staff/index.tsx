@@ -217,7 +217,7 @@ const AddStaff = () => {
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-          <Typography variant='h2'>Basic Info</Typography>
+          <Typography variant='h2'>General Info</Typography>
           <TextFieldElement
             name='name'
             label='Name'
@@ -234,16 +234,6 @@ const AddStaff = () => {
 
               setValue('id', id, { shouldValidate: true });
             }}
-          />
-        </Paper>
-        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-          <Typography variant='h2'>General Info</Typography>
-          <TextFieldElement
-            name='name'
-            label='Name'
-            required
-            fullWidth
-            margin='normal'
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
