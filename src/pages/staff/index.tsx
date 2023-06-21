@@ -40,30 +40,32 @@ export const getServerSideProps: GetServerSideProps<
   const staffRoles = staffRolesDoc.data() || {};
 
   // categorize staff members by their first letter
-  const categorizedStaffNames = Object.entries(staffNames).reduce<
-    Record<
-      string,
-      {
-        id: string;
-        name: string;
-        roles: string[];
-      }[]
-    >
-  >((acc, [id, name]) => {
-    const firstLetter = name[0].toUpperCase();
+  const categorizedStaffNames = Object.entries(staffNames)
+    .sort(([, a], [, b]) => a.localeCompare(b))
+    .reduce<
+      Record<
+        string,
+        {
+          id: string;
+          name: string;
+          roles: string[];
+        }[]
+      >
+    >((acc, [id, name]) => {
+      const firstLetter = name[0].toUpperCase();
 
-    if (!acc[firstLetter]) {
-      acc[firstLetter] = [];
-    }
+      if (!acc[firstLetter]) {
+        acc[firstLetter] = [];
+      }
 
-    acc[firstLetter].push({
-      id,
-      name,
-      roles: staffRoles[id] || [],
-    });
+      acc[firstLetter].push({
+        id,
+        name,
+        roles: staffRoles[id] || [],
+      });
 
-    return acc;
-  }, {});
+      return acc;
+    }, {});
 
   // get all staff avatar urls
   const staffAvatarUrls: Record<string, string> = {};
