@@ -128,6 +128,8 @@ const StaffInfo = ({
   const formattedSoundtracks = musicIds
     .map((soundtrackId) => {
       const soundtrack = cachedMusic[soundtrackId];
+      const hasArrangerOrOtherArtists =
+        soundtrack.arrangerIds.length > 0 || soundtrack.otherArtists.length > 0;
 
       if (!soundtrack) return null;
 
@@ -139,7 +141,9 @@ const StaffInfo = ({
           ...soundtrack.composerIds.map((c) =>
             staffNames[c]
               ? {
-                  name: staffNames[c],
+                  name: hasArrangerOrOtherArtists
+                    ? `${staffNames[c]} (Comp.)`
+                    : staffNames[c],
                   link: `/staff/${c}`,
                 }
               : null

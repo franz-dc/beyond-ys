@@ -169,6 +169,8 @@ const GamePage = ({
   const formattedSoundtracks = soundtrackIds
     .map((soundtrackId) => {
       const soundtrack = cachedSoundtracks[soundtrackId];
+      const hasArrangerOrOtherArtists =
+        soundtrack.arrangerIds.length > 0 || soundtrack.otherArtists.length > 0;
 
       if (!soundtrack) return null;
 
@@ -180,7 +182,9 @@ const GamePage = ({
           ...soundtrack.composerIds.map((c) =>
             staffNames[c]
               ? {
-                  name: staffNames[c],
+                  name: hasArrangerOrOtherArtists
+                    ? `${staffNames[c]} (Comp.)`
+                    : staffNames[c],
                   link: `/staff/${c}`,
                 }
               : null

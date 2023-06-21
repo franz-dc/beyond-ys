@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 
 import { keyframes } from '@emotion/react';
 import {
@@ -12,6 +12,7 @@ import {
   styled,
 } from '@mui/material';
 import Image from 'next/image';
+import Marquee from 'react-fast-marquee';
 import {
   MdPause,
   MdPlayArrow,
@@ -317,6 +318,61 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     }
   `;
 
+  const [overflowActive, setOverflowActive] = useState(false);
+
+  const overflowingText = useRef<HTMLSpanElement | null>(null);
+
+  const checkOverflow = (textContainer: HTMLSpanElement | null): boolean => {
+    if (textContainer)
+      return (
+        textContainer.offsetHeight < textContainer.scrollHeight ||
+        textContainer.offsetWidth < textContainer.scrollWidth
+      );
+    return false;
+  };
+
+  useEffect(() => {
+    if (checkOverflow(overflowingText.current)) {
+      setOverflowActive(true);
+      return;
+    }
+
+    setOverflowActive(false);
+    // add youtubeId to dependency array to recheck overflow when video changes
+  }, [overflowActive, youtubeId]);
+
+  const artistsComponent = (
+    <>
+      {artists.length !== 0
+        ? artists.map((artist, idx) => (
+            // eslint-disable-next-line react/jsx-indent
+            <Typography
+              component='span'
+              key={artist.name}
+              sx={{ fontSize: 'inherit' }}
+            >
+              <Link
+                href={artist.link}
+                sx={{
+                  color: 'text.secondary',
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline',
+                  },
+                }}
+              >
+                {artist.name}
+              </Link>
+              {
+                // Add a comma after each artist except the last one
+                idx !== artists.length - 1 && ', '
+              }
+            </Typography>
+          ))
+        : 'Unknown Composer'}
+    </>
+  );
+
   return (
     <Box
       sx={{
@@ -416,7 +472,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
               {albumUrl && (
                 <Image
                   src={albumUrl}
-                  alt={albumName!}
+                  alt='Album art'
                   width={42}
                   height={42}
                   style={{
@@ -430,7 +486,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                 />
               )}
             </Box>
-            <Box sx={{ width: '100%' }}>
+            <Box sx={{ width: '100%', position: 'relative' }}>
               <Typography
                 sx={{
                   fontWeight: 'medium',
@@ -444,39 +500,58 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
               </Typography>
               <Typography
                 sx={{
+                  position: 'absolute',
                   fontSize: 14,
                   color: 'text.secondary',
                   userSelect: 'none',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  visibility: overflowActive ? 'hidden' : 'visible',
+                  opacity: overflowActive ? 0 : 1,
+                  width: {
+                    // half screen width - player padding - controls - album art - spacing
+                    xs: 'calc(100vw - 32px - 140px - 42px - 16px)',
+                    // full screen width - player padding - half controls - album art - spacing - extra
+                    md: 'calc(50vw - 32px - 114px - 42px - 16px)',
+                    // minus extra on large screens
+                    lg: 'calc(50vw - 32px - 114px - 42px - 16px - 50px)',
+                    xl: 'calc(50vw - 32px - 114px - 42px - 16px - 100px)',
+                  },
                 }}
+                ref={overflowingText}
               >
-                {artists.length !== 0
-                  ? artists.map((artist, idx) => (
-                      // eslint-disable-next-line react/jsx-indent
-                      <Typography
-                        component='span'
-                        key={artist.name}
-                        sx={{ fontSize: 'inherit' }}
-                      >
-                        <Link
-                          href={artist.link}
-                          sx={{
-                            color: 'text.secondary',
-                            textDecoration: 'none',
-                            '&:hover': {
-                              textDecoration: 'underline',
-                            },
-                          }}
-                        >
-                          {artist.name}
-                        </Link>
-                        {
-                          // Add a comma after each artist except the last one
-                          idx !== artists.length - 1 && ', '
-                        }
-                      </Typography>
-                    ))
-                  : 'Unknown Composer'}
+                {artistsComponent}
               </Typography>
+              {overflowActive && (
+                <Box
+                  sx={{
+                    maxWidth: {
+                      lg: 'calc(50vw - 32px - 114px - 42px - 16px - 50px)',
+                      xl: 'calc(50vw - 32px - 114px - 42px - 16px - 100px)',
+                    },
+                  }}
+                >
+                  <Marquee
+                    speed={10}
+                    delay={2}
+                    pauseOnHover
+                    gradient
+                    gradientWidth={8}
+                    gradientColor={[22, 26, 34]}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: 14,
+                        color: 'text.secondary',
+                        userSelect: 'none',
+                        pr: 8,
+                      }}
+                    >
+                      {artistsComponent}
+                    </Typography>
+                  </Marquee>
+                </Box>
+              )}
             </Box>
           </Stack>
         </Grid>
