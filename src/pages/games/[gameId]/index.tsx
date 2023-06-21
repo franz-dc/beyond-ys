@@ -187,7 +187,7 @@ const GamePage = ({
             staffNames[a.staffId]
               ? {
                   name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
-                  link: `/staff/${a}`,
+                  link: `/staff/${a.staffId}`,
                 }
               : null
           ),
