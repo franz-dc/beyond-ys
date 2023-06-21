@@ -38,6 +38,7 @@ import {
   gamesCollection,
   musicAlbumsCollection,
   musicCollection,
+  staffInfosCollection,
 } from '~/configs';
 import { MusicCacheSchema, MusicSchema, musicSchema } from '~/schemas';
 
@@ -185,13 +186,15 @@ const EditMusic = () => {
       const batch = writeBatch(db);
 
       const dependentGameIds = currentMusicData?.dependentGameIds || [];
+      const formattedComposerIds = composerIds.map(({ value }) => value);
+      const formattedArrangerIds = arrangerIds.map(({ value }) => value);
 
       const newData = {
         id,
         title,
         albumId,
-        composerIds: composerIds.map(({ value }) => value),
-        arrangerIds: arrangerIds.map(({ value }) => value),
+        composerIds: formattedComposerIds,
+        arrangerIds: formattedArrangerIds,
         otherArtists,
         duration: hours * 3600 + minutes * 60 + seconds,
         youtubeId,
@@ -204,6 +207,7 @@ const EditMusic = () => {
 
       // update all game docs that depend on this music
       dependentGameIds.forEach((gameId) => {
+        // @ts-ignore firestore types cannot handle nested objects
         batch.update(doc(gamesCollection, gameId), {
           [`cachedSoundtracks.${id}`]: newData,
         });
@@ -240,6 +244,22 @@ const EditMusic = () => {
           });
         }
       }
+
+      // update all staff data related to this music
+      const staffIds = [
+        // in case there are duplicate staff ids
+        ...new Set([
+          ...formattedComposerIds,
+          ...formattedArrangerIds,
+          ...otherArtists.map(({ staffId }) => staffId),
+        ]),
+      ];
+
+      staffIds.forEach((staffId) => {
+        batch.update(doc(staffInfosCollection, staffId), {
+          [`cachedMusic.${id}`]: newData,
+        });
+      });
 
       await batch.commit();
 

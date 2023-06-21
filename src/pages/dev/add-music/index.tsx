@@ -27,6 +27,7 @@ import {
   db,
   musicAlbumsCollection,
   musicCollection,
+  staffInfosCollection,
 } from '~/configs';
 import { musicSchema } from '~/schemas';
 
@@ -151,12 +152,15 @@ const AddMusic = () => {
     youtubeId,
   }: Schema) => {
     try {
+      const formattedComposerIds = composerIds.map(({ value }) => value);
+      const formattedArrangerIds = arrangerIds.map(({ value }) => value);
+
       // create the music doc and fill the rest with blank data
       const newData = {
         title,
         albumId,
-        composerIds: composerIds.map(({ value }) => value),
-        arrangerIds: arrangerIds.map(({ value }) => value),
+        composerIds: formattedComposerIds,
+        arrangerIds: formattedArrangerIds,
         otherArtists,
         duration: hours * 3600 + minutes * 60 + seconds,
         youtubeId,
@@ -184,6 +188,23 @@ const AddMusic = () => {
           [`cachedMusic.${id}`]: newData,
         });
       }
+
+      // update all staff data related to this music
+      const staffIds = [
+        // in case there are duplicate staff ids
+        ...new Set([
+          ...formattedComposerIds,
+          ...formattedArrangerIds,
+          ...otherArtists.map(({ staffId }) => staffId),
+        ]),
+      ];
+
+      staffIds.forEach((staffId) => {
+        batch.update(doc(staffInfosCollection, staffId), {
+          musicIds: arrayUnion(id),
+          [`cachedMusic.${id}`]: newData,
+        });
+      });
 
       await batch.commit();
 
