@@ -3,6 +3,7 @@ import { useState } from 'react';
 import {
   Box,
   ButtonBase,
+  Collapse,
   Grid,
   Stack,
   // SvgIcon,
@@ -30,8 +31,12 @@ import { GameSchema } from '~/schemas';
 
 type ExtendedGameSchema = GameSchema & {
   id: string;
+  bannerUrl?: string;
+  coverUrl?: string;
+  characterImageUrls?: Record<string, string>;
   staffNames: Record<string, string>;
   albumNames: Record<string, string>;
+  albumArtUrls: Record<string, string>;
 };
 
 export const getServerSideProps: GetServerSideProps<
@@ -49,10 +54,14 @@ export const getServerSideProps: GetServerSideProps<
     return { notFound: true };
   }
 
-  const data: GameSchema = {
+  const data: ExtendedGameSchema = {
     ...docSnap.data(),
+    id: gameId,
+    updatedAt: docSnap.data().updatedAt.toMillis(),
     characterImageUrls: {},
     albumArtUrls: {},
+    staffNames: {},
+    albumNames: {},
     // convert cachedSoundtracks updatedAt to milliseconds
     cachedSoundtracks: Object.entries(docSnap.data().cachedSoundtracks).reduce(
       (acc, [key, value]) => ({
@@ -74,6 +83,8 @@ export const getServerSideProps: GetServerSideProps<
   const res = await Promise.allSettled([
     getDownloadURL(ref(storage, `game-banners/${gameId}`)),
     getDownloadURL(ref(storage, `game-covers/${gameId}`)),
+    getDoc(doc(cacheCollection, 'staffNames')),
+    getDoc(doc(cacheCollection, 'albumNames')),
     ...data.characterIds.map((characterId) =>
       getDownloadURL(ref(storage, `character-avatars/${characterId}`))
     ),
@@ -87,11 +98,16 @@ export const getServerSideProps: GetServerSideProps<
 
   const bannerUrlRes = res[0];
   const coverUrlRes = res[1];
-  const characterImageUrlsRes = res.slice(2, 2 + characterIdsLength);
+  const staffNamesRes = res[2];
+  const albumNamesRes = res[3];
+  const characterImageUrlsRes = res.slice(
+    4,
+    4 + characterIdsLength
+  ) as PromiseFulfilledResult<string>[];
   const soundtrackAlbumImageUrlsRes = res.slice(
-    2 + characterIdsLength,
-    2 + characterIdsLength + soundtrackAlbumsLength
-  );
+    4 + characterIdsLength,
+    4 + characterIdsLength + soundtrackAlbumsLength
+  ) as PromiseFulfilledResult<string>[];
 
   if (bannerUrlRes.status === 'fulfilled') {
     data.bannerUrl = bannerUrlRes.value;
@@ -99,6 +115,14 @@ export const getServerSideProps: GetServerSideProps<
 
   if (coverUrlRes.status === 'fulfilled') {
     data.coverUrl = coverUrlRes.value;
+  }
+
+  if (staffNamesRes.status === 'fulfilled') {
+    data.staffNames = staffNamesRes.value.data() || {};
+  }
+
+  if (albumNamesRes.status === 'fulfilled') {
+    data.albumNames = albumNamesRes.value.data() || {};
   }
 
   characterImageUrlsRes.forEach((characterImageUrlRes, idx) => {
@@ -114,19 +138,7 @@ export const getServerSideProps: GetServerSideProps<
     }
   });
 
-  const staffNames = await getDoc(doc(cacheCollection, 'staffNames'));
-
-  const albumNames = await getDoc(doc(cacheCollection, 'albumNames'));
-
-  return {
-    props: {
-      ...data,
-      staffNames: staffNames.data() || {},
-      albumNames: albumNames.data() || {},
-      id: gameId,
-      updatedAt: data.updatedAt.toMillis(),
-    },
-  };
+  return { props: data };
 };
 
 const GamePage = ({
@@ -198,6 +210,8 @@ const GamePage = ({
 
   const [isCharacterSpoilersShown, setIsCharacterSpoilersShown] =
     useState(false);
+
+  const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
 
   return (
     <MainLayout title={name}>
@@ -445,7 +459,7 @@ const GamePage = ({
             Soundtracks
           </Typography>
           <Stack spacing={1}>
-            {formattedSoundtracks.map((soundtrack, idx) => (
+            {formattedSoundtracks.slice(0, 10).map((soundtrack, idx) => (
               <MusicItem
                 key={idx}
                 id={soundtrack.id}
@@ -482,7 +496,67 @@ const GamePage = ({
                 }
               />
             ))}
+            {formattedSoundtracks.length > 10 && (
+              <Collapse in={isSoundtracksExpanded}>
+                <Stack spacing={1}>
+                  {formattedSoundtracks.slice(10).map((soundtrack, idx) => (
+                    <MusicItem
+                      key={idx}
+                      id={soundtrack.id}
+                      title={soundtrack.title}
+                      artists={soundtrack.artists}
+                      youtubeId={soundtrack.youtubeId}
+                      duration={soundtrack.duration}
+                      trackNumber={idx + 11}
+                      albumName={albumNames[soundtrack.albumId]}
+                      albumUrl={albumArtUrls![soundtrack.albumId]}
+                      onPlay={
+                        !!soundtrack.youtubeId
+                          ? () => {
+                              setNowPlaying({
+                                id: soundtrack.id,
+                                title: soundtrack.title,
+                                youtubeId: soundtrack.youtubeId,
+                                artists: soundtrack.artists,
+                                albumName: albumNames[soundtrack.albumId],
+                                albumUrl: albumArtUrls![soundtrack.albumId],
+                              });
+                              setQueue(
+                                formattedSoundtracks.map((s) => ({
+                                  id: s.id,
+                                  title: s.title,
+                                  youtubeId: s.youtubeId,
+                                  artists: s.artists,
+                                  albumName: albumNames[soundtrack.albumId],
+                                  albumUrl: albumArtUrls![soundtrack.albumId],
+                                }))
+                              );
+                            }
+                          : undefined
+                      }
+                    />
+                  ))}
+                </Stack>
+              </Collapse>
+            )}
           </Stack>
+          {formattedSoundtracks.length > 10 && (
+            <ButtonBase
+              onClick={() => {
+                setIsSoundtracksExpanded((prev) => !prev);
+              }}
+              focusRipple
+              sx={{
+                mt: isSoundtracksExpanded ? 1 : -1,
+              }}
+            >
+              <Typography color='text.secondary' fontSize={14}>
+                {isSoundtracksExpanded
+                  ? 'Show less'
+                  : `Show all (+${formattedSoundtracks.length - 10})`}
+              </Typography>
+            </ButtonBase>
+          )}
         </Box>
       )}
     </MainLayout>

@@ -420,7 +420,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                   width={42}
                   height={42}
                   style={{
-                    borderRadius: 1,
+                    borderRadius: 4,
                     width: 42,
                     height: 42,
                     objectFit: 'cover',

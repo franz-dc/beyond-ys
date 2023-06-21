@@ -1,10 +1,21 @@
-import { Avatar, Box, Grid, Paper, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
+
+import {
+  Avatar,
+  Box,
+  ButtonBase,
+  Collapse,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 
-import { Link, MainLayout, MusicItem, MusicItemProps } from '~/components';
+import { Link, MainLayout, MusicItem } from '~/components';
 import { cacheCollection, staffInfosCollection, storage } from '~/configs';
 import { useMusicPlayer } from '~/hooks';
 import { StaffInfoSchema } from '~/schemas';
@@ -13,6 +24,9 @@ type Props = StaffInfoSchema & {
   id: string;
   staffNames: Record<string, string>;
   gameNames: Record<string, string>;
+  albumNames: Record<string, string>;
+  albumArtUrls: Record<string, string>;
+  avatarUrl?: string;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -30,7 +44,21 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return { notFound: true };
   }
 
-  const data = docSnap.data();
+  const data: Props = {
+    ...docSnap.data(),
+    id: staffId,
+    updatedAt: docSnap.data().updatedAt.toMillis(),
+    staffNames: {},
+    gameNames: {},
+    albumNames: {},
+    albumArtUrls: {},
+    // remove updatedAt from cachedMusic values to prevent next.js errors
+    cachedMusic: Object.fromEntries(
+      Object.entries(docSnap.data().cachedMusic).map(
+        ([key, { updatedAt, ...m }]) => [key, m]
+      )
+    ),
+  };
 
   try {
     const avatarUrl = await getDownloadURL(
@@ -41,18 +69,43 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     console.error(error);
   }
 
-  const staffNames = await getDoc(doc(cacheCollection, 'staffNames'));
-  const gameNames = await getDoc(doc(cacheCollection, 'gameNames'));
+  const musicAlbums = [
+    ...new Set(Object.values(data.cachedMusic).map((s) => s.albumId)),
+  ].filter(Boolean);
 
-  return {
-    props: {
-      ...data,
-      staffNames: staffNames.data() || {},
-      gameNames: gameNames.data() || {},
-      id: staffId,
-      updatedAt: data.updatedAt.toMillis(),
-    },
-  };
+  const [
+    staffNamesRes,
+    gameNamesRes,
+    albumNamesRes,
+    ...musicAlbumImageUrlsRes
+  ] = await Promise.allSettled([
+    getDoc(doc(cacheCollection, 'staffNames')),
+    getDoc(doc(cacheCollection, 'gameNames')),
+    getDoc(doc(cacheCollection, 'albumNames')),
+    ...musicAlbums.map((albumId) =>
+      getDownloadURL(ref(storage, `album-arts/${albumId}`))
+    ),
+  ]);
+
+  if (staffNamesRes.status === 'fulfilled') {
+    data.staffNames = staffNamesRes.value.data() || {};
+  }
+
+  if (gameNamesRes.status === 'fulfilled') {
+    data.gameNames = gameNamesRes.value.data() || {};
+  }
+
+  if (albumNamesRes.status === 'fulfilled') {
+    data.albumNames = albumNamesRes.value.data() || {};
+  }
+
+  musicAlbumImageUrlsRes.forEach((albumImageUrlRes, idx) => {
+    if (albumImageUrlRes.status === 'fulfilled') {
+      data.albumArtUrls![musicAlbums[idx]] = albumImageUrlRes.value;
+    }
+  });
+
+  return { props: data };
 };
 
 const StaffInfo = ({
@@ -63,44 +116,58 @@ const StaffInfo = ({
   roles,
   games,
   avatarUrl,
+  musicIds,
   cachedMusic,
+  albumNames,
+  albumArtUrls,
   staffNames,
   gameNames,
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
-  const formattedSoundtracks = cachedMusic.map((soundtrack) => ({
-    ...soundtrack,
-    artists: [
-      // populate composers
-      ...soundtrack.composerIds.map((c) =>
-        staffNames[c]
-          ? {
-              name: staffNames[c],
-              link: `/staff/${c}`,
-            }
-          : null
-      ),
-      // populate arrangers
-      ...soundtrack.arrangerIds.map((a) =>
-        staffNames[a]
-          ? {
-              name: `${staffNames[a]} (Arr.)`,
-              link: `/staff/${a}`,
-            }
-          : null
-      ),
-      // populate other artists
-      ...soundtrack.otherArtists.map((a) =>
-        staffNames[a.staffId]
-          ? {
-              name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
-              link: `/staff/${a}`,
-            }
-          : null
-      ),
-    ].filter(Boolean) as MusicItemProps['artists'],
-  }));
+  const formattedSoundtracks = musicIds
+    .map((soundtrackId) => {
+      const soundtrack = cachedMusic[soundtrackId];
+
+      if (!soundtrack) return null;
+
+      return {
+        ...soundtrack,
+        id: soundtrackId,
+        artists: [
+          // populate composers
+          ...soundtrack.composerIds.map((c) =>
+            staffNames[c]
+              ? {
+                  name: staffNames[c],
+                  link: `/staff/${c}`,
+                }
+              : null
+          ),
+          // populate arrangers
+          ...soundtrack.arrangerIds.map((a) =>
+            staffNames[a]
+              ? {
+                  name: `${staffNames[a]} (Arr.)`,
+                  link: `/staff/${a}`,
+                }
+              : null
+          ),
+          // populate other artists
+          ...soundtrack.otherArtists.map((a) =>
+            staffNames[a.staffId]
+              ? {
+                  name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
+                  link: `/staff/${a.staffId}`,
+                }
+              : null
+          ),
+        ].filter((a): a is Exclude<typeof a, null> => !!a),
+      };
+    })
+    .filter((s): s is Exclude<typeof s, null> => !!s);
+
+  const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
 
   return (
     <MainLayout title={name}>
@@ -279,7 +346,7 @@ const StaffInfo = ({
             Music
           </Typography>
           <Stack spacing={1}>
-            {formattedSoundtracks.map((soundtrack, idx) => (
+            {formattedSoundtracks.slice(0, 10).map((soundtrack, idx) => (
               <MusicItem
                 key={idx}
                 id={soundtrack.id}
@@ -288,6 +355,8 @@ const StaffInfo = ({
                 youtubeId={soundtrack.youtubeId}
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
+                albumName={albumNames[soundtrack.albumId]}
+                albumUrl={albumArtUrls![soundtrack.albumId]}
                 onPlay={
                   !!soundtrack.youtubeId
                     ? () => {
@@ -296,8 +365,8 @@ const StaffInfo = ({
                           title: soundtrack.title,
                           youtubeId: soundtrack.youtubeId,
                           artists: soundtrack.artists,
-                          // TODO: albumName
-                          // TODO: albumUrl
+                          albumName: albumNames[soundtrack.albumId],
+                          albumUrl: albumArtUrls![soundtrack.albumId],
                         });
                         setQueue(
                           formattedSoundtracks.map((s) => ({
@@ -305,8 +374,8 @@ const StaffInfo = ({
                             title: s.title,
                             youtubeId: s.youtubeId,
                             artists: s.artists,
-                            // TODO: albumName
-                            // TODO: albumUrl
+                            albumName: albumNames[soundtrack.albumId],
+                            albumUrl: albumArtUrls![soundtrack.albumId],
                           }))
                         );
                       }
@@ -314,7 +383,67 @@ const StaffInfo = ({
                 }
               />
             ))}
+            {formattedSoundtracks.length > 10 && (
+              <Collapse in={isSoundtracksExpanded}>
+                <Stack spacing={1}>
+                  {formattedSoundtracks.slice(10).map((soundtrack, idx) => (
+                    <MusicItem
+                      key={idx}
+                      id={soundtrack.id}
+                      title={soundtrack.title}
+                      artists={soundtrack.artists}
+                      youtubeId={soundtrack.youtubeId}
+                      duration={soundtrack.duration}
+                      trackNumber={idx + 11}
+                      albumName={albumNames[soundtrack.albumId]}
+                      albumUrl={albumArtUrls![soundtrack.albumId]}
+                      onPlay={
+                        !!soundtrack.youtubeId
+                          ? () => {
+                              setNowPlaying({
+                                id: soundtrack.id,
+                                title: soundtrack.title,
+                                youtubeId: soundtrack.youtubeId,
+                                artists: soundtrack.artists,
+                                albumName: albumNames[soundtrack.albumId],
+                                albumUrl: albumArtUrls![soundtrack.albumId],
+                              });
+                              setQueue(
+                                formattedSoundtracks.map((s) => ({
+                                  id: s.id,
+                                  title: s.title,
+                                  youtubeId: s.youtubeId,
+                                  artists: s.artists,
+                                  albumName: albumNames[soundtrack.albumId],
+                                  albumUrl: albumArtUrls![soundtrack.albumId],
+                                }))
+                              );
+                            }
+                          : undefined
+                      }
+                    />
+                  ))}
+                </Stack>
+              </Collapse>
+            )}
           </Stack>
+          {formattedSoundtracks.length > 10 && (
+            <ButtonBase
+              onClick={() => {
+                setIsSoundtracksExpanded((prev) => !prev);
+              }}
+              focusRipple
+              sx={{
+                mt: isSoundtracksExpanded ? 1 : -1,
+              }}
+            >
+              <Typography color='text.secondary' fontSize={14}>
+                {isSoundtracksExpanded
+                  ? 'Show less'
+                  : `Show all (+${formattedSoundtracks.length - 10})`}
+              </Typography>
+            </ButtonBase>
+          )}
         </Box>
       )}
     </MainLayout>

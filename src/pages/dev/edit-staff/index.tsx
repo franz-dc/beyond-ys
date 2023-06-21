@@ -403,9 +403,14 @@ const EditStaff = () => {
                         'Supervisor',
                       ]}
                       multiple
-                      autocompleteProps={{ fullWidth: true, freeSolo: true }}
-                      textFieldProps={{ margin: 'normal' }}
-                      matchId
+                      autocompleteProps={{
+                        fullWidth: true,
+                        freeSolo: true,
+                      }}
+                      textFieldProps={{
+                        margin: 'normal',
+                        helperText: 'Press enter to add a new role',
+                      }}
                       required
                     />
                     <Stack direction='row' spacing={2} sx={{ mt: 1 }}>

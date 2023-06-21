@@ -358,7 +358,6 @@ const AddStaff = () => {
                   multiple
                   autocompleteProps={{ fullWidth: true, freeSolo: true }}
                   textFieldProps={{ margin: 'normal' }}
-                  matchId
                   required
                 />
                 <Stack direction='row' spacing={2} sx={{ mt: 1 }}>
