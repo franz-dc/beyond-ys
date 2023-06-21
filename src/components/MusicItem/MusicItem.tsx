@@ -153,7 +153,16 @@ const MusicItem: FC<MusicItemProps> = ({
             {title}
           </Typography>
           <Typography
-            sx={{ fontSize: 14, color: 'text.secondary', userSelect: 'none' }}
+            sx={{
+              fontSize: 14,
+              color: 'text.secondary',
+              userSelect: 'none',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: 'vertical',
+            }}
             aria-label='artist'
           >
             {artists.length !== 0
