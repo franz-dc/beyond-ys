@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 
-import { Box, IconButton, Stack, Typography } from '@mui/material';
+import { Box, ButtonBase, IconButton, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import { MdPlayArrow } from 'react-icons/md';
 
@@ -45,6 +45,7 @@ const MusicItem: FC<MusicItemProps> = ({
   return (
     <Box
       sx={{
+        position: 'relative',
         backgroundColor: 'background.paper',
         px: 2,
         py: 1.5,
@@ -52,10 +53,10 @@ const MusicItem: FC<MusicItemProps> = ({
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onDoubleClick={() => {
-        if (nowPlaying?.id === id) return;
-        onPlay?.();
-      }}
+      // onDoubleClick={() => {
+      //   if (nowPlaying?.id === id) return;
+      //   onPlay?.();
+      // }}
     >
       <Stack direction='row' spacing={2}>
         <Box
@@ -103,30 +104,37 @@ const MusicItem: FC<MusicItemProps> = ({
         </Box>
         <Box
           sx={{
-            width: 42,
-            height: 42,
-            minWidth: 42,
-            minHeight: 42,
-            borderRadius: 1,
-            backgroundColor: 'background.default',
+            display: 'flex',
+            alignItems: 'center',
           }}
         >
-          {albumUrl && (
-            <Image
-              src={albumUrl}
-              alt={albumName}
-              width={42}
-              height={42}
-              style={{
-                borderRadius: 4,
-                width: 42,
-                height: 42,
-                objectFit: 'cover',
-                userSelect: 'none',
-              }}
-              unoptimized
-            />
-          )}
+          <Box
+            sx={{
+              width: 42,
+              height: 42,
+              minWidth: 42,
+              minHeight: 42,
+              borderRadius: 1,
+              backgroundColor: 'background.default',
+            }}
+          >
+            {albumUrl && (
+              <Image
+                src={albumUrl}
+                alt={albumName}
+                width={42}
+                height={42}
+                style={{
+                  borderRadius: 4,
+                  width: 42,
+                  height: 42,
+                  objectFit: 'cover',
+                  userSelect: 'none',
+                }}
+                unoptimized
+              />
+            )}
+          </Box>
         </Box>
         <Box sx={{ width: '100%' }}>
           <Typography
@@ -196,6 +204,24 @@ const MusicItem: FC<MusicItemProps> = ({
           </Typography>
         </Box>
       </Stack>
+      <ButtonBase
+        onClick={() => {
+          if (nowPlaying?.id === id) return;
+          onPlay?.();
+        }}
+        sx={{
+          display: {
+            xs: 'block',
+            md: 'none',
+          },
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          borderRadius: 2,
+        }}
+      />
     </Box>
   );
 };
