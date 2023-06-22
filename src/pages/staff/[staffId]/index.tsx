@@ -60,15 +60,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ),
   };
 
-  try {
-    const avatarUrl = await getDownloadURL(
-      ref(storage, `staff-avatars/${staffId}`)
-    );
-    data.avatarUrl = avatarUrl;
-  } catch (error) {
-    console.error(error);
-  }
-
   const musicAlbums = [
     ...new Set(Object.values(data.cachedMusic).map((s) => s.albumId)),
   ].filter(Boolean);
@@ -77,11 +68,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     staffNamesRes,
     gameNamesRes,
     albumNamesRes,
+    avatarUrlRes,
     ...musicAlbumImageUrlsRes
   ] = await Promise.allSettled([
     getDoc(doc(cacheCollection, 'staffNames')),
     getDoc(doc(cacheCollection, 'gameNames')),
     getDoc(doc(cacheCollection, 'albumNames')),
+    getDownloadURL(ref(storage, `staff-avatars/${staffId}`)),
     ...musicAlbums.map((albumId) =>
       getDownloadURL(ref(storage, `album-arts/${albumId}`))
     ),
@@ -97,6 +90,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 
   if (albumNamesRes.status === 'fulfilled') {
     data.albumNames = albumNamesRes.value.data() || {};
+  }
+
+  if (avatarUrlRes.status === 'fulfilled') {
+    data.avatarUrl = avatarUrlRes.value;
   }
 
   musicAlbumImageUrlsRes.forEach((albumImageUrlRes, idx) => {
