@@ -5,6 +5,10 @@ import { FaqContainer, GenericHeader, Link, MainLayout } from '~/components';
 const Faqs = () => (
   <MainLayout title='Frequently Asked Questions'>
     <Head>
+      <meta
+        name='description'
+        content='Answering questions you might have about the project.'
+      />
       <meta name='og:title' content='Frequently Asked Questions' />
       <meta
         name='og:description'

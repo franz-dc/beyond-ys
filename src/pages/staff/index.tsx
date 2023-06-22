@@ -103,6 +103,7 @@ const StaffList: FC<StaffListProps> = ({
   return (
     <MainLayout title='Staff'>
       <Head>
+        <meta name='description' content={description} />
         <meta name='og:title' content='Staff' />
         <meta name='og:description' content={description} />
       </Head>

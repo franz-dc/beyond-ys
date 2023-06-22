@@ -220,6 +220,7 @@ const GamePage = ({
   return (
     <MainLayout title={name}>
       <Head>
+        <meta name='description' content={description} />
         <meta name='og:title' content={name} />
         <meta name='og:description' content={description} />
         {!!(coverUrl || bannerUrl) && (
