@@ -440,7 +440,6 @@ const GamePage = ({
                     name={foundCharacterCache.name}
                     accentColor={foundCharacterCache.accentColor}
                     image={foundCharacterImageUrl}
-                    imageDirection={foundCharacterCache.imageDirection}
                     isSpoiler={characterSpoilerIds.includes(characterId)}
                     isSpoilerShown={isCharacterSpoilersShown}
                     sx={{

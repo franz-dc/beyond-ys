@@ -14,7 +14,6 @@ export interface CharacterItemProps
   name: string;
   accentColor: string;
   image?: string;
-  imageDirection?: 'left' | 'right';
   isSpoiler?: boolean;
   isSpoilerShown?: boolean;
   BoxProps?: BoxProps;
@@ -25,7 +24,6 @@ const CharacterItem: FC<CharacterItemProps> = ({
   name,
   accentColor,
   image,
-  imageDirection = 'left',
   isSpoiler,
   isSpoilerShown,
   BoxProps,
@@ -113,7 +111,6 @@ const CharacterItem: FC<CharacterItemProps> = ({
               right: 0,
               width: 100,
               height: 100,
-              // mt: '-36px',
             }}
           >
             <ImageWithFallback
@@ -122,9 +119,7 @@ const CharacterItem: FC<CharacterItemProps> = ({
               height={100}
               alt={name}
               style={{
-                borderBottomLeftRadius: imageDirection === 'right' ? 8 : 0,
-                borderBottomRightRadius: imageDirection === 'left' ? 8 : 0,
-                transform: imageDirection === 'right' ? 'scaleX(-1)' : 'none',
+                borderBottomRightRadius: 8,
                 filter: isSpoiler && !isSpoilerShown ? 'brightness(0)' : 'none',
                 transition: 'filter 0.1s ease-in-out',
               }}
