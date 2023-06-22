@@ -104,6 +104,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   const [timeLastUpdated, setTimeLastUpdated] = useState(new Date().getTime());
   const [lastRecordedCurrentTime, setLastRecordedCurrentTime] = useState(0);
 
+  // controls state
+  const [isShuffleOn, setIsShuffleOn] = useState(false);
+  const [repeatMode, setRepeatMode] = useState<'none' | 'one' | 'all'>('none');
+
   const {
     playerDetails: { currentTime, duration, volume, state },
     actions: { playVideo, pauseVideo, seekTo, setVolume },
@@ -112,12 +116,12 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     type: 'video',
     options: {
       origin: process.env.NEXT_PUBLIC_SITE_URL,
+      autoplay: true,
     },
     events: {
       onReady: () => {
         setIsReady(true);
         setWasPlaying(true);
-        playVideo();
       },
       onStateChange: (e) => {
         const currentTime = e.target.getCurrentTime();
@@ -160,8 +164,25 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   // the video was playing before buffering
   const [wasPlaying, setWasPlaying] = useState(false);
 
-  const [isShuffleOn, setIsShuffleOn] = useState(false);
-  const [repeatMode, setRepeatMode] = useState<'none' | 'one' | 'all'>('none');
+  // remove old embeds when a new one is loaded
+  const [lastYoutubeId, setLastYoutubeId] = useState(youtubeId);
+
+  useEffect(() => {
+    if (youtubeId === lastYoutubeId) return;
+    // remove iframe
+    document.getElementById(`youtube-player-${lastYoutubeId}`)?.remove();
+    // removed iframe becomes a div so we remove that too
+    document.getElementById(`youtube-player-${lastYoutubeId}`)?.remove();
+    setLastYoutubeId(youtubeId);
+    setIsReady(false);
+  }, [lastYoutubeId, youtubeId]);
+
+  // loop video if repeatMode is 'one'
+  useEffect(() => {
+    if (repeatMode !== 'one') return;
+    if (state !== PlayerState.ENDED) return;
+    playVideo();
+  }, [playVideo, repeatMode, state]);
 
   // update actualCurrentTime when currentTime changes
   // currentTime does not update in real time so we use this to keep track of
@@ -230,10 +251,9 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     if (!('mediaSession' in navigator)) return;
 
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: 'test',
+      title,
       artist: artists.map((artist) => artist.name).join(', '),
-      // TODO: add album name
-      // album: albumName,
+      album: albumName,
       // TODO: add album art
       // artwork: [],
     });
@@ -244,6 +264,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     });
 
     navigator.mediaSession.setActionHandler('pause', () => {
+      alert('pause');
       setWasPlaying(false);
       pauseVideo();
     });
@@ -399,7 +420,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           mt: -1,
           mb: {
             xs: 0,
-            md: 1,
+            md: 0.5,
           },
         }}
       >

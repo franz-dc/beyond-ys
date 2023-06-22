@@ -150,7 +150,7 @@ const CharacterList: FC<CharacterListProps> = ({
                 }
 
                 return (
-                  <Box key={firstLetter} sx={{ mb: 4 }}>
+                  <Box key={firstLetter} sx={{ mb: 1 }}>
                     <Typography variant='h3' component='h2' sx={{ mb: 2 }}>
                       {firstLetter}
                     </Typography>
@@ -163,6 +163,7 @@ const CharacterList: FC<CharacterListProps> = ({
                             category={category}
                             accentColor='#4e5051'
                             image={characterAvatarUrls[id]}
+                            sx={{ mb: 3 }}
                           />
                         </Grid>
                       ))}

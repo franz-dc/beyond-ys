@@ -139,7 +139,7 @@ const Footer = () => {
             mb: !!nowPlaying
               ? {
                   xs: '89px',
-                  md: '97px',
+                  md: '93px',
                 }
               : 0,
             transition: 'margin-bottom 0.3s ease',
