@@ -434,7 +434,7 @@ const GamePage = ({
               const foundCharacterImageUrl = characterImageUrls?.[characterId];
 
               return (
-                <Grid item xs={12} xs2={6} sm={4} md={3} key={characterId}>
+                <Grid item xs={12} xs2={6} sm2={4} md={3} key={characterId}>
                   <CharacterItem
                     id={characterId}
                     name={foundCharacterCache.name}

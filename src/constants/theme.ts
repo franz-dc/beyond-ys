@@ -12,6 +12,7 @@ declare module '@mui/material/styles' {
   }
   interface BreakpointOverrides {
     xs2: true;
+    sm2: true;
   }
 }
 
@@ -28,6 +29,7 @@ export const theme = createTheme({
       xs: 0,
       xs2: 450,
       sm: 600,
+      sm2: 670,
       md: 900,
       lg: 1200,
       xl: 1536,

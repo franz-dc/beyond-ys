@@ -2,8 +2,8 @@ import { FC } from 'react';
 
 import { Box, ButtonBase, Typography } from '@mui/material';
 import type { BoxProps, ButtonBaseProps } from '@mui/material';
+import { MdNoAccounts } from 'react-icons/md';
 
-import FallbackImg from '../../../public/assets/character-avatar-fallback.webp';
 import ImageWithFallback from '../ImageWithFallback';
 import Link from '../Link';
 import type { LinkProps } from '../Link';
@@ -105,32 +105,53 @@ const CharacterItem: FC<CharacterItemProps> = ({
             {name}
           </Typography>
         </Box>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: -36,
-            right: 0,
-            width: 100,
-            height: 100,
-            // mt: '-36px',
-          }}
-        >
-          <ImageWithFallback
-            src={image || FallbackImg}
-            fallback={FallbackImg}
-            width={100}
-            height={100}
-            alt={name}
-            style={{
-              borderBottomLeftRadius: imageDirection === 'right' ? 8 : 0,
-              borderBottomRightRadius: imageDirection === 'left' ? 8 : 0,
-              transform: imageDirection === 'right' ? 'scaleX(-1)' : 'none',
-              filter: isSpoiler && !isSpoilerShown ? 'brightness(0)' : 'none',
-              transition: 'filter 0.1s ease-in-out',
+        {image ? (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: -36,
+              right: 0,
+              width: 100,
+              height: 100,
+              // mt: '-36px',
             }}
-            unoptimized
-          />
-        </Box>
+          >
+            <ImageWithFallback
+              src={image}
+              width={100}
+              height={100}
+              alt={name}
+              style={{
+                borderBottomLeftRadius: imageDirection === 'right' ? 8 : 0,
+                borderBottomRightRadius: imageDirection === 'left' ? 8 : 0,
+                transform: imageDirection === 'right' ? 'scaleX(-1)' : 'none',
+                filter: isSpoiler && !isSpoilerShown ? 'brightness(0)' : 'none',
+                transition: 'filter 0.1s ease-in-out',
+              }}
+              unoptimized
+            />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              right: 8,
+              width: 56,
+              height: 56,
+            }}
+          >
+            <Box
+              component={MdNoAccounts}
+              sx={{
+                width: '100%',
+                height: '100%',
+                color: 'divider',
+              }}
+            />
+          </Box>
+        )}
       </Box>
     </ButtonBase>
   );
