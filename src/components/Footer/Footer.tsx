@@ -39,8 +39,8 @@ const Footer = () => {
       type: 'email',
     },
     {
-      name: 'GitHub: Franz DC',
-      href: 'https://github.com/franz-dc',
+      name: 'GitHub: Beyond Ys',
+      href: 'https://github.com/franz-dc/beyond-ys',
       icon: SiGithub,
       type: 'link',
     },
