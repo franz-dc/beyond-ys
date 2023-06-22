@@ -30,6 +30,7 @@ export type CharacterSchema = z.infer<typeof characterSchema>;
 
 export const characterCacheSchema = characterSchema.pick({
   name: true,
+  category: true,
   accentColor: true,
   imageDirection: true,
 });

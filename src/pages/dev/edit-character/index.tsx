@@ -104,6 +104,7 @@ const EditCharacter = () => {
   const handleSave = async ({
     id,
     name,
+    category,
     imageDirection,
     accentColor,
     ...rest
@@ -117,6 +118,7 @@ const EditCharacter = () => {
       // update the character doc
       batch.update(characterDocRef, {
         name,
+        category,
         imageDirection,
         accentColor,
         // imageGalleryPaths: [],
@@ -129,11 +131,13 @@ const EditCharacter = () => {
       // update the characters cache
       if (
         currentCharacterData?.name !== name ||
+        currentCharacterData?.category !== category ||
         currentCharacterData?.imageDirection !== imageDirection ||
         currentCharacterData?.accentColor !== accentColor
       ) {
         const newCharacterCacheData = {
           name,
+          category,
           imageDirection,
           accentColor,
         };
@@ -158,6 +162,7 @@ const EditCharacter = () => {
         ...prev,
         [id]: {
           name,
+          category,
           imageDirection,
           accentColor,
         },

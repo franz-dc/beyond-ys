@@ -24,8 +24,8 @@ const CharacterItem: FC<CharacterItemProps> = ({
   name,
   accentColor,
   image,
-  isSpoiler,
-  isSpoilerShown,
+  isSpoiler = false,
+  isSpoilerShown = true,
   BoxProps,
   ...rest
 }) => {

@@ -443,9 +443,7 @@ const GamePage = ({
                     image={foundCharacterImageUrl}
                     isSpoiler={characterSpoilerIds.includes(characterId)}
                     isSpoilerShown={isCharacterSpoilersShown}
-                    sx={{
-                      mb: 3,
-                    }}
+                    sx={{ mb: 3 }}
                   />
                 </Grid>
               );

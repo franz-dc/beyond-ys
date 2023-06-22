@@ -94,6 +94,7 @@ const AddCharacter = () => {
   const handleSave = async ({
     id,
     name,
+    category,
     imageDirection,
     accentColor,
     ...rest
@@ -112,6 +113,7 @@ const AddCharacter = () => {
       // create the character doc and fill the rest with blank data
       batch.set(characterDocRef, {
         name,
+        category,
         imageDirection,
         accentColor,
         imageGalleryPaths: [],
@@ -125,6 +127,7 @@ const AddCharacter = () => {
       batch.update(doc(cacheCollection, 'characters'), {
         [id]: {
           name,
+          category,
           imageDirection,
           accentColor,
         },
@@ -137,6 +140,7 @@ const AddCharacter = () => {
         ...prev,
         [id]: {
           name,
+          category,
           imageDirection,
           accentColor,
         },
