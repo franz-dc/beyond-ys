@@ -339,6 +339,52 @@ const CharacterInfo = ({
                           />
                         </ButtonBase>
                       ))}
+                      {extraImages[3] && (
+                        <ButtonBase
+                          focusRipple
+                          sx={{
+                            position: 'relative',
+                            width: 39, // (180 - 8 * 3) / 4
+                            height: 56,
+                            borderRadius: 1,
+                          }}
+                        >
+                          <Box
+                            component='img'
+                            src={extraImageUrls[extraImages[3].path]}
+                            sx={{
+                              width: 39,
+                              height: 56,
+                              objectFit: 'cover',
+                              borderRadius: 1,
+                              backgroundColor: 'background.paper',
+                            }}
+                            onClick={() => setPhotoIndex(mainImageUrl ? 4 : 3)}
+                          />
+                          {extraImages.length > 4 ||
+                            (true && (
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  width: '100%',
+                                  height: '100%',
+                                  borderRadius: 1,
+                                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                  backdropFilter: 'blur(2px)',
+                                }}
+                              >
+                                <Typography fontSize={14} fontWeight='medium'>
+                                  +{extraImages.length - 4}
+                                </Typography>
+                              </Box>
+                            ))}
+                        </ButtonBase>
+                      )}
                     </Stack>
                   </Box>
                 </Stack>
