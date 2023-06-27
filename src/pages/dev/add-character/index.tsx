@@ -23,6 +23,7 @@ import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
 import { cacheCollection, charactersCollection, db } from '~/configs';
+import { COUNTRIES } from '~/constants';
 import { CharacterCacheSchema, characterSchema } from '~/schemas';
 
 const AddCharacter = () => {
@@ -62,7 +63,7 @@ const AddCharacter = () => {
 
   const schema = characterSchema
     .omit({
-      imageGalleryPaths: true,
+      extraImages: true,
       gameIds: true,
       cachedGameNames: true,
       updatedAt: true,
@@ -143,7 +144,7 @@ const AddCharacter = () => {
         category,
         imageDirection,
         accentColor,
-        imageGalleryPaths: [],
+        extraImages: [],
         gameIds: [],
         cachedGameNames: {},
         updatedAt: serverTimestamp(),
@@ -332,16 +333,10 @@ const AddCharacter = () => {
                 <AutocompleteElement
                   name={`voiceActors.${idx}.language`}
                   label={`Voice Actor ${idx + 1} Language`}
-                  options={[
-                    'Chinese',
-                    'English',
-                    'French',
-                    'Japanese',
-                    'Korean',
-                  ]}
+                  options={COUNTRIES.map(({ language }) => language)}
                   autocompleteProps={{
                     fullWidth: true,
-                    freeSolo: true,
+                    // freeSolo: true,
                   }}
                   textFieldProps={{
                     margin: 'normal',

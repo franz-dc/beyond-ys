@@ -35,6 +35,7 @@ import {
   db,
   gamesCollection,
 } from '~/configs';
+import { COUNTRIES } from '~/constants';
 import {
   CharacterCacheSchema,
   CharacterSchema,
@@ -98,14 +99,13 @@ const EditCharacter = () => {
 
   const schema = characterSchema
     .omit({
-      imageGalleryPaths: true,
+      extraImages: true,
       gameIds: true,
       cachedGameNames: true,
       updatedAt: true,
     })
     .extend({
       id: z.string().nullable(),
-      name: z.string().min(1),
       gameIds: z.object({ value: z.string().min(1) }).array(),
     });
 
@@ -182,8 +182,6 @@ const EditCharacter = () => {
         imageDirection,
         accentColor,
         gameIds: formattedGameIds,
-        // imageGalleryPaths: [],
-        // cachedGameNames: {},
         updatedAt: serverTimestamp(),
         ...rest,
       });
@@ -225,11 +223,17 @@ const EditCharacter = () => {
           category,
           imageDirection,
           accentColor,
-          gameIds: formattedGameIds,
         },
       }));
 
-      reset();
+      setCurrentCharacterData((prev) => ({
+        ...prev!,
+        name,
+        category,
+        imageDirection,
+        accentColor,
+        gameIds: formattedGameIds,
+      }));
 
       enqueueSnackbar('Character edited.', { variant: 'success' });
     } catch (err) {
@@ -245,13 +249,8 @@ const EditCharacter = () => {
       const character = characterSnap.data();
 
       if (character) {
-        const {
-          imageGalleryPaths,
-          gameIds,
-          cachedGameNames,
-          updatedAt,
-          ...rest
-        } = character;
+        const { extraImages, gameIds, cachedGameNames, updatedAt, ...rest } =
+          character;
 
         setCurrentCharacterData(character);
         reset({
@@ -269,7 +268,7 @@ const EditCharacter = () => {
           descriptionSourceUrl: '',
           containsSpoilers: false,
           accentColor: '#000000',
-          imageGalleryPaths: [],
+          extraImages: [],
           imageDirection: 'left',
           voiceActors: [],
           updatedAt: null,
@@ -482,16 +481,10 @@ const EditCharacter = () => {
                     <AutocompleteElement
                       name={`voiceActors.${idx}.language`}
                       label={`Voice Actor ${idx + 1} Language`}
-                      options={[
-                        'Chinese',
-                        'English',
-                        'French',
-                        'Japanese',
-                        'Korean',
-                      ]}
+                      options={COUNTRIES.map(({ language }) => language)}
                       autocompleteProps={{
                         fullWidth: true,
-                        freeSolo: true,
+                        // freeSolo: true,
                       }}
                       textFieldProps={{
                         margin: 'normal',
