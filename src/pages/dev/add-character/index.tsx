@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Paper, Typography } from '@mui/material';
+import { Button, Paper, Stack, Typography } from '@mui/material';
 import {
   doc,
   onSnapshot,
@@ -15,6 +15,7 @@ import {
   CheckboxElement,
   FormContainer,
   TextFieldElement,
+  useFieldArray,
   useForm,
 } from 'react-hook-form-mui';
 import slugify from 'slugify';
@@ -38,6 +39,21 @@ const AddCharacter = () => {
       (docSnap) => {
         setCharactersCache(docSnap.data() || {});
         setIsLoadingCharacterCache(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
+  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(cacheCollection, 'staffNames'),
+      (docSnap) => {
+        setStaffNames(docSnap.data() || {});
+        setIsLoadingStaffNames(false);
       }
     );
 
@@ -83,6 +99,7 @@ const AddCharacter = () => {
   });
 
   const {
+    control,
     watch,
     getValues,
     setValue,
@@ -90,6 +107,16 @@ const AddCharacter = () => {
     formState: { isSubmitting },
     handleSubmit,
   } = formContext;
+
+  const {
+    fields: voiceActors,
+    append: appendVoiceActor,
+    remove: removeVoiceActor,
+    swap: swapVoiceActor,
+  } = useFieldArray({
+    control,
+    name: 'voiceActors',
+  });
 
   const handleSave = async ({
     id,
@@ -268,6 +295,115 @@ const AddCharacter = () => {
             fullWidth
             margin='normal'
           />
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>Voice Actors</Typography>
+          {voiceActors.length === 0 && (
+            <Typography color='warning.main' sx={{ mb: 2 }}>
+              No voice actors added yet.
+            </Typography>
+          )}
+          {voiceActors.map((voiceActor, idx) => (
+            <Paper
+              key={voiceActor.id}
+              sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
+            >
+              <Stack direction='column' sx={{ mt: -1 }}>
+                <AutocompleteElement
+                  name={`voiceActors.${idx}.staffId`}
+                  label={`Voice Actor ${idx + 1}`}
+                  options={Object.entries(staffNames)
+                    .map(([id, label]) => ({
+                      id,
+                      label,
+                    }))
+                    .filter(
+                      ({ id }) =>
+                        // remove voiceActors that are already selected
+                        !voiceActors.some((g) => g.staffId === id) ||
+                        voiceActor.staffId === id
+                    )}
+                  loading={isLoadingStaffNames}
+                  autocompleteProps={{ fullWidth: true }}
+                  textFieldProps={{ margin: 'normal' }}
+                  matchId
+                  required
+                />
+                <AutocompleteElement
+                  name={`voiceActors.${idx}.language`}
+                  label={`Voice Actor ${idx + 1} Language`}
+                  options={[
+                    'Chinese',
+                    'English',
+                    'French',
+                    'Japanese',
+                    'Korean',
+                  ]}
+                  autocompleteProps={{
+                    fullWidth: true,
+                    freeSolo: true,
+                  }}
+                  textFieldProps={{
+                    margin: 'normal',
+                  }}
+                  required
+                />
+                <TextFieldElement
+                  name={`voiceActors.${idx}.description`}
+                  label={`Voice Actor ${idx + 1} Description`}
+                  fullWidth
+                  margin='normal'
+                />
+                <Stack direction='row' spacing={2} sx={{ mt: 1 }}>
+                  <Button
+                    variant='outlined'
+                    onClick={() => removeVoiceActor(idx)}
+                    fullWidth
+                  >
+                    Remove
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === 0) return;
+                      swapVoiceActor(idx, idx - 1);
+                    }}
+                    disabled={idx === 0}
+                    fullWidth
+                  >
+                    Up
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === voiceActors.length - 1) return;
+                      swapVoiceActor(idx, idx + 1);
+                    }}
+                    disabled={idx === voiceActors.length - 1}
+                    fullWidth
+                  >
+                    Down
+                  </Button>
+                </Stack>
+              </Stack>
+            </Paper>
+          ))}
+          <LoadingButton
+            variant='outlined'
+            loading={isLoadingStaffNames}
+            onClick={() =>
+              appendVoiceActor({
+                staffId: '',
+                language: '',
+                description: '',
+              })
+            }
+            fullWidth
+            disabled={voiceActors.length >= Object.entries(staffNames).length}
+            sx={{ mt: 1 }}
+          >
+            Add Voice Actor
+          </LoadingButton>
         </Paper>
         <LoadingButton
           type='submit'
