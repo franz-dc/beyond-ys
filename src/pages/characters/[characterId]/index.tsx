@@ -15,9 +15,10 @@ import Head from 'next/head';
 import { ReactCountryFlag } from 'react-country-flag';
 import { MdNoAccounts } from 'react-icons/md';
 import { Lightbox } from 'yet-another-react-lightbox';
-import { Captions } from 'yet-another-react-lightbox/plugins';
+import { Captions, Counter } from 'yet-another-react-lightbox/plugins';
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
+import 'yet-another-react-lightbox/plugins/counter.css';
 
 import { Link, MainLayout } from '~/components';
 import { cacheCollection, charactersCollection, storage } from '~/configs';
@@ -360,15 +361,18 @@ const CharacterInfo = ({
                       backdropFilter: 'blur(4px)',
                     },
                   }}
-                  plugins={[Captions]}
+                  plugins={[Captions, Counter]}
+                  counter={{
+                    container: { style: { top: 'unset', bottom: 0 } },
+                  }}
                   slides={[
                     ...(mainImageUrl
-                      ? [{ src: mainImageUrl, alt: name, description: name }]
+                      ? [{ src: mainImageUrl, alt: name, title: name }]
                       : []),
                     ...extraImages.map(({ path, caption }, idx) => ({
                       src: extraImageUrls[path],
                       alt: caption || `Image ${idx + 1}`,
-                      description: caption || `Image ${idx + 1}`,
+                      title: caption || `Image ${idx + 1}`,
                     })),
                   ]}
                 />

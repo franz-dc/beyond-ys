@@ -82,6 +82,16 @@ export const theme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '& .yarl__slide_image': {
+          maxHeight: 'calc(100vh - 140px) !important',
+        },
+        '& .yarl__slide_captions_container': {
+          background: 'none !important',
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         root: {
