@@ -27,7 +27,11 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
       <title>{title ? `${title} - ${SITE_NAME}` : SITE_NAME}</title>
     </Head>
     <Navbar />
-    <Container component='main' maxWidth='md' sx={{ flexGrow: 1 }}>
+    <Container
+      component='main'
+      maxWidth='md'
+      sx={{ flexGrow: 1, position: 'relative' }}
+    >
       {children}
     </Container>
     <Footer />
