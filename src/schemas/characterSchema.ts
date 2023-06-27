@@ -14,12 +14,21 @@ export const characterSchema = z.object({
     },
     { message: 'Accent color must be a valid hex color code' }
   ),
-  imageGalleryPaths: z.string().min(1).array(),
+  extraImages: z
+    .object({
+      path: z.string().min(1),
+      caption: z.string(),
+    })
+    .array(),
   imageDirection: z.enum(['left', 'right']),
+  voiceActors: z
+    .object({
+      staffId: z.string().min(1),
+      language: z.string().min(1),
+      description: z.string(),
+    })
+    .array(),
   updatedAt: z.any(),
-  // for getting the download url from firebase storage
-  mainImageUrl: z.string().optional(),
-  imageGalleryUrls: z.string().optional(),
   // not to be edited directly
   // for reducing the amount of reads
   gameIds: z.string().min(1).array(),
