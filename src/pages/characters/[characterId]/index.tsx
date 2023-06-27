@@ -344,6 +344,7 @@ const CharacterInfo = ({
                 <Lightbox
                   open={photoIndex >= 0}
                   close={() => setPhotoIndex(-1)}
+                  index={photoIndex}
                   animation={{
                     fade: 220,
                     swipe: 220,
