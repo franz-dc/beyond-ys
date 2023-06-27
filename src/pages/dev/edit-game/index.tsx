@@ -13,6 +13,7 @@ import { formatISO } from 'date-fns';
 import {
   arrayRemove,
   arrayUnion,
+  deleteField,
   doc,
   documentId,
   getDoc,
@@ -313,6 +314,7 @@ const EditGame = () => {
         removedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayRemove(id),
+            [`cachedGameNames.${id}`]: deleteField(),
           });
 
           // remove the character from the game's cachedCharacters
@@ -329,6 +331,7 @@ const EditGame = () => {
         addedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayUnion(id),
+            [`cachedGameNames.${id}`]: name,
           });
 
           // add the character to the game's cachedCharacters
@@ -336,6 +339,25 @@ const EditGame = () => {
           if (foundCharacterCache) {
             newData.cachedCharacters[characterId] = foundCharacterCache;
           }
+        });
+      }
+
+      if (currentGameData?.name !== name) {
+        // 3. retained characters
+        const retainedCharacterIds = formattedCharacterIds.filter((id) =>
+          currentGameData?.characterIds.includes(id)
+        );
+
+        // update all character docs that depend on this game
+        retainedCharacterIds.forEach((characterId) => {
+          batch.update(doc(charactersCollection, characterId), {
+            [`cachedGameNames.${id}`]: name,
+          });
+        });
+
+        // update the gameName cache
+        batch.update(doc(cacheCollection, 'game'), {
+          [id]: name,
         });
       }
 

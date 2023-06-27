@@ -319,6 +319,7 @@ const AddGame = () => {
       formattedCharacterIds.forEach((characterId) => {
         batch.update(doc(charactersCollection, characterId), {
           gameIds: arrayUnion(id),
+          [`cachedGameNames.${id}`]: name,
         });
       });
 
