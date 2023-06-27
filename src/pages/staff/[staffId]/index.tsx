@@ -272,31 +272,33 @@ const StaffInfo = ({
           </Grid>
         </Grid>
       </Box>
-      <Box component='section' sx={{ mb: 4 }}>
-        <Typography>{description}</Typography>
-        {descriptionSourceName && (
-          <Typography color='text.secondary' sx={{ mt: 2 }}>
-            Source:{' '}
-            {descriptionSourceUrl ? (
-              <Link
-                href={descriptionSourceUrl}
-                target='_blank'
-                rel='noopener noreferrer'
-                sx={{
-                  color: 'text.secondary',
-                  '&:hover, &:focus': {
-                    textDecoration: 'underline',
-                  },
-                }}
-              >
-                {descriptionSourceName}
-              </Link>
-            ) : (
-              descriptionSourceName
-            )}
-          </Typography>
-        )}
-      </Box>
+      {description && (
+        <Box component='section' sx={{ mb: 4 }}>
+          <Typography>{description}</Typography>
+          {descriptionSourceName && (
+            <Typography color='text.secondary' sx={{ mt: 2 }}>
+              Source:{' '}
+              {descriptionSourceUrl ? (
+                <Link
+                  href={descriptionSourceUrl}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  sx={{
+                    color: 'text.secondary',
+                    '&:hover, &:focus': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                >
+                  {descriptionSourceName}
+                </Link>
+              ) : (
+                descriptionSourceName
+              )}
+            </Typography>
+          )}
+        </Box>
+      )}
       {games.length > 0 && (
         <Box component='section' sx={{ mb: 4 }}>
           <Typography component='h2' variant='h2' gutterBottom>
