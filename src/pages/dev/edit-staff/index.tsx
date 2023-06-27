@@ -401,6 +401,7 @@ const EditStaff = () => {
                         'Public Relations',
                         'Scenario Writer',
                         'Supervisor',
+                        'Voice Actor',
                       ]}
                       multiple
                       autocompleteProps={{
