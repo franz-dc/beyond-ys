@@ -244,14 +244,24 @@ const GamePage = ({
             src={bannerUrl}
             alt='game banner'
             sx={{
-              width: '100%',
+              width: {
+                xs: 'calc(100% + 32px)',
+                sm: '100%',
+              },
               height: {
                 xs: 120,
                 sm: 160,
                 md: 200,
               },
+              mx: {
+                xs: -2,
+                sm: 0,
+              },
               objectFit: 'cover',
-              borderRadius: 4,
+              borderRadius: {
+                xs: 0,
+                sm: 4,
+              },
               backgroundColor: 'headerBackground',
               color: 'headerBackground',
             }}
