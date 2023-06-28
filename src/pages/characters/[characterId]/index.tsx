@@ -310,7 +310,7 @@ const CharacterInfo = ({
                         >
                           <Box
                             component='img'
-                            src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${extraImages[3].path}`}
+                            src={`${CLOUD_STORAGE_URL}/${extraImages[3].path}`}
                             sx={{
                               width: 39,
                               height: 56,
@@ -375,7 +375,7 @@ const CharacterInfo = ({
                       ? [{ src: mainImageUrl, alt: name, title: name }]
                       : []),
                     ...extraImages.map(({ path, caption }, idx) => ({
-                      src: `${CLOUD_STORAGE_URL}/character-gallery/${id}/${path}`,
+                      src: `${CLOUD_STORAGE_URL}/${path}`,
                       alt: caption || `Image ${idx + 1}`,
                       title: caption || `Image ${idx + 1}`,
                     })),
