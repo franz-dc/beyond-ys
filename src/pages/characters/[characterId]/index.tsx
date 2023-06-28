@@ -4,6 +4,7 @@ import {
   Avatar,
   Box,
   ButtonBase,
+  Collapse,
   Grid,
   Stack,
   Typography,
@@ -129,6 +130,8 @@ const CharacterInfo = ({
     .filter((g) => !!g.name);
 
   const [photoIndex, setPhotoIndex] = useState(-1);
+
+  const [isGamesExpanded, setIsGamesExpanded] = useState(false);
 
   return (
     <MainLayout title={name}>
@@ -473,37 +476,89 @@ const CharacterInfo = ({
                 <Typography variant='h2' sx={{ mb: 2 }}>
                   Game Appearances
                 </Typography>
-                <Grid container spacing={1}>
-                  {formattedGames.map((game) => (
-                    <Grid item key={game.id} xs={12} sm2={6}>
-                      <ButtonBase
-                        focusRipple
-                        component={Link}
-                        href={`/games/${game.id}`}
+                <Stack direction='column' spacing={1}>
+                  {formattedGames.slice(0, 10).map((game) => (
+                    <ButtonBase
+                      key={game.id}
+                      focusRipple
+                      component={Link}
+                      href={`/games/${game.id}`}
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Box
                         sx={{
+                          display: 'flex',
+                          alignItems: 'center',
                           width: '100%',
                           height: '100%',
+                          px: 2,
+                          py: 1.5,
+                          backgroundColor: 'background.paper',
                           borderRadius: 2,
                         }}
                       >
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            width: '100%',
-                            height: '100%',
-                            px: 2,
-                            py: 1.5,
-                            backgroundColor: 'background.paper',
-                            borderRadius: 2,
-                          }}
-                        >
-                          <Typography>{game.name}</Typography>
-                        </Box>
-                      </ButtonBase>
-                    </Grid>
+                        <Typography>{game.name}</Typography>
+                      </Box>
+                    </ButtonBase>
                   ))}
-                </Grid>
+                </Stack>
+                {formattedGames.length > 10 && (
+                  <>
+                    <Collapse in={isGamesExpanded}>
+                      <Box sx={{ mt: 1 }}>
+                        <Stack direction='column' spacing={1}>
+                          {formattedGames.slice(10).map((game) => (
+                            <ButtonBase
+                              key={game.id}
+                              focusRipple
+                              component={Link}
+                              href={`/games/${game.id}`}
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: 2,
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  width: '100%',
+                                  height: '100%',
+                                  px: 2,
+                                  py: 1.5,
+                                  backgroundColor: 'background.paper',
+                                  borderRadius: 2,
+                                }}
+                              >
+                                <Typography>{game.name}</Typography>
+                              </Box>
+                            </ButtonBase>
+                          ))}
+                        </Stack>
+                      </Box>
+                    </Collapse>
+                    <ButtonBase
+                      onClick={() => {
+                        setIsGamesExpanded((prev) => !prev);
+                      }}
+                      focusRipple
+                      sx={{
+                        mt: 1,
+                      }}
+                    >
+                      <Typography color='text.secondary' fontSize={14}>
+                        {isGamesExpanded
+                          ? 'Show less'
+                          : `Show all (+${formattedGames.length - 10})`}
+                      </Typography>
+                    </ButtonBase>
+                  </>
+                )}
               </Box>
             )}
             {voiceActors.length > 0 && (
