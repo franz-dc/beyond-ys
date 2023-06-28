@@ -11,9 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
-import Head from 'next/head';
 
 import {
   CharacterItem,
@@ -21,9 +19,10 @@ import {
   MusicItem,
   StoryTimeline,
 } from '~/components';
-import { cacheCollection, gamesCollection, storage } from '~/configs';
+import { cacheCollection, gamesCollection } from '~/configs';
 import {
   CATEGORIES_WITH_TIMELINE,
+  CLOUD_STORAGE_URL,
   // GAME_PLATFORMS,
 } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
@@ -31,12 +30,8 @@ import { GameSchema } from '~/schemas';
 
 type ExtendedGameSchema = GameSchema & {
   id: string;
-  bannerUrl?: string;
-  coverUrl?: string;
-  characterImageUrls?: Record<string, string>;
   staffNames: Record<string, string>;
   albumNames: Record<string, string>;
-  albumArtUrls: Record<string, string>;
 };
 
 export const getServerSideProps: GetServerSideProps<
@@ -58,8 +53,6 @@ export const getServerSideProps: GetServerSideProps<
     ...docSnap.data(),
     id: gameId,
     updatedAt: docSnap.data().updatedAt.toMillis(),
-    characterImageUrls: {},
-    albumArtUrls: {},
     staffNames: {},
     albumNames: {},
     // convert cachedSoundtracks updatedAt to milliseconds
@@ -75,47 +68,11 @@ export const getServerSideProps: GetServerSideProps<
     ),
   };
 
-  const soundtrackAlbums = [
-    ...new Set(Object.values(data.cachedSoundtracks).map((s) => s.albumId)),
-  ].filter(Boolean);
-
   // doing it this way to parallelize the requests and save time
-  const res = await Promise.allSettled([
-    getDownloadURL(ref(storage, `game-banners/${gameId}`)),
-    getDownloadURL(ref(storage, `game-covers/${gameId}`)),
+  const [staffNamesRes, albumNamesRes] = await Promise.allSettled([
     getDoc(doc(cacheCollection, 'staffNames')),
     getDoc(doc(cacheCollection, 'albumNames')),
-    ...data.characterIds.map((characterId) =>
-      getDownloadURL(ref(storage, `character-avatars/${characterId}`))
-    ),
-    ...soundtrackAlbums.map((albumId) =>
-      getDownloadURL(ref(storage, `album-arts/${albumId}`))
-    ),
   ]);
-
-  const characterIdsLength = data.characterIds.length;
-  const soundtrackAlbumsLength = soundtrackAlbums.length;
-
-  const bannerUrlRes = res[0];
-  const coverUrlRes = res[1];
-  const staffNamesRes = res[2];
-  const albumNamesRes = res[3];
-  const characterImageUrlsRes = res.slice(
-    4,
-    4 + characterIdsLength
-  ) as PromiseFulfilledResult<string>[];
-  const soundtrackAlbumImageUrlsRes = res.slice(
-    4 + characterIdsLength,
-    4 + characterIdsLength + soundtrackAlbumsLength
-  ) as PromiseFulfilledResult<string>[];
-
-  if (bannerUrlRes.status === 'fulfilled') {
-    data.bannerUrl = bannerUrlRes.value;
-  }
-
-  if (coverUrlRes.status === 'fulfilled') {
-    data.coverUrl = coverUrlRes.value;
-  }
 
   if (staffNamesRes.status === 'fulfilled') {
     data.staffNames = staffNamesRes.value.data() || {};
@@ -125,19 +82,6 @@ export const getServerSideProps: GetServerSideProps<
     data.albumNames = albumNamesRes.value.data() || {};
   }
 
-  characterImageUrlsRes.forEach((characterImageUrlRes, idx) => {
-    if (characterImageUrlRes.status === 'fulfilled') {
-      data.characterImageUrls![data.characterIds[idx]] =
-        characterImageUrlRes.value;
-    }
-  });
-
-  soundtrackAlbumImageUrlsRes.forEach((albumImageUrlRes, idx) => {
-    if (albumImageUrlRes.status === 'fulfilled') {
-      data.albumArtUrls![soundtrackAlbums[idx]] = albumImageUrlRes.value;
-    }
-  });
-
   return { props: data };
 };
 
@@ -145,17 +89,13 @@ const GamePage = ({
   id,
   name,
   category,
-  bannerUrl,
-  coverUrl,
   // platforms,
   // releaseDate: releaseDateRaw,
   description = 'No description available.',
   characterIds,
   characterSpoilerIds,
   cachedCharacters,
-  characterImageUrls,
   soundtrackIds,
-  albumArtUrls,
   cachedSoundtracks,
   staffNames,
   albumNames,
@@ -218,15 +158,11 @@ const GamePage = ({
   const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
 
   return (
-    <MainLayout title={name}>
-      <Head>
-        <meta name='description' content={description} />
-        <meta name='og:title' content={name} />
-        <meta name='og:description' content={description} />
-        {!!(coverUrl || bannerUrl) && (
-          <meta name='og:image' content={coverUrl || bannerUrl} />
-        )}
-      </Head>
+    <MainLayout
+      title={name}
+      description={description}
+      image={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
+    >
       <Box
         sx={{
           height: {
@@ -238,35 +174,33 @@ const GamePage = ({
           backgroundColor: 'headerBackground',
         }}
       >
-        {bannerUrl && (
-          <Box
-            component='img'
-            src={bannerUrl}
-            alt='game banner'
-            sx={{
-              width: {
-                xs: 'calc(100% + 32px)',
-                sm: '100%',
-              },
-              height: {
-                xs: 120,
-                sm: 160,
-                md: 200,
-              },
-              mx: {
-                xs: -2,
-                sm: 0,
-              },
-              objectFit: 'cover',
-              borderRadius: {
-                xs: 0,
-                sm: 4,
-              },
-              backgroundColor: 'headerBackground',
-              color: 'headerBackground',
-            }}
-          />
-        )}
+        <Box
+          component='img'
+          src={`${CLOUD_STORAGE_URL}/game-banners/${id}`}
+          alt='game banner'
+          sx={{
+            width: {
+              xs: 'calc(100% + 32px)',
+              sm: '100%',
+            },
+            height: {
+              xs: 120,
+              sm: 160,
+              md: 200,
+            },
+            mx: {
+              xs: -2,
+              sm: 0,
+            },
+            objectFit: 'cover',
+            borderRadius: {
+              xs: 0,
+              sm: 4,
+            },
+            backgroundColor: 'headerBackground',
+            color: 'headerBackground',
+          }}
+        />
       </Box>
       <Box
         sx={{
@@ -292,36 +226,23 @@ const GamePage = ({
           }}
         >
           <Grid item xs='auto'>
-            {coverUrl ? (
-              <Box
-                component='img'
-                src={coverUrl}
-                alt='game cover'
-                sx={{
-                  width: {
-                    xs: 120,
-                    md: 175,
-                  },
-                  height: 'auto',
-                  borderRadius: 2,
-                }}
-              />
-            ) : (
-              <Box
-                sx={{
-                  width: {
-                    xs: 120,
-                    md: 175,
-                  },
-                  height: {
-                    xs: 160,
-                    md: 250,
-                  },
-                  borderRadius: 2,
-                  backgroundColor: 'background.paper',
-                }}
-              />
-            )}
+            <Box
+              component='img'
+              src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
+              alt='game cover'
+              sx={{
+                width: {
+                  xs: 120,
+                  md: 175,
+                },
+                height: 'auto',
+                minHeight: {
+                  xs: 120,
+                  md: 175,
+                },
+                borderRadius: 2,
+              }}
+            />
           </Grid>
           <Grid item xs>
             <Box
@@ -442,15 +363,13 @@ const GamePage = ({
               const foundCharacterCache = cachedCharacters[characterId];
               if (!foundCharacterCache) return null;
 
-              const foundCharacterImageUrl = characterImageUrls?.[characterId];
-
               return (
                 <Grid item xs={12} xs2={6} sm2={4} md={3} key={characterId}>
                   <CharacterItem
                     id={characterId}
                     name={foundCharacterCache.name}
                     accentColor={foundCharacterCache.accentColor}
-                    image={foundCharacterImageUrl}
+                    image={`${CLOUD_STORAGE_URL}/character-avatars/${characterId}`}
                     isSpoiler={characterSpoilerIds.includes(characterId)}
                     isSpoilerShown={isCharacterSpoilersShown}
                     sx={{ mb: 3 }}
@@ -481,7 +400,7 @@ const GamePage = ({
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
                 albumName={albumNames[soundtrack.albumId]}
-                albumUrl={albumArtUrls![soundtrack.albumId]}
+                albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                 onPlay={
                   !!soundtrack.youtubeId
                     ? () => {
@@ -491,7 +410,7 @@ const GamePage = ({
                           youtubeId: soundtrack.youtubeId,
                           artists: soundtrack.artists,
                           albumName: albumNames[soundtrack.albumId],
-                          albumUrl: albumArtUrls![soundtrack.albumId],
+                          albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                         });
                         setQueue(
                           formattedSoundtracks.map((s) => ({
@@ -500,7 +419,7 @@ const GamePage = ({
                             youtubeId: s.youtubeId,
                             artists: s.artists,
                             albumName: albumNames[soundtrack.albumId],
-                            albumUrl: albumArtUrls![soundtrack.albumId],
+                            albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                           }))
                         );
                       }
@@ -521,7 +440,7 @@ const GamePage = ({
                       duration={soundtrack.duration}
                       trackNumber={idx + 11}
                       albumName={albumNames[soundtrack.albumId]}
-                      albumUrl={albumArtUrls![soundtrack.albumId]}
+                      albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                       onPlay={
                         !!soundtrack.youtubeId
                           ? () => {
@@ -531,7 +450,7 @@ const GamePage = ({
                                 youtubeId: soundtrack.youtubeId,
                                 artists: soundtrack.artists,
                                 albumName: albumNames[soundtrack.albumId],
-                                albumUrl: albumArtUrls![soundtrack.albumId],
+                                albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                               });
                               setQueue(
                                 formattedSoundtracks.map((s) => ({
@@ -540,7 +459,7 @@ const GamePage = ({
                                   youtubeId: s.youtubeId,
                                   artists: s.artists,
                                   albumName: albumNames[soundtrack.albumId],
-                                  albumUrl: albumArtUrls![soundtrack.albumId],
+                                  albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                                 }))
                               );
                             }

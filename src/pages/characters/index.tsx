@@ -2,13 +2,12 @@ import { FC, useState } from 'react';
 
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
 import type { GetServerSideProps } from 'next';
-import Head from 'next/head';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { CharacterItem, GenericHeader, MainLayout } from '~/components';
-import { cacheCollection, storage } from '~/configs';
+import { cacheCollection } from '~/configs';
+import { CLOUD_STORAGE_URL } from '~/constants';
 import { CharacterCacheSchema } from '~/schemas';
 
 type CategorizedCharacters = Record<
@@ -19,7 +18,6 @@ type CategorizedCharacters = Record<
 interface CharacterListProps {
   // category -> first letter -> characters
   categorizedCharacters: CategorizedCharacters;
-  characterAvatarUrls: Record<string, string>;
   description: string;
 }
 
@@ -55,24 +53,9 @@ export const getServerSideProps: GetServerSideProps<
       return acc;
     }, {});
 
-  // get all character avatar urls
-  const characterAvatarUrls: Record<string, string> = {};
-
-  await Promise.all(
-    Object.keys(charactersCache).map(async (id) => {
-      try {
-        const url = await getDownloadURL(
-          ref(storage, `character-avatars/${id}`)
-        );
-        characterAvatarUrls[id] = url;
-      } catch {}
-    })
-  );
-
   return {
     props: {
       categorizedCharacters,
-      characterAvatarUrls,
       description: "List of all characters from Falcom's games.",
     },
   };
@@ -80,7 +63,6 @@ export const getServerSideProps: GetServerSideProps<
 
 const CharacterList: FC<CharacterListProps> = ({
   categorizedCharacters,
-  characterAvatarUrls,
   description,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -90,12 +72,7 @@ const CharacterList: FC<CharacterListProps> = ({
   }, 500);
 
   return (
-    <MainLayout title='Characters'>
-      <Head>
-        <meta name='description' content={description} />
-        <meta name='og:title' content='Characters' />
-        <meta name='og:description' content={description} />
-      </Head>
+    <MainLayout title='Characters' description={description}>
       <GenericHeader title='Characters' subtitle={description} gutterBottom />
       <Box
         sx={{
@@ -162,7 +139,7 @@ const CharacterList: FC<CharacterListProps> = ({
                             name={name}
                             category={category}
                             accentColor='#4e5051'
-                            image={characterAvatarUrls[id]}
+                            image={`${CLOUD_STORAGE_URL}/character-avatars/${id}`}
                             sx={{ mb: 3 }}
                           />
                         </Grid>

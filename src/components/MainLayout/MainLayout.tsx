@@ -10,10 +10,14 @@ import Navbar from '../Navbar';
 
 export interface MainLayoutProps {
   title?: string;
+  description?: string;
+  image?: string;
 }
 
 const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
   title,
+  description = "Bringing light to Falcom's works of art.",
+  image,
   children,
 }) => (
   <Box
@@ -25,6 +29,10 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
   >
     <Head>
       <title>{title ? `${title} - ${SITE_NAME}` : SITE_NAME}</title>
+      <meta name='og:title' content={title || SITE_NAME} />
+      <meta name='description' content={description} />
+      <meta name='og:description' content={description} />
+      {image && <meta name='og:image' content={image} />}
     </Head>
     <Navbar />
     <Container

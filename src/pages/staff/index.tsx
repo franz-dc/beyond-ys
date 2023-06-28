@@ -10,13 +10,12 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
 import type { GetServerSideProps } from 'next';
-import Head from 'next/head';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { GenericHeader, Link, MainLayout } from '~/components';
-import { cacheCollection, storage } from '~/configs';
+import { cacheCollection } from '~/configs';
+import { CLOUD_STORAGE_URL } from '~/constants';
 interface StaffListProps {
   categorizedStaffNames: Record<
     string,
@@ -26,7 +25,6 @@ interface StaffListProps {
       roles: string[];
     }[]
   >;
-  staffAvatarUrls: Record<string, string>;
   description: string;
 }
 
@@ -67,22 +65,9 @@ export const getServerSideProps: GetServerSideProps<
       return acc;
     }, {});
 
-  // get all staff avatar urls
-  const staffAvatarUrls: Record<string, string> = {};
-
-  await Promise.all(
-    Object.keys(staffNames).map(async (id) => {
-      try {
-        const url = await getDownloadURL(ref(storage, `staff-avatars/${id}`));
-        staffAvatarUrls[id] = url;
-      } catch {}
-    })
-  );
-
   return {
     props: {
       categorizedStaffNames,
-      staffAvatarUrls,
       description:
         "Current and former members involved with the production of Falcom's works",
     },
@@ -91,7 +76,6 @@ export const getServerSideProps: GetServerSideProps<
 
 const StaffList: FC<StaffListProps> = ({
   categorizedStaffNames,
-  staffAvatarUrls,
   description,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,12 +85,7 @@ const StaffList: FC<StaffListProps> = ({
   }, 500);
 
   return (
-    <MainLayout title='Staff'>
-      <Head>
-        <meta name='description' content={description} />
-        <meta name='og:title' content='Staff' />
-        <meta name='og:description' content={description} />
-      </Head>
+    <MainLayout title='Staff' description={description}>
       <GenericHeader title='Staff' subtitle={description} gutterBottom />
       <Box
         sx={{
@@ -178,7 +157,7 @@ const StaffList: FC<StaffListProps> = ({
                         >
                           <Stack direction='row' spacing={2}>
                             <Avatar
-                              src={staffAvatarUrls[id]}
+                              src={`${CLOUD_STORAGE_URL}/staff-avatars/${id}`}
                               imgProps={{
                                 loading: 'lazy',
                               }}

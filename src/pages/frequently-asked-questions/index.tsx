@@ -1,20 +1,10 @@
-import Head from 'next/head';
-
 import { FaqContainer, GenericHeader, Link, MainLayout } from '~/components';
 
 const Faqs = () => (
-  <MainLayout title='Frequently Asked Questions'>
-    <Head>
-      <meta
-        name='description'
-        content='Answering questions you might have about the project.'
-      />
-      <meta name='og:title' content='Frequently Asked Questions' />
-      <meta
-        name='og:description'
-        content='Answering questions you might have about the project.'
-      />
-    </Head>
+  <MainLayout
+    title='Frequently Asked Questions'
+    description='Answering questions you might have about the project.'
+  >
     <GenericHeader title='Frequently Asked Questions' gutterBottom />
     <FaqContainer question='Why make this website?'>
       This fan website was created for two reasons. The first one is to create a

@@ -1,6 +1,5 @@
 import { Box, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import type { GetStaticProps } from 'next';
-import Head from 'next/head';
 import Image from 'next/image';
 import type { StaticImageData } from 'next/image';
 
@@ -93,12 +92,7 @@ export const getStaticProps: GetStaticProps<AboutProps> = async () => ({
 });
 
 const About = ({ description, contributors }: AboutProps) => (
-  <MainLayout title='About'>
-    <Head>
-      <meta name='description' content={description} />
-      <meta name='og:title' content='About' />
-      <meta name='og:description' content={description} />
-    </Head>
+  <MainLayout title='About' description={description}>
     <GenericHeader title='About' />
     <Typography
       sx={{

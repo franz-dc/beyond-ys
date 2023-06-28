@@ -7,6 +7,9 @@ export * from './theme';
 export * from './trailsSubcategories';
 export * from './ysSubcategories';
 
+// env
+export const CLOUD_STORAGE_URL = process.env.NEXT_PUBLIC_CLOUD_STORAGE_URL;
+
 export const SITE_NAME = 'Beyond Ys';
 export const CATEGORIES_WITH_TIMELINE = ['Ys Series', 'Trails Series'] as const;
 

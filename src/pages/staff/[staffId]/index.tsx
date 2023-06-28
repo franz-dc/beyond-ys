@@ -11,12 +11,11 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
-import Head from 'next/head';
 
 import { Link, MainLayout, MusicItem } from '~/components';
-import { cacheCollection, staffInfosCollection, storage } from '~/configs';
+import { cacheCollection, staffInfosCollection } from '~/configs';
+import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { StaffInfoSchema } from '~/schemas';
 
@@ -25,8 +24,6 @@ type Props = StaffInfoSchema & {
   staffNames: Record<string, string>;
   gameNames: Record<string, string>;
   albumNames: Record<string, string>;
-  albumArtUrls: Record<string, string>;
-  avatarUrl?: string;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -51,7 +48,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     staffNames: {},
     gameNames: {},
     albumNames: {},
-    albumArtUrls: {},
     // remove updatedAt from cachedMusic values to prevent next.js errors
     cachedMusic: Object.fromEntries(
       Object.entries(docSnap.data().cachedMusic).map(
@@ -60,25 +56,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ),
   };
 
-  const musicAlbums = [
-    ...new Set(Object.values(data.cachedMusic).map((s) => s.albumId)),
-  ].filter(Boolean);
-
-  const [
-    staffNamesRes,
-    gameNamesRes,
-    albumNamesRes,
-    avatarUrlRes,
-    ...musicAlbumImageUrlsRes
-  ] = await Promise.allSettled([
-    getDoc(doc(cacheCollection, 'staffNames')),
-    getDoc(doc(cacheCollection, 'gameNames')),
-    getDoc(doc(cacheCollection, 'albumNames')),
-    getDownloadURL(ref(storage, `staff-avatars/${staffId}`)),
-    ...musicAlbums.map((albumId) =>
-      getDownloadURL(ref(storage, `album-arts/${albumId}`))
-    ),
-  ]);
+  const [staffNamesRes, gameNamesRes, albumNamesRes] = await Promise.allSettled(
+    [
+      getDoc(doc(cacheCollection, 'staffNames')),
+      getDoc(doc(cacheCollection, 'gameNames')),
+      getDoc(doc(cacheCollection, 'albumNames')),
+    ]
+  );
 
   if (staffNamesRes.status === 'fulfilled') {
     data.staffNames = staffNamesRes.value.data() || {};
@@ -92,31 +76,20 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     data.albumNames = albumNamesRes.value.data() || {};
   }
 
-  if (avatarUrlRes.status === 'fulfilled') {
-    data.avatarUrl = avatarUrlRes.value;
-  }
-
-  musicAlbumImageUrlsRes.forEach((albumImageUrlRes, idx) => {
-    if (albumImageUrlRes.status === 'fulfilled') {
-      data.albumArtUrls![musicAlbums[idx]] = albumImageUrlRes.value;
-    }
-  });
-
   return { props: data };
 };
 
 const StaffInfo = ({
+  id,
   name,
   description = 'No description available.',
   descriptionSourceName,
   descriptionSourceUrl,
   roles,
   games,
-  avatarUrl,
   musicIds,
   cachedMusic,
   albumNames,
-  albumArtUrls,
   staffNames,
   gameNames,
 }: Props) => {
@@ -171,13 +144,11 @@ const StaffInfo = ({
   const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
 
   return (
-    <MainLayout title={name}>
-      <Head>
-        <meta name='description' content={description} />
-        <meta name='og:title' content={name} />
-        <meta name='og:description' content={description} />
-        {!!avatarUrl && <meta name='og:image' content={avatarUrl} />}
-      </Head>
+    <MainLayout
+      title={name}
+      description={description}
+      image={`${CLOUD_STORAGE_URL}/staff-avatars/${id}`}
+    >
       <Box
         sx={{
           height: 100,
@@ -228,27 +199,15 @@ const StaffInfo = ({
                 },
               }}
             >
-              {avatarUrl ? (
-                <Avatar
-                  src={avatarUrl}
-                  sx={{
-                    width: 128,
-                    height: 128,
-                    border: ({ palette }) =>
-                      `8px solid ${palette.background.default}`,
-                  }}
-                />
-              ) : (
-                <Avatar
-                  sx={{
-                    width: 128,
-                    height: 128,
-                    backgroundColor: 'avatarBackground',
-                    border: ({ palette }) =>
-                      `8px solid ${palette.background.default}`,
-                  }}
-                />
-              )}
+              <Avatar
+                src={`${CLOUD_STORAGE_URL}/staff-avatars/${id}`}
+                sx={{
+                  width: 128,
+                  height: 128,
+                  border: ({ palette }) =>
+                    `8px solid ${palette.background.default}`,
+                }}
+              />
             </Box>
           </Grid>
           <Grid item xs={12} sm>
@@ -360,7 +319,7 @@ const StaffInfo = ({
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
                 albumName={albumNames[soundtrack.albumId]}
-                albumUrl={albumArtUrls![soundtrack.albumId]}
+                albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                 onPlay={
                   !!soundtrack.youtubeId
                     ? () => {
@@ -370,7 +329,7 @@ const StaffInfo = ({
                           youtubeId: soundtrack.youtubeId,
                           artists: soundtrack.artists,
                           albumName: albumNames[soundtrack.albumId],
-                          albumUrl: albumArtUrls![soundtrack.albumId],
+                          albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                         });
                         setQueue(
                           formattedSoundtracks.map((s) => ({
@@ -379,7 +338,7 @@ const StaffInfo = ({
                             youtubeId: s.youtubeId,
                             artists: s.artists,
                             albumName: albumNames[soundtrack.albumId],
-                            albumUrl: albumArtUrls![soundtrack.albumId],
+                            albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                           }))
                         );
                       }
@@ -400,7 +359,7 @@ const StaffInfo = ({
                       duration={soundtrack.duration}
                       trackNumber={idx + 11}
                       albumName={albumNames[soundtrack.albumId]}
-                      albumUrl={albumArtUrls![soundtrack.albumId]}
+                      albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                       onPlay={
                         !!soundtrack.youtubeId
                           ? () => {
@@ -410,7 +369,7 @@ const StaffInfo = ({
                                 youtubeId: soundtrack.youtubeId,
                                 artists: soundtrack.artists,
                                 albumName: albumNames[soundtrack.albumId],
-                                albumUrl: albumArtUrls![soundtrack.albumId],
+                                albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                               });
                               setQueue(
                                 formattedSoundtracks.map((s) => ({
@@ -419,7 +378,7 @@ const StaffInfo = ({
                                   youtubeId: s.youtubeId,
                                   artists: s.artists,
                                   albumName: albumNames[soundtrack.albumId],
-                                  albumUrl: albumArtUrls![soundtrack.albumId],
+                                  albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                                 }))
                               );
                             }

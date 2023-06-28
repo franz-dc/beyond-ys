@@ -10,9 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
-import Head from 'next/head';
 import { ReactCountryFlag } from 'react-country-flag';
 import { MdNoAccounts } from 'react-icons/md';
 import { Lightbox } from 'yet-another-react-lightbox';
@@ -22,15 +20,15 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 
 import { Link, MainLayout } from '~/components';
-import { cacheCollection, charactersCollection, storage } from '~/configs';
-import { COUNTRIES } from '~/constants';
+import { cacheCollection, charactersCollection } from '~/configs';
+import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
 import { CharacterSchema } from '~/schemas';
 
 interface Props extends CharacterSchema {
   id: string;
+  // using getDownloadURL instead of direct url for determining if image exists
+  // this affects lightbox logic if removed
   mainImageUrl?: string;
-  extraImageUrls: Record<string, string>;
-  staffAvatarUrls: Record<string, string>;
   staffNames: Record<string, string>;
 }
 
@@ -47,65 +45,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return { notFound: true };
   }
 
-  const [staffNamesDocRes, mainImageUrlRes, ...imageUrlsRes] =
-    await Promise.allSettled([
-      getDoc(doc(cacheCollection, 'staffNames')),
-      getDownloadURL(ref(storage, `characters/${characterId}`)),
-      ...docSnap
-        .data()
-        .extraImages.map(({ path }) => getDownloadURL(ref(storage, path))),
-      ...docSnap
-        .data()
-        .voiceActors.map(({ staffId }) =>
-          getDownloadURL(ref(storage, `staff-avatars/${staffId}`))
-        ),
-    ]);
+  const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
 
-  const staffNames =
-    staffNamesDocRes.status === 'fulfilled'
-      ? staffNamesDocRes.value.data() || {}
-      : {};
+  const staffNames = staffNamesDoc.data() || {};
 
   const data: Props = {
     ...docSnap.data(),
     id: characterId,
     updatedAt: docSnap.data()?.updatedAt?.toMillis() || null,
     staffNames,
-    extraImageUrls: {},
-    staffAvatarUrls: {},
   };
-
-  if (mainImageUrlRes.status === 'fulfilled' && mainImageUrlRes.value) {
-    data.mainImageUrl = mainImageUrlRes.value;
-  }
-
-  const extraImageUrlsRes = imageUrlsRes.slice(0, data.extraImages.length);
-  const staffAvatarUrlsRes = imageUrlsRes.slice(data.extraImages.length);
-
-  data.extraImageUrls = extraImageUrlsRes.reduce<Record<string, string>>(
-    (acc, res, idx) => {
-      if (res.status === 'fulfilled' && res.value) {
-        acc[data.extraImages[idx].path] = res.value;
-      }
-      return acc;
-    },
-    {}
-  );
-
-  data.staffAvatarUrls = staffAvatarUrlsRes.reduce<Record<string, string>>(
-    (acc, res, idx) => {
-      if (res.status === 'fulfilled' && res.value) {
-        acc[data.voiceActors[idx].staffId] = res.value;
-      }
-      return acc;
-    },
-    {}
-  );
 
   return { props: data };
 };
 
 const CharacterInfo = ({
+  id,
   name,
   category,
   accentColor,
@@ -118,9 +73,7 @@ const CharacterInfo = ({
   cachedGameNames,
   voiceActors,
   staffNames,
-  staffAvatarUrls,
   extraImages,
-  extraImageUrls,
 }: Props) => {
   const formattedGames = gameIds
     .map((gameId) => ({
@@ -134,13 +87,7 @@ const CharacterInfo = ({
   const [isGamesExpanded, setIsGamesExpanded] = useState(false);
 
   return (
-    <MainLayout title={name}>
-      <Head>
-        <meta name='description' content={description} />
-        <meta name='og:title' content={name} />
-        <meta name='og:description' content={description} />
-        {!!mainImageUrl && <meta name='og:image' content={mainImageUrl} />}
-      </Head>
+    <MainLayout title={name} description={description} image={mainImageUrl}>
       <Box
         sx={{
           position: 'absolute',
@@ -328,7 +275,7 @@ const CharacterInfo = ({
                         >
                           <Box
                             component='img'
-                            src={extraImageUrls[image.path]}
+                            src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${image.path}`}
                             sx={{
                               width: 39,
                               height: 56,
@@ -354,7 +301,7 @@ const CharacterInfo = ({
                         >
                           <Box
                             component='img'
-                            src={extraImageUrls[extraImages[3].path]}
+                            src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${extraImages[3].path}`}
                             sx={{
                               width: 39,
                               height: 56,
@@ -419,7 +366,7 @@ const CharacterInfo = ({
                       ? [{ src: mainImageUrl, alt: name, title: name }]
                       : []),
                     ...extraImages.map(({ path, caption }, idx) => ({
-                      src: extraImageUrls[path],
+                      src: `${CLOUD_STORAGE_URL}/character-gallery/${id}/${path}`,
                       alt: caption || `Image ${idx + 1}`,
                       title: caption || `Image ${idx + 1}`,
                     })),
@@ -595,7 +542,7 @@ const CharacterInfo = ({
                             }}
                           >
                             <Avatar
-                              src={staffAvatarUrls[voiceActor.staffId]}
+                              src={`${CLOUD_STORAGE_URL}/staff/${voiceActor.staffId}`}
                               imgProps={{
                                 loading: 'lazy',
                               }}
