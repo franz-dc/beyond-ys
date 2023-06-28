@@ -113,7 +113,7 @@ const Navbar = () => {
   ];
 
   return (
-    <AppBar component='nav' position='relative'>
+    <AppBar component='nav' position='relative' sx={{ zIndex: 1 }}>
       <Container maxWidth='md'>
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1 }}>
