@@ -69,6 +69,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 };
 
 const CharacterInfo = ({
+  id,
   name,
   category,
   accentColor,
@@ -283,7 +284,7 @@ const CharacterInfo = ({
                         >
                           <Box
                             component='img'
-                            src={`${CLOUD_STORAGE_URL}/${image.path}`}
+                            src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${image.path}`}
                             sx={{
                               width: 39,
                               height: 56,
@@ -309,7 +310,7 @@ const CharacterInfo = ({
                         >
                           <Box
                             component='img'
-                            src={`${CLOUD_STORAGE_URL}/${extraImages[3].path}`}
+                            src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${extraImages[3].path}`}
                             sx={{
                               width: 39,
                               height: 56,
@@ -374,7 +375,7 @@ const CharacterInfo = ({
                       ? [{ src: mainImageUrl, alt: name, title: name }]
                       : []),
                     ...extraImages.map(({ path, caption }, idx) => ({
-                      src: `${CLOUD_STORAGE_URL}/${path}`,
+                      src: `${CLOUD_STORAGE_URL}/character-gallery/${id}/${path}`,
                       alt: caption || `Image ${idx + 1}`,
                       title: caption,
                     })),
