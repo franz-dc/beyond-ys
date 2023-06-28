@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
+import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
 import { ReactCountryFlag } from 'react-country-flag';
 import { MdNoAccounts } from 'react-icons/md';
@@ -20,7 +21,7 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 
 import { Link, MainLayout } from '~/components';
-import { cacheCollection, charactersCollection } from '~/configs';
+import { cacheCollection, charactersCollection, storage } from '~/configs';
 import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
 import { CharacterSchema } from '~/schemas';
 
@@ -45,16 +46,24 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return { notFound: true };
   }
 
-  const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
-
-  const staffNames = staffNamesDoc.data() || {};
+  const [staffNamesDocRes, mainImageUrlRes] = await Promise.allSettled([
+    getDoc(doc(cacheCollection, 'staffNames')),
+    getDownloadURL(ref(storage, `characters/${characterId}`)),
+  ]);
 
   const data: Props = {
     ...docSnap.data(),
     id: characterId,
     updatedAt: docSnap.data()?.updatedAt?.toMillis() || null,
-    staffNames,
+    staffNames:
+      staffNamesDocRes.status === 'fulfilled'
+        ? staffNamesDocRes.value.data() || {}
+        : {},
   };
+
+  if (mainImageUrlRes.status === 'fulfilled' && mainImageUrlRes.value) {
+    data.mainImageUrl = mainImageUrlRes.value;
+  }
 
   return { props: data };
 };
@@ -275,7 +284,7 @@ const CharacterInfo = ({
                         >
                           <Box
                             component='img'
-                            src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${image.path}`}
+                            src={`${CLOUD_STORAGE_URL}/${image.path}`}
                             sx={{
                               width: 39,
                               height: 56,
