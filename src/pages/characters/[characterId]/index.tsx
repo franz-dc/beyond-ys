@@ -374,10 +374,10 @@ const CharacterInfo = ({
                     ...(mainImageUrl
                       ? [{ src: mainImageUrl, alt: name, title: name }]
                       : []),
-                    ...extraImages.map(({ path, caption }, idx) => ({
+                    ...extraImages.map(({ path, caption }) => ({
                       src: `${CLOUD_STORAGE_URL}/${path}`,
-                      alt: caption || `Image ${idx + 1}`,
-                      title: caption || `Image ${idx + 1}`,
+                      alt: caption,
+                      title: caption,
                     })),
                   ]}
                 />
