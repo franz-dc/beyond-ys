@@ -69,7 +69,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
 };
 
 const CharacterInfo = ({
-  id,
   name,
   category,
   accentColor,
