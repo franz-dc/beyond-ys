@@ -227,22 +227,32 @@ const GamePage = ({
         >
           <Grid item xs='auto'>
             <Box
-              component='img'
-              src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
-              alt='game cover'
               sx={{
                 width: {
                   xs: 120,
                   md: 175,
                 },
-                height: 'auto',
+                borderRadius: 2,
+                backgroundColor: 'background.paper',
                 minHeight: {
                   xs: 120,
                   md: 175,
                 },
-                borderRadius: 2,
+                color: 'transparent',
               }}
-            />
+            >
+              <Box
+                component='img'
+                src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
+                alt='game cover'
+                sx={{
+                  width: '100%',
+                  height: 'auto',
+
+                  borderRadius: 2,
+                }}
+              />
+            </Box>
           </Grid>
           <Grid item xs>
             <Box
