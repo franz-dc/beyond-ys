@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode } from 'react';
 
 import { AppBar, Box, Container, Stack, Toolbar, Tooltip } from '@mui/material';
 import Image from 'next/image';
@@ -26,67 +26,63 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
   name,
   href,
   MenuComponent,
-}) => {
-  // used for chevron icon rotation
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <Tooltip
-      title={MenuComponent}
-      arrow
-      onOpen={() => setIsOpen(true)}
-      onClose={() => setIsOpen(false)}
-      componentsProps={{
-        tooltip: {
-          sx: {
-            maxWidth: 'unset',
-            backgroundColor: 'background.paper',
-            p: 3,
-            fontSize: 'unset',
-            borderRadius: 2,
+}) => (
+  <Tooltip
+    title={MenuComponent}
+    arrow
+    componentsProps={{
+      tooltip: {
+        sx: {
+          maxWidth: 'unset',
+          backgroundColor: 'background.paper',
+          p: 3,
+          fontSize: 'unset',
+          borderRadius: 2,
+        },
+      },
+      arrow: {
+        sx: {
+          color: 'background.paper',
+        },
+      },
+    }}
+    PopperProps={{
+      keepMounted: true,
+      disablePortal: true,
+    }}
+  >
+    <Link
+      id={`${id}-link`}
+      href={href}
+      sx={{
+        color: 'text.secondary',
+        '&:hover': {
+          color: 'text.primary',
+          '& svg': {
+            transform: 'rotate(180deg) !important',
           },
         },
-        arrow: {
-          sx: {
-            color: 'background.paper',
-          },
+        '&:focus, &:focus-visible': {
+          color: 'text.primary',
+          outline: 'none',
+          textDecoration: 'underline',
         },
-      }}
-      PopperProps={{
-        keepMounted: true,
-        disablePortal: true,
       }}
     >
-      <Link
-        id={`${id}-link`}
-        href={href}
-        sx={{
-          color: 'text.secondary',
-          '&:hover': {
-            color: 'text.primary',
-          },
-          '&:focus, &:focus-visible': {
-            color: 'text.primary',
-            outline: 'none',
-            textDecoration: 'underline',
-          },
+      {name}
+      <FiChevronDown
+        style={{
+          display: 'inline-block',
+          marginLeft: '0.25rem',
+          verticalAlign: 'middle',
+          // transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          transition: 'transform 0.2s ease-in-out',
+          fontSize: '1rem',
         }}
-      >
-        {name}
-        <FiChevronDown
-          style={{
-            display: 'inline-block',
-            marginLeft: '0.25rem',
-            verticalAlign: 'middle',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s ease-in-out',
-            fontSize: '1rem',
-          }}
-        />
-      </Link>
-    </Tooltip>
-  );
-};
+      />
+    </Link>
+  </Tooltip>
+);
 
 const Navbar = () => {
   const navTextLinks = [
