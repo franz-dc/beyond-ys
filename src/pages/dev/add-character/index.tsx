@@ -66,6 +66,8 @@ const AddCharacter = () => {
       extraImages: true,
       gameIds: true,
       cachedGameNames: true,
+      hasMainImage: true,
+      hasAvatar: true,
       updatedAt: true,
     })
     .extend({
@@ -147,6 +149,8 @@ const AddCharacter = () => {
         extraImages: [],
         gameIds: [],
         cachedGameNames: {},
+        hasMainImage: false,
+        hasAvatar: false,
         updatedAt: serverTimestamp(),
         ...rest,
       });
@@ -158,6 +162,8 @@ const AddCharacter = () => {
           category,
           imageDirection,
           accentColor,
+          hasMainImage: false,
+          hasAvatar: false,
         },
       });
 
@@ -171,6 +177,8 @@ const AddCharacter = () => {
           category,
           imageDirection,
           accentColor,
+          hasMainImage: false,
+          hasAvatar: false,
         },
       }));
 

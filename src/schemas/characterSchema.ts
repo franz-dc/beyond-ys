@@ -29,6 +29,9 @@ export const characterSchema = z.object({
     })
     .array(),
   updatedAt: z.any(),
+  // to prevent unnecessary requests
+  hasMainImage: z.boolean(),
+  hasAvatar: z.boolean(),
   // not to be edited directly
   // for reducing the amount of reads
   gameIds: z.string().min(1).array(),
@@ -42,6 +45,7 @@ export const characterCacheSchema = characterSchema.pick({
   category: true,
   accentColor: true,
   imageDirection: true,
+  hasAvatar: true,
 });
 
 export type CharacterCacheSchema = z.infer<typeof characterCacheSchema>;

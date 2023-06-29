@@ -102,6 +102,8 @@ const EditCharacter = () => {
       extraImages: true,
       gameIds: true,
       cachedGameNames: true,
+      hasMainImage: true,
+      hasAvatar: true,
       updatedAt: true,
     })
     .extend({
@@ -219,6 +221,7 @@ const EditCharacter = () => {
       setCharactersCache((prev) => ({
         ...prev,
         [id]: {
+          ...prev[id],
           name,
           category,
           imageDirection,
@@ -274,6 +277,8 @@ const EditCharacter = () => {
           updatedAt: null,
           gameIds: [],
           cachedGameNames: {},
+          hasMainImage: false,
+          hasAvatar: false,
         });
         reset({
           id: '',

@@ -132,18 +132,24 @@ const CharacterList: FC<CharacterListProps> = ({
                       {firstLetter}
                     </Typography>
                     <Grid container spacing={2}>
-                      {filteredCharacters.map(({ id, name, category }) => (
-                        <Grid key={id} item xs={12} xs2={6} sm2={4} md={3}>
-                          <CharacterItem
-                            id={id}
-                            name={name}
-                            category={category}
-                            accentColor='#4e5051'
-                            image={`${CLOUD_STORAGE_URL}/character-avatars/${id}`}
-                            sx={{ mb: 3 }}
-                          />
-                        </Grid>
-                      ))}
+                      {filteredCharacters.map(
+                        ({ id, name, category, hasAvatar }) => (
+                          <Grid key={id} item xs={12} xs2={6} sm2={4} md={3}>
+                            <CharacterItem
+                              id={id}
+                              name={name}
+                              category={category}
+                              accentColor='#4e5051'
+                              image={
+                                hasAvatar
+                                  ? `${CLOUD_STORAGE_URL}/character-avatars/${id}`
+                                  : undefined
+                              }
+                              sx={{ mb: 3 }}
+                            />
+                          </Grid>
+                        )
+                      )}
                     </Grid>
                   </Box>
                 );
