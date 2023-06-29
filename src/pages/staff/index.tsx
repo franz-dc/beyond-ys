@@ -138,7 +138,7 @@ const StaffList: FC<StaffListProps> = ({
                   {letter}
                 </Typography>
                 <Grid container spacing={2}>
-                  {staffMembers.map(({ id, name, roles }) => (
+                  {filteredStaffMembers.map(({ id, name, roles }) => (
                     <Grid item key={id} xs={12} sm={6} md={4}>
                       <ButtonBase
                         component={Link}
