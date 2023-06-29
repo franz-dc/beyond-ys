@@ -25,6 +25,7 @@ interface StaffListProps {
       roles: string[];
     }[]
   >;
+  staffAvatarPresence: Record<string, boolean>;
   description: string;
 }
 
@@ -33,9 +34,13 @@ export const getServerSideProps: GetServerSideProps<
 > = async () => {
   const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
   const staffRolesDoc = await getDoc(doc(cacheCollection, 'staffRoles'));
+  const staffAvatarPresenceDoc = await getDoc(
+    doc(cacheCollection, 'staffAvatarPresence')
+  );
 
   const staffNames = staffNamesDoc.data() || {};
   const staffRoles = staffRolesDoc.data() || {};
+  const staffAvatarPresence = staffAvatarPresenceDoc.data() || {};
 
   // categorize staff members by their first letter
   const categorizedStaffNames = Object.entries(staffNames)
@@ -68,6 +73,7 @@ export const getServerSideProps: GetServerSideProps<
   return {
     props: {
       categorizedStaffNames,
+      staffAvatarPresence,
       description:
         "Current and former members involved with the production of Falcom's works",
     },
@@ -77,6 +83,7 @@ export const getServerSideProps: GetServerSideProps<
 const StaffList: FC<StaffListProps> = ({
   categorizedStaffNames,
   description,
+  staffAvatarPresence,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -157,7 +164,11 @@ const StaffList: FC<StaffListProps> = ({
                         >
                           <Stack direction='row' spacing={2}>
                             <Avatar
-                              src={`${CLOUD_STORAGE_URL}/staff-avatars/${id}`}
+                              src={
+                                staffAvatarPresence?.[id]
+                                  ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
+                                  : undefined
+                              }
                               imgProps={{
                                 loading: 'lazy',
                               }}
