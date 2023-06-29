@@ -92,6 +92,7 @@ const StaffInfo = ({
   albumNames,
   staffNames,
   gameNames,
+  hasAvatar,
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -147,7 +148,7 @@ const StaffInfo = ({
     <MainLayout
       title={name}
       description={description}
-      image={`${CLOUD_STORAGE_URL}/staff-avatars/${id}`}
+      image={hasAvatar ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}` : undefined}
     >
       <Box
         sx={{
@@ -200,7 +201,11 @@ const StaffInfo = ({
               }}
             >
               <Avatar
-                src={`${CLOUD_STORAGE_URL}/staff-avatars/${id}`}
+                src={
+                  hasAvatar
+                    ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
+                    : undefined
+                }
                 sx={{
                   width: 128,
                   height: 128,
