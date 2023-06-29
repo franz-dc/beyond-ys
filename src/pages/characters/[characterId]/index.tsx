@@ -10,7 +10,6 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { getDownloadURL, ref } from 'firebase/storage';
 import { GetServerSideProps } from 'next';
 import { ReactCountryFlag } from 'react-country-flag';
 import { MdNoAccounts } from 'react-icons/md';
@@ -21,15 +20,12 @@ import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 
 import { Link, MainLayout } from '~/components';
-import { cacheCollection, charactersCollection, storage } from '~/configs';
+import { cacheCollection, charactersCollection } from '~/configs';
 import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
 import { CharacterSchema } from '~/schemas';
 
 interface Props extends CharacterSchema {
   id: string;
-  // using getDownloadURL instead of direct url for determining if image exists
-  // this affects lightbox logic if removed
-  mainImageUrl?: string;
   staffNames: Record<string, string>;
 }
 
@@ -46,24 +42,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return { notFound: true };
   }
 
-  const [staffNamesDocRes, mainImageUrlRes] = await Promise.allSettled([
-    getDoc(doc(cacheCollection, 'staffNames')),
-    getDownloadURL(ref(storage, `characters/${characterId}`)),
-  ]);
+  const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
 
   const data: Props = {
     ...docSnap.data(),
     id: characterId,
     updatedAt: docSnap.data()?.updatedAt?.toMillis() || null,
-    staffNames:
-      staffNamesDocRes.status === 'fulfilled'
-        ? staffNamesDocRes.value.data() || {}
-        : {},
+    staffNames: staffNamesDoc.data() || {},
   };
-
-  if (mainImageUrlRes.status === 'fulfilled' && mainImageUrlRes.value) {
-    data.mainImageUrl = mainImageUrlRes.value;
-  }
 
   return { props: data };
 };
@@ -77,12 +63,12 @@ const CharacterInfo = ({
   descriptionSourceName,
   descriptionSourceUrl,
   imageDirection,
-  mainImageUrl,
   gameIds,
   cachedGameNames,
   voiceActors,
   staffNames,
   extraImages,
+  hasMainImage,
 }: Props) => {
   const formattedGames = gameIds
     .map((gameId) => ({
@@ -96,7 +82,11 @@ const CharacterInfo = ({
   const [isGamesExpanded, setIsGamesExpanded] = useState(false);
 
   return (
-    <MainLayout title={name} description={description} image={mainImageUrl}>
+    <MainLayout
+      title={name}
+      description={description}
+      image={hasMainImage ? `${CLOUD_STORAGE_URL}/characters/${id}` : undefined}
+    >
       <Box
         sx={{
           position: 'absolute',
@@ -157,7 +147,7 @@ const CharacterInfo = ({
                     mb: 1,
                   }}
                 >
-                  {mainImageUrl ? (
+                  {hasMainImage ? (
                     <ButtonBase
                       focusRipple
                       onClick={() => setPhotoIndex(0)}
@@ -167,7 +157,7 @@ const CharacterInfo = ({
                     >
                       <Box
                         component='img'
-                        src={mainImageUrl || '/images/placeholder.png'}
+                        src={`${CLOUD_STORAGE_URL}/characters/${id}`}
                         alt={name}
                         width='100%'
                         height='auto'
@@ -293,7 +283,7 @@ const CharacterInfo = ({
                               backgroundColor: 'background.paper',
                             }}
                             onClick={() =>
-                              setPhotoIndex(mainImageUrl ? idx + 1 : idx)
+                              setPhotoIndex(hasMainImage ? idx + 1 : idx)
                             }
                           />
                         </ButtonBase>
@@ -318,7 +308,7 @@ const CharacterInfo = ({
                               borderRadius: 1,
                               backgroundColor: 'background.paper',
                             }}
-                            onClick={() => setPhotoIndex(mainImageUrl ? 4 : 3)}
+                            onClick={() => setPhotoIndex(hasMainImage ? 4 : 3)}
                           />
                           {extraImages.length > 4 ||
                             (true && (
@@ -371,8 +361,14 @@ const CharacterInfo = ({
                     container: { style: { top: 'unset', bottom: 0 } },
                   }}
                   slides={[
-                    ...(mainImageUrl
-                      ? [{ src: mainImageUrl, alt: name, title: name }]
+                    ...(hasMainImage
+                      ? [
+                          {
+                            src: `${CLOUD_STORAGE_URL}/character/${id}`,
+                            alt: name,
+                            title: name,
+                          },
+                        ]
                       : []),
                     ...extraImages.map(({ path, caption }, idx) => ({
                       src: `${CLOUD_STORAGE_URL}/character-gallery/${id}/${path}`,
