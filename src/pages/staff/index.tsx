@@ -32,15 +32,26 @@ interface StaffListProps {
 export const getServerSideProps: GetServerSideProps<
   StaffListProps
 > = async () => {
-  const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
-  const staffRolesDoc = await getDoc(doc(cacheCollection, 'staffRoles'));
-  const staffAvatarPresenceDoc = await getDoc(
-    doc(cacheCollection, 'staffAvatarPresence')
-  );
+  const [staffNamesDocRes, staffRolesDocRes, staffAvatarPresenceDocRes] =
+    await Promise.allSettled([
+      getDoc(doc(cacheCollection, 'staffNames')),
+      getDoc(doc(cacheCollection, 'staffRoles')),
+      getDoc(doc(cacheCollection, 'staffAvatarPresence')),
+    ]);
 
-  const staffNames = staffNamesDoc.data() || {};
-  const staffRoles = staffRolesDoc.data() || {};
-  const staffAvatarPresence = staffAvatarPresenceDoc.data() || {};
+  const staffNames =
+    staffNamesDocRes.status === 'fulfilled' && staffNamesDocRes.value.exists()
+      ? staffNamesDocRes.value?.data()
+      : {};
+  const staffRoles =
+    staffRolesDocRes.status === 'fulfilled' && staffRolesDocRes.value.exists()
+      ? staffRolesDocRes.value?.data()
+      : {};
+  const staffAvatarPresence =
+    staffAvatarPresenceDocRes.status === 'fulfilled' &&
+    staffAvatarPresenceDocRes.value.exists()
+      ? staffAvatarPresenceDocRes.value?.data()
+      : {};
 
   // categorize staff members by their first letter
   const categorizedStaffNames = Object.entries(staffNames)
