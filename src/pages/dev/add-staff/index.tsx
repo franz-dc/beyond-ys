@@ -62,6 +62,7 @@ const AddStaff = () => {
       cachedMusic: true,
       musicIds: true,
       updatedAt: true,
+      hasAvatar: true,
       // doing this to fulfill useFieldArray's requirement
       roles: true,
     })
@@ -148,6 +149,7 @@ const AddStaff = () => {
         updatedAt: serverTimestamp(),
         cachedMusic: {},
         musicIds: [],
+        hasAvatar: false,
         ...rest,
       });
 

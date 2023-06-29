@@ -160,6 +160,7 @@ const EditStaff = () => {
           games: [],
           musicIds: [],
           cachedMusic: {},
+          hasAvatar: false,
           updatedAt: null,
         });
         reset({

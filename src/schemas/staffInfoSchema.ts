@@ -15,6 +15,8 @@ export const staffInfoSchema = z.object({
     })
     .array(),
   updatedAt: z.any(),
+  // to prevent unnecessary requests
+  hasAvatar: z.boolean(),
   // musicIds and cachedMusic are not to be edited directly
   // doing this to reduce reads
   musicIds: z.string().min(1).array(),
