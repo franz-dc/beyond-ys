@@ -159,6 +159,7 @@ const StaffList: FC<StaffListProps> = ({
                   {filteredStaffMembers.map(({ id, name, roles }) => (
                     <Grid item key={id} xs={12} sm={6} md={4}>
                       <ButtonBase
+                        focusRipple
                         component={Link}
                         href={`/staff/${id}`}
                         sx={{
