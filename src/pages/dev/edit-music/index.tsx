@@ -243,6 +243,13 @@ const EditMusic = () => {
             [`cachedMusic.${id}`]: newData,
           });
         }
+      } else {
+        // just update the music cache for the album if the albumId is the same
+        if (albumId) {
+          batch.update(doc(musicAlbumsCollection, albumId), {
+            [`cachedMusic.${id}`]: newData,
+          });
+        }
       }
 
       // update all staff data related to this music
