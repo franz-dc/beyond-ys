@@ -178,8 +178,12 @@ const MusicItem: FC<MusicItemProps> = ({
                       sx={{
                         color: 'text.secondary',
                         textDecoration: 'none',
-                        '&:hover': {
+                        '&:hover, &:focus': {
                           textDecoration: 'underline',
+                        },
+                        '&:focus': {
+                          outline: 'none',
+                          color: 'primary.main',
                         },
                       }}
                     >
