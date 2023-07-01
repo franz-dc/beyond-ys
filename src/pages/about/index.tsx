@@ -140,7 +140,6 @@ const About = ({ description, contributors }: AboutProps) => (
                   width={64}
                   height={64}
                   alt='avatar'
-                  unoptimized
                   style={{
                     borderRadius: '50%',
                   }}
