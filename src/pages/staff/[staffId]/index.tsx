@@ -228,7 +228,17 @@ const StaffInfo = ({
                 },
               }}
             >
-              <Typography variant='h1'>{name}</Typography>
+              <Typography
+                variant='h1'
+                sx={{
+                  fontSize: {
+                    xs: '1.75rem',
+                    sm: '2rem',
+                  },
+                }}
+              >
+                {name}
+              </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
                 {roles.join(', ')}
               </Typography>

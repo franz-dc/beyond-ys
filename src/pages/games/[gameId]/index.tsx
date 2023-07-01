@@ -248,7 +248,6 @@ const GamePage = ({
                 sx={{
                   width: '100%',
                   height: 'auto',
-
                   borderRadius: 2,
                 }}
               />
@@ -263,7 +262,17 @@ const GamePage = ({
                 },
               }}
             >
-              <Typography variant='h1'>{name}</Typography>
+              <Typography
+                variant='h1'
+                sx={{
+                  fontSize: {
+                    xs: '1.75rem',
+                    sm: '2rem',
+                  },
+                }}
+              >
+                {name}
+              </Typography>
               <Typography fontSize={18} color='text.secondary' mb={2}>
                 {category}
               </Typography>

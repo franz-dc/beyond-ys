@@ -34,7 +34,17 @@ const GenericHeader: FC<GenericHeaderProps> = ({
           py: 2,
         }}
       >
-        <Typography variant='h1'>{title}</Typography>
+        <Typography
+          variant='h1'
+          sx={{
+            fontSize: {
+              xs: '1.75rem',
+              sm: '2rem',
+            },
+          }}
+        >
+          {title}
+        </Typography>
         {subtitle && (
           <Typography
             variant='subtitle1'
