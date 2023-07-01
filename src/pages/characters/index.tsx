@@ -5,7 +5,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { CharacterItem, GenericHeader, MainLayout } from '~/components';
+import {
+  CharacterItem,
+  GenericHeader,
+  MainLayout,
+  Searchbar,
+} from '~/components';
 import { cacheCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import { CharacterCacheSchema } from '~/schemas';
@@ -74,33 +79,10 @@ const CharacterList: FC<CharacterListProps> = ({
   return (
     <MainLayout title='Characters' description={description}>
       <GenericHeader title='Characters' subtitle={description} gutterBottom />
-      <Box
-        sx={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: 300,
-          mb: 3,
-        }}
-      >
-        <Box
-          component='input'
-          type='text'
-          placeholder='Search'
-          sx={{
-            width: '100%',
-            px: 2,
-            py: 1.5,
-            borderRadius: 2,
-            border: 'none',
-            outline: 'none',
-            color: 'text.primary',
-            fontFamily: 'inherit',
-            fontSize: 'inherit',
-            backgroundColor: 'background.paper',
-          }}
-          onChange={(e) => debounce(e.target.value.toLowerCase())}
-        />
-      </Box>
+      <Searchbar
+        onChange={(e) => debounce(e.target.value)}
+        ContainerProps={{ sx: { mb: 3 } }}
+      />
       {
         // render a list of categories
         Object.entries(categorizedCharacters)

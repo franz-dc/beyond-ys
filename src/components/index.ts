@@ -10,7 +10,6 @@ export { default as GenericHeader } from './GenericHeader';
 export * from './GenericHeader';
 
 export { default as ImageWithFallback } from './ImageWithFallback';
-export * from './ImageWithFallback';
 
 export { default as Link } from './Link';
 export * from './Link';
@@ -24,6 +23,9 @@ export * from './MusicItem';
 export { default as MusicPlayer } from './MusicPlayer';
 
 export { default as Navbar } from './Navbar';
+
+export { default as Searchbar } from './Searchbar';
+export * from './Searchbar';
 
 export { default as StoryTimeline } from './StoryTimeline';
 export * from './StoryTimeline';

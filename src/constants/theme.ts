@@ -12,7 +12,9 @@ declare module '@mui/material/styles' {
   }
   interface BreakpointOverrides {
     xs2: true;
+    xs3: true;
     sm2: true;
+    sm3: true;
   }
 }
 
@@ -27,9 +29,11 @@ export const theme = createTheme({
   breakpoints: {
     values: {
       xs: 0,
-      xs2: 450,
+      xs2: 450, // for character item
+      xs3: 500, // for music album item
       sm: 600,
-      sm2: 670,
+      sm2: 670, // for character item
+      sm3: 750, // for music album item
       md: 900,
       lg: 1200,
       xl: 1536,

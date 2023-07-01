@@ -13,7 +13,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { GenericHeader, Link, MainLayout } from '~/components';
+import { GenericHeader, Link, MainLayout, Searchbar } from '~/components';
 import { cacheCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 interface StaffListProps {
@@ -105,32 +105,14 @@ const StaffList: FC<StaffListProps> = ({
   return (
     <MainLayout title='Staff' description={description}>
       <GenericHeader title='Staff' subtitle={description} gutterBottom />
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: 300,
-          mb: 3,
+      <Searchbar
+        onChange={(e) => debounce(e.target.value.toLowerCase())}
+        ContainerProps={{
+          sx: {
+            mb: 3,
+          },
         }}
-      >
-        <Box
-          component='input'
-          type='text'
-          placeholder='Search'
-          sx={{
-            width: '100%',
-            px: 2,
-            py: 1.5,
-            borderRadius: 2,
-            border: 'none',
-            outline: 'none',
-            color: 'text.primary',
-            fontFamily: 'inherit',
-            fontSize: 'inherit',
-            backgroundColor: 'background.paper',
-          }}
-          onChange={(e) => debounce(e.target.value.toLowerCase())}
-        />
-      </Box>
+      />
       {
         // render a list of letters
         Object.entries(categorizedStaffNames)
