@@ -49,6 +49,9 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
     PopperProps={{
       keepMounted: true,
       disablePortal: true,
+      style: {
+        zIndex: 9999,
+      },
     }}
   >
     <Link

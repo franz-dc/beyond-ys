@@ -13,7 +13,7 @@ const ExploreMenu = () => {
       sx={{ mt: -1 }}
     >
       {exploreMenuItems.map((subcategory) => (
-        <Box key={subcategory.name} sx={{ width: 120 }}>
+        <Box key={subcategory.name} sx={{ width: 140 }}>
           <NavMenuList labelPrefix='explore-menu' subcategory={subcategory} />
         </Box>
       ))}

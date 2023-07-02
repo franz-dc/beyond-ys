@@ -17,6 +17,7 @@ const GenericHeader: FC<GenericHeaderProps> = ({
 }) => {
   return (
     <Box
+      {...rest}
       sx={{
         display: 'flex',
         alignItems: 'flex-end',
@@ -26,7 +27,6 @@ const GenericHeader: FC<GenericHeaderProps> = ({
         mb: gutterBottom ? 3 : 0,
         ...rest.sx,
       }}
-      {...rest}
     >
       <Box
         sx={{

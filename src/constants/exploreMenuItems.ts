@@ -15,6 +15,10 @@ export const exploreMenuItems = [
         name: 'Staff',
         href: '/staff',
       },
+      {
+        name: 'Composer Timeline',
+        href: '/composer-timeline',
+      },
     ],
     hideSubheader: true,
   },

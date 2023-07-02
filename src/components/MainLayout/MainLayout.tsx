@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 
 import { Box, Container } from '@mui/material';
+import type { ContainerProps } from '@mui/material';
 import Head from 'next/head';
 
 import { SITE_NAME } from '~/constants';
@@ -12,6 +13,7 @@ export interface MainLayoutProps {
   title?: string;
   description?: string;
   image?: string;
+  ContainerProps?: ContainerProps;
 }
 
 const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
@@ -19,6 +21,7 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
   description = "Bringing light to Falcom's works of art.",
   image,
   children,
+  ContainerProps,
 }) => (
   <Box
     sx={{
@@ -38,7 +41,8 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
     <Container
       component='main'
       maxWidth='md'
-      sx={{ flexGrow: 1, position: 'relative' }}
+      {...ContainerProps}
+      sx={{ flexGrow: 1, position: 'relative', ...ContainerProps?.sx }}
     >
       {children}
     </Container>

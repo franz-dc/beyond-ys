@@ -1,4 +1,18 @@
+/** HOW TO EDIT THIS FILE: ----------------------------------------------------
+ * - For new games, add a new entry to the COMPOSER_TIMELINE_GAMES object.
+ *
+ * - For new composers, add a new entry to COMPOSER_TIMELINE_STAFF_MEMBERS and
+ * COMPOSER_TIMELINE objects.
+ *
+ * - Recommended: Use intellisense when filling out COMPOSER_TIMELINE keys to
+ * prevent typos.
+ * ------------------------------------------------------------------------- */
+
 // cspell: disable
+
+// - keys generated using slugify
+// - gameId is the id of the game in the database
+// - releaseDate is in ISO 8601 format (YYYY-MM-DD or YYYY-MM or YYYY)
 export const COMPOSER_TIMELINE_GAMES = {
   'dragon-slayer-ii-xanadu': {
     name: 'Dragon Slayer II: Xanadu',
@@ -26,17 +40,17 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1987-06',
   },
   'dragon-slayer-iv-drasle-family-msx-ver': {
-    name: 'Dragon Slayer IV: Drasle Family (MSX Ver.)',
+    name: 'Dragon Slayer IV: Drasle Family (MSX)',
     gameId: '',
     releaseDate: '1987-07',
   },
   'dragon-slayer-iv-drasle-family-famicom-ver': {
-    name: 'Dragon Slayer IV: Drasle Family (Famicom Ver.)',
+    name: 'Dragon Slayer IV: Drasle Family (Famicom)',
     gameId: '',
     releaseDate: '1987-07',
   },
   'dragon-slayer-ii-xanadu-msx-rom-ver': {
-    name: 'Dragon Slayer II: Xanadu (MSX ROM Ver.)',
+    name: 'Dragon Slayer II: Xanadu (MSX ROM)',
     gameId: '',
     releaseDate: '1987-10',
   },
@@ -51,7 +65,7 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1988-04',
   },
   'dragon-slayer-v-sorcerian-x1turbo-ver': {
-    name: 'Dragon Slayer V: Sorcerian (X1turbo Ver.)',
+    name: 'Dragon Slayer V: Sorcerian (X1turbo)',
     gameId: '',
     releaseDate: '1988-05',
   },
@@ -91,7 +105,7 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1989-12',
   },
   'ys-iii-wanderers-from-ys-x68000-ver': {
-    name: 'Ys III: Wanderers from Ys (X68000 Ver.)',
+    name: 'Ys III: Wanderers from Ys (X68000)',
     gameId: '',
     releaseDate: '1990-03',
   },
@@ -116,7 +130,7 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1991-11',
   },
   'popful-mail-pc-88-ver': {
-    name: 'Popful Mail (PC-88 Ver.)',
+    name: 'Popful Mail (PC-88)',
     gameId: '',
     releaseDate: '1991-12',
   },
@@ -131,12 +145,12 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1993-03',
   },
   'ys-iv-mask-of-the-sun-music-arrangement-by-cube': {
-    name: 'Ys IV: Mask of the Sun (Music arrangement by CUBE)',
+    name: 'Ys IV: Mask of the Sun (CUBE)',
     gameId: '',
     releaseDate: '1993-11',
   },
   'ys-iv-the-dawn-of-ys-music-arrangement-by-hudson-soft': {
-    name: 'Ys IV: The Dawn of Ys (Music arrangement by Hudson Soft)',
+    name: 'Ys IV: The Dawn of Ys (Hudson Soft)',
     gameId: '',
     releaseDate: '1993-12',
   },
@@ -151,7 +165,7 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1994-03',
   },
   'popful-mail-sfc-ver': {
-    name: 'Popful Mail (SFC Ver.)',
+    name: 'Popful Mail (SFC)',
     gameId: '',
     releaseDate: '1994-06',
   },
@@ -201,7 +215,7 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1997-03',
   },
   'new-the-legend-of-heroes-windows-ver': {
-    name: 'New The Legend of Heroes (Windows Ver.)',
+    name: 'New The Legend of Heroes (Windows)',
     gameId: '',
     releaseDate: '1997-04',
   },
@@ -236,12 +250,12 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '1998-11',
   },
   'brandish-4-brandish-vt-for-windows': {
-    name: 'Brandish 4 (Brandish VT for Windows)',
+    name: 'Brandish 4 (Windows)',
     gameId: '',
     releaseDate: '1998-12',
   },
   'the-legend-of-heroes-iii-white-witch-windows-ver': {
-    name: 'The Legend of Heroes III: White Witch (Windows Ver.)',
+    name: 'The Legend of Heroes III: White Witch (Windows)',
     gameId: '',
     releaseDate: '1999-04',
   },
@@ -261,7 +275,7 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '2000-11',
   },
   'the-legend-of-heroes-iv-a-tear-of-vermillion-windows-ver': {
-    name: 'The Legend of Heroes IV: A Tear of Vermillion (Windows Ver.)',
+    name: 'The Legend of Heroes IV: A Tear of Vermillion (Windows)',
     gameId: '',
     releaseDate: '2000-12',
   },
@@ -396,22 +410,22 @@ export const COMPOSER_TIMELINE_GAMES = {
     releaseDate: '2014-09',
   },
   'tokyo-xanadu-vita-ver': {
-    name: 'Tokyo Xanadu (Vita Ver.)',
+    name: 'Tokyo Xanadu (Vita)',
     gameId: '',
     releaseDate: '2015-09',
   },
   'ys-viii-lacrimosa-of-dana-vita-ver': {
-    name: 'Ys VIII -Lacrimosa of DANA- (Vita Ver.)',
+    name: 'Ys VIII -Lacrimosa of DANA- (Vita)',
     gameId: '',
     releaseDate: '2016-07',
   },
   'tokyo-xanadu-ex-plus-ps4-ver': {
-    name: 'Tokyo Xanadu eX+ (PS4 Ver.)',
+    name: 'Tokyo Xanadu eX+ (PS4)',
     gameId: '',
     releaseDate: '2016-09',
   },
   'ys-viii-lacrimosa-of-dana-ps4-ver': {
-    name: 'Ys VIII -Lacrimosa of DANA- (PS4 Ver.)',
+    name: 'Ys VIII -Lacrimosa of DANA- (PS4)',
     gameId: '',
     releaseDate: '2017-05',
   },
@@ -452,43 +466,193 @@ export const COMPOSER_TIMELINE_GAMES = {
   },
 } as const;
 
+// type TStaffMemeber = {
+//   name: string;
+//   staffType: 'jdk' | 'outsourcing';
+//   firstGame: keyof typeof COMPOSER_TIMELINE_GAMES | '';
+// };
+
 export const COMPOSER_TIMELINE_STAFF_MEMBERS = {
-  'toshiya-takahashi': 'Toshiya Takahashi',
-  'takahito-abe': 'Takahito Abe',
-  'yuzo-koshiro': 'Yuzo Koshiro',
-  'meiko-ishikawa': 'Meiko Ishikawa',
-  'masaya-hashimoto': 'Masaya Hashimoto',
-  'hideya-nagata': 'Hideya Nagata',
-  'reiko-takebayashi': 'Reiko Takebayashi',
-  'masaaki-kawai': 'Masaaki Kawai',
-  'atsushi-shirakawa': 'Atsushi Shirakawa',
-  'naoki-kaneda': 'Naoki Kaneda',
-  'masaru-nakajima': 'Masaru Nakajima',
-  'takahiro-tsunashima': 'Takahiro Tsunashima',
-  'hirofumi-matsuoda': 'Hirofumi Matsuoda',
-  'satoshi-arai': 'Satoshi Arai',
-  'hayato-sonoda': 'Hayato Sonoda',
-  'kaname-ohara': 'Kaname Ohara',
-  'hirokazu-matsumura': 'Hirokazu Matsumura',
-  'wataru-ishibashi': 'Wataru Ishibashi',
-  'maiko-hattori': 'Maiko Hattori',
-  'takahide-murayama': 'Takahide Murayama',
-  'takahiro-unisuga': 'Takahiro Unisuga',
-  'ryo-yonemitsu': 'Ryo Yonemitsu',
-  'saki-momiyama': 'Saki Momiyama',
-  'masanori-osaki': 'Masanori Osaki',
-  'tomokatsu-hagiuda': 'Tomokatsu Hagiuda',
-  'atsume-hashimoto': 'Atsume Hashimoto',
-  'shuntaro-koguchi': 'Shuntaro Koguchi',
-  'yukihiro-jindo': 'Yukihiro Jindo',
-  'masahi-okagaki': 'Masahi Okagaki',
-  'kohei-wada': 'Kohei Wada',
-  'kimata-kogo': 'Kimata Kogo',
-  'ayako-shibazaki': 'Ayako Shibazaki',
-  'toshiharu-okajima': 'Toshiharu Okajima',
-  'noriyuki-kamikura': 'Noriyuki Kamikura',
-  'mitsuo-singa': 'Mitsuo Singa',
-  n: '"N"',
+  'toshiya-takahashi': {
+    name: 'Toshiya Takahashi',
+    staffType: 'jdk',
+    firstGame: 'dragon-slayer-ii-xanadu',
+  },
+  'takahito-abe': {
+    name: 'Takahito Abe',
+    staffType: 'jdk',
+    firstGame: 'xanadu-scenario-ii',
+  },
+  'yuzo-koshiro': {
+    name: 'Yuzo Koshiro',
+    staffType: 'jdk',
+    firstGame: 'xanadu-scenario-ii',
+  },
+  'meiko-ishikawa': {
+    name: 'Meiko Ishikawa',
+    staffType: 'jdk',
+    firstGame: 'ys',
+  },
+  'masaya-hashimoto': {
+    name: 'Masaya Hashimoto',
+    staffType: 'jdk',
+    firstGame: 'ys',
+  },
+  'hideya-nagata': {
+    name: 'Hideya Nagata',
+    staffType: 'jdk',
+    firstGame: 'dragon-slayer-v-sorcerian',
+  },
+  'reiko-takebayashi': {
+    name: 'Reiko Takebayashi',
+    staffType: 'jdk',
+    firstGame: 'dragon-slayer-v-sorcerian',
+  },
+  'masaaki-kawai': {
+    name: 'Masaaki Kawai',
+    staffType: 'jdk',
+    firstGame: 'ys-iii-wanderers-from-ys-x68000-ver',
+  },
+  'atsushi-shirakawa': {
+    name: 'Atsushi Shirakawa',
+    staffType: 'jdk',
+    firstGame: 'dragon-slayer-viii-lord-monarch',
+  },
+  'naoki-kaneda': {
+    name: 'Naoki Kaneda',
+    staffType: 'jdk',
+    firstGame: 'brandish-2-the-planet-buster',
+  },
+  'masaru-nakajima': {
+    name: 'Masaru Nakajima',
+    staffType: 'jdk',
+    firstGame: 'brandish-2-the-planet-buster',
+  },
+  'takahiro-tsunashima': {
+    name: 'Takahiro Tsunashima',
+    staffType: 'jdk',
+    firstGame: 'brandish-2-the-planet-buster',
+  },
+  'hirofumi-matsuoda': {
+    name: 'Hirofumi Matsuoda',
+    staffType: 'jdk',
+    firstGame: 'brandish-2-the-planet-buster',
+  },
+  'satoshi-arai': {
+    name: 'Satoshi Arai',
+    staffType: 'jdk',
+    firstGame: 'brandish-3-spirit-of-balcan',
+  },
+  'hayato-sonoda': {
+    name: 'Hayato Sonoda',
+    staffType: 'jdk',
+    firstGame: 'sega-saturn-falcom-classics',
+  },
+  'kaname-ohara': {
+    name: 'Kaname Ohara',
+    staffType: 'jdk',
+    firstGame: 'vantage-master',
+  },
+  'hirokazu-matsumura': {
+    name: 'Hirokazu Matsumura',
+    staffType: 'jdk',
+    firstGame: 'monarch-monarch',
+  },
+  'wataru-ishibashi': {
+    name: 'Wataru Ishibashi',
+    staffType: 'jdk',
+    firstGame: 'the-legend-of-heroes-iii-white-witch-windows-ver',
+  },
+  'maiko-hattori': {
+    name: 'Maiko Hattori',
+    staffType: 'jdk',
+    firstGame: 'the-legend-of-heroes-iii-white-witch-windows-ver',
+  },
+  'takahide-murayama': {
+    name: 'Takahide Murayama',
+    staffType: 'jdk',
+    firstGame: 'the-legend-of-heroes-trails-in-the-sky',
+  },
+  'takahiro-unisuga': {
+    name: 'Takahiro Unisuga',
+    staffType: 'jdk',
+    firstGame: 'xanadu-next',
+  },
+  'ryo-takeshita': {
+    name: 'Ryo Takeshita',
+    staffType: 'jdk',
+    firstGame: 'the-legend-of-heroes-trails-in-the-sky-sc',
+  },
+  'saki-momiyama': {
+    name: 'Saki Momiyama',
+    staffType: 'jdk',
+    firstGame: 'zwei-ii',
+  },
+  'masanori-osaki': {
+    name: 'Masanori Osaki',
+    staffType: 'jdk',
+    firstGame: 'zwei-ii',
+  },
+  'tomokatsu-hagiuda': {
+    name: 'Tomokatsu Hagiuda',
+    staffType: 'jdk',
+    firstGame: 'ys-memories-of-celceta',
+  },
+  'atsume-hashimoto': {
+    name: 'Atsume Hashimoto',
+    staffType: 'jdk',
+    firstGame: '',
+  },
+  'shuntaro-koguchi': {
+    name: 'Shuntaro Koguchi',
+    staffType: 'jdk',
+    firstGame: 'the-legend-of-heroes-hajimari-no-kiseki',
+  },
+  'yukihiro-jindo': {
+    name: 'Yukihiro Jindo',
+    staffType: 'oursourcing',
+    firstGame: 'ys-vi-the-ark-of-napishtim',
+  },
+  'masahi-okagaki': {
+    name: 'Masahi Okagaki',
+    staffType: 'oursourcing',
+    firstGame: 'ys-the-oath-in-felghana',
+  },
+  'kohei-wada': {
+    name: 'Kohei Wada',
+    staffType: 'oursourcing',
+    firstGame: 'the-legend-of-heroes-trails-in-the-sky',
+  },
+  'kimata-kogo': {
+    name: 'Kimata Kogo',
+    staffType: 'oursourcing',
+    firstGame: 'gurumin',
+  },
+  'ayako-shibazaki': {
+    name: 'Ayako Shibazaki',
+    staffType: 'oursourcing',
+    firstGame: 'xanadu-next',
+  },
+  'toshiharu-okajima': {
+    name: 'Toshiharu Okajima',
+    staffType: 'oursourcing',
+    firstGame: 'ys-memories-of-celceta',
+  },
+  'noriyuki-kamikura': {
+    name: 'Noriyuki Kamikura',
+    staffType: 'oursourcing',
+    firstGame: 'nayuta-no-kiseki',
+  },
+  'mitsuo-singa': {
+    name: 'Mitsuo Singa',
+    staffType: 'oursourcing',
+    firstGame: 'tokyo-xanadu-vita-ver',
+  },
+  n: {
+    name: '"N"',
+    staffType: 'jdk',
+    firstGame: 'ys-ix-mostrum-nox',
+  },
 } as const;
 
 type TInvolvementType =
@@ -839,7 +1003,7 @@ export const COMPOSER_TIMELINE: TComposerTimeline = {
     'ys-ix-mostrum-nox': 'composer',
     'the-legend-of-heroes-hajimari-no-kiseki': 'composer',
   },
-  'ryo-yonemitsu': {
+  'ryo-takeshita': {
     'the-legend-of-heroes-trails-in-the-sky-sc': 'composer',
     'ys-origin': 'composerArranger',
     'the-legend-of-heroes-trails-in-the-sky-the-3rd': 'composer',

@@ -88,6 +88,9 @@ export const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        html: {
+          scrollBehavior: 'smooth',
+        },
         '& .yarl__slide_image': {
           maxHeight: 'calc(100vh - 140px) !important',
         },
