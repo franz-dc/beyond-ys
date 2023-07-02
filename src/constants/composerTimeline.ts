@@ -457,7 +457,7 @@ export const COMPOSER_TIMELINE_GAMES = {
   'the-legend-of-heroes-kuro-no-kiseki-ii': {
     name: 'The Legend of Heroes: Kuro no Kiseki II',
     gameId: '',
-    releaseDate: '2021-09',
+    releaseDate: '2022-09',
   },
   'ys-x-nordics': {
     name: 'Ys X: Nordics',
