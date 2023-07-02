@@ -49,9 +49,6 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
     PopperProps={{
       keepMounted: true,
       disablePortal: true,
-      style: {
-        zIndex: 9999,
-      },
     }}
   >
     <Link
@@ -116,7 +113,7 @@ const Navbar = () => {
   ];
 
   return (
-    <AppBar component='nav' position='relative' sx={{ zIndex: 1 }}>
+    <AppBar component='nav' position='relative' sx={{ zIndex: 101 }}>
       <Container maxWidth='md'>
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1 }}>
