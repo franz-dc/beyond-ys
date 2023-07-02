@@ -28,6 +28,10 @@ const ComposerTimeline = () => {
   // change this if another staff member with longer name is added
   const theadHeight = 156;
 
+  // arbitrary max width to not make it too wide
+  // add 30px every time a new staff member is added
+  const maxFullWidth = 1650;
+
   const columns = [
     'Release Date',
     'Game',
@@ -59,6 +63,7 @@ const ComposerTimeline = () => {
   const closeOptionsMenu = () => setOptionsAnchorEl(null);
 
   const [isFullWidth, setIsFullWidth] = useState(false);
+  const [isFullHeight, setIsFullHeight] = useState(false);
 
   const involvementIcons = {
     composer: (
@@ -124,6 +129,9 @@ const ComposerTimeline = () => {
       description="Involved composers and arrangers in each of Falcom's works"
       ContainerProps={{
         maxWidth: isFullWidth ? false : 'md',
+        sx: {
+          maxWidth: isFullWidth ? maxFullWidth : undefined,
+        },
       }}
     >
       <GenericHeader
@@ -206,8 +214,14 @@ const ComposerTimeline = () => {
       >
         <MenuItem
           onClick={() => {
-            setIsFullWidth(!isFullWidth);
+            setIsFullWidth((prev) => !prev);
             closeOptionsMenu();
+          }}
+          sx={{
+            display: {
+              xs: 'none',
+              md: 'block',
+            },
           }}
         >
           <Checkbox
@@ -221,6 +235,23 @@ const ComposerTimeline = () => {
           />
           Full Width
         </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setIsFullHeight((prev) => !prev);
+            closeOptionsMenu();
+          }}
+        >
+          <Checkbox
+            checked={isFullHeight}
+            size='small'
+            disableRipple
+            sx={{
+              p: 0,
+              pr: 1.5,
+            }}
+          />
+          Full Height
+        </MenuItem>
       </Menu>
       <Box
         sx={{
@@ -231,6 +262,9 @@ const ComposerTimeline = () => {
             xs: 'calc(100vw - 32px)',
             sm: 'calc(100vw - 48px)',
             md: isFullWidth ? 'calc(100vw - 48px)' : '100%',
+          },
+          [`@media (min-width: ${maxFullWidth}px)`]: {
+            width: isFullWidth ? maxFullWidth - 48 : '100%',
           },
           maxHeight: 'calc(100vh - 64px - 100px)',
           scrollPaddingTop: theadHeight,
@@ -401,16 +435,6 @@ const ComposerTimeline = () => {
                         minWidth: 100,
                         pl: 2,
                         zIndex: 10,
-                        // '&::before': {
-                        //   content: '""',
-                        //   position: 'absolute',
-                        //   top: 0,
-                        //   bottom: 0,
-                        //   left: 0,
-                        //   right: 0,
-                        //   backgroundColor: 'primary.main',
-                        //   zIndex: -1,
-                        // },
                       }}
                     >
                       {format(new Date(releaseDate), 'yyyy MMM')}
