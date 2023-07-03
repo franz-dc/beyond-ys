@@ -280,7 +280,7 @@ const ComposerTimeline = () => {
           // approx rounded up height using inspector
           // change this if another staff member with longer name is added
           scrollPaddingTop: theadHeight,
-          borderTopLeftRadius: '8px',
+          // borderTopLeftRadius: '8px',
           scrollBehavior: 'smooth',
           '& thead': {
             '& tr': {
@@ -316,13 +316,15 @@ const ComposerTimeline = () => {
                 textAlign: 'center',
               },
               '&:nth-of-type(even)': {
-                '& > *:first-child': {
+                // use js logic to prevent emotion warning about *-child selectors
+                [`& > ${
+                  shownColumnIndexes.includes(0) ||
+                  shownColumnIndexes.includes(1)
+                    ? 'th'
+                    : 'td'
+                }:first-of-type`]: {
                   borderTopLeftRadius: '8px',
                   borderBottomLeftRadius: '8px',
-                },
-                '& > *:last-child': {
-                  borderTopRightRadius: '8px',
-                  borderBottomRightRadius: '8px',
                 },
                 '& th': {
                   zIndex: 1,
