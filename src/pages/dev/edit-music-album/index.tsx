@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { format } from 'date-fns';
 import {
   doc,
   documentId,
@@ -23,7 +24,9 @@ import {
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
+  DatePickerElement,
   FormContainer,
+  RadioButtonGroup,
   TextFieldElement,
   useFieldArray,
   useForm,
@@ -38,6 +41,7 @@ import {
   musicCollection,
 } from '~/configs';
 import {
+  MusicAlbumCacheSchema,
   MusicAlbumSchema,
   MusicCacheSchema,
   musicAlbumSchema,
@@ -46,20 +50,20 @@ import {
 const EditMusicAlbum = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [musicAlbumNames, setMusicAlbumNames] = useState<
-    Record<string, string>
+  const [musicAlbumsCache, setMusicAlbumsCache] = useState<
+    Record<string, MusicAlbumCacheSchema>
   >({});
-  const [isLoadingMusicAlbumNames, setIsLoadingMusicAlbumNames] =
+  const [isLoadingMusicAlbumsCache, setIsLoadingMusicAlbumsCache] =
     useState(true);
 
   // doing this in case someone else added an album while the user is
   // filling this form. this will update the validation in real time
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'musicAlbumNames'),
+      doc(cacheCollection, 'musicAlbums'),
       (docSnap) => {
-        setMusicAlbumNames(docSnap.data() || {});
-        setIsLoadingMusicAlbumNames(false);
+        setMusicAlbumsCache(docSnap.data() || {});
+        setIsLoadingMusicAlbumsCache(false);
       }
     );
 
@@ -95,7 +99,26 @@ const EditMusicAlbum = () => {
           value: z.string(),
         })
         .array(),
-    });
+      releaseDatePrecision: z.enum(['day', 'month', 'year', 'unknown']),
+    })
+    .refine(
+      (data) => {
+        const { releaseDate, releaseDatePrecision } = data;
+
+        if (
+          ['day', 'month', 'year'].includes(releaseDatePrecision) &&
+          !releaseDate
+        ) {
+          return false;
+        }
+
+        return true;
+      },
+      {
+        message: 'Release date is required if precision is not unknown.',
+        path: ['releaseDate'],
+      }
+    );
 
   type Schema = z.infer<typeof schema> & {
     id: string | null;
@@ -111,6 +134,8 @@ const EditMusicAlbum = () => {
       id: '',
       name: '',
       musicIds: [],
+      releaseDate: null,
+      releaseDatePrecision: 'unknown',
     },
     resolver: zodResolver(schema),
   });
@@ -143,13 +168,32 @@ const EditMusicAlbum = () => {
       const musicAlbum = musicAlbumSnap.data();
 
       if (musicAlbum) {
-        const { cachedMusic, updatedAt, musicIds, ...rest } = musicAlbum;
+        const { cachedMusic, updatedAt, musicIds, releaseDate, ...rest } =
+          musicAlbum;
+
+        const releaseDatePrecision = (() => {
+          // releaseDate is string here
+          const releaseDateStr = releaseDate as string;
+
+          switch (releaseDateStr.length) {
+            case 4: // 2000
+              return 'year';
+            case 7: // 2000-01
+              return 'month';
+            case 10: // 2000-01-01
+              return 'day';
+            default:
+              return 'unknown';
+          }
+        })();
 
         setCurrentMusicAlbumData(musicAlbum);
         reset({
           ...rest,
           id,
           musicIds: musicIds.map((value) => ({ value })),
+          releaseDate: releaseDate ? new Date(releaseDate) : null,
+          releaseDatePrecision,
         });
         setLastMusicAlbumId(id);
       } else {
@@ -157,12 +201,15 @@ const EditMusicAlbum = () => {
           name: '',
           musicIds: [],
           cachedMusic: {},
+          releaseDate: '',
           updatedAt: null,
         });
         reset({
           id,
           name: '',
           musicIds: [],
+          releaseDate: null,
+          releaseDatePrecision: 'unknown',
         });
         setLastMusicAlbumId(id);
       }
@@ -177,7 +224,12 @@ const EditMusicAlbum = () => {
     }
   };
 
-  const handleSave = async ({ id, ...values }: Schema) => {
+  const handleSave = async ({
+    id,
+    releaseDate,
+    releaseDatePrecision,
+    ...values
+  }: Schema) => {
     if (!id) return;
     try {
       const albumId = id;
@@ -188,14 +240,36 @@ const EditMusicAlbum = () => {
 
       const musicAlbumDocRef = doc(musicAlbumsCollection, id);
 
+      let formattedReleaseDate = '';
+
+      if (releaseDate) {
+        switch (releaseDatePrecision) {
+          case 'day':
+            formattedReleaseDate = format(new Date(releaseDate), 'yyyy-MM-dd');
+            break;
+          case 'month':
+            formattedReleaseDate = format(new Date(releaseDate), 'yyyy-MM');
+            break;
+          case 'year':
+            formattedReleaseDate = format(new Date(releaseDate), 'yyyy');
+            break;
+        }
+      }
+
       const batch = writeBatch(db);
 
-      // update musicAlbumNames cache if name is changed
-      if (currentMusicAlbumData?.name !== values.name) {
-        const musicAlbumNamesDocRef = doc(cacheCollection, 'musicAlbumNames');
+      // update musicAlbums cache if name is changed
+      if (
+        currentMusicAlbumData?.name !== values.name ||
+        currentMusicAlbumData?.releaseDate !== formattedReleaseDate
+      ) {
+        const musicAlbumCacheDocRef = doc(cacheCollection, 'musicAlbums');
 
-        batch.update(musicAlbumNamesDocRef, {
-          [id]: values.name,
+        batch.update(musicAlbumCacheDocRef, {
+          [id]: {
+            name: values.name,
+            releaseDate: formattedReleaseDate,
+          },
         });
       }
 
@@ -273,6 +347,7 @@ const EditMusicAlbum = () => {
         ...values,
         musicIds: values.musicIds.map(({ value }) => value),
         updatedAt: serverTimestamp(),
+        releaseDate: formattedReleaseDate,
         // @ts-ignore
         cachedMusic,
       });
@@ -290,9 +365,12 @@ const EditMusicAlbum = () => {
         musicIds: values.musicIds.map(({ value }) => value),
       }));
 
-      setMusicAlbumNames((prev) => ({
+      setMusicAlbumsCache((prev) => ({
         ...prev,
-        [id]: values.name,
+        [id]: {
+          name: values.name,
+          releaseDate: formattedReleaseDate,
+        },
       }));
 
       enqueueSnackbar('Music album updated successfully.', {
@@ -318,11 +396,13 @@ const EditMusicAlbum = () => {
           <AutocompleteElement
             name='id'
             label='Music Album'
-            options={Object.entries(musicAlbumNames).map(([id, label]) => ({
-              id,
-              label,
-            }))}
-            loading={isLoadingMusicAlbumNames}
+            options={Object.entries(musicAlbumsCache).map(
+              ([id, { name: label }]) => ({
+                id,
+                label,
+              })
+            )}
+            loading={isLoadingMusicAlbumsCache}
             autocompleteProps={{
               onChange: (_, v) => changeMusicAlbum(v.id),
               fullWidth: true,
@@ -348,6 +428,33 @@ const EditMusicAlbum = () => {
               />
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Release Date</Typography>
+              <DatePickerElement
+                name='releaseDate'
+                label='Release Date'
+                inputProps={{
+                  fullWidth: true,
+                  margin: 'normal',
+                }}
+                slotProps={{
+                  actionBar: {
+                    actions: ['clear'],
+                  },
+                }}
+                helperText='For dates with less precision, fill in the rest with random values.'
+              />
+              <RadioButtonGroup
+                name='releaseDatePrecision'
+                label='Precision'
+                options={[
+                  { label: 'Year, month, and day', id: 'day' },
+                  { label: 'Year and month only', id: 'month' },
+                  { label: 'Year only', id: 'year' },
+                  { label: 'Unknown date', id: 'unknown' },
+                ]}
+              />
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Music</Typography>
               <Typography color='text.secondary'>
                 Music from a different album will be overwritten by this one.
@@ -356,15 +463,15 @@ const EditMusicAlbum = () => {
                 <Stack direction='row' spacing={2} key={musicId.id}>
                   <AutocompleteElement
                     name={`musicIds.${idx}.value`}
-                    label={`Music ${idx + 1}`}
+                    label={`Track ${idx + 1}`}
                     options={Object.entries(musicCache)
                       .map(([id, { title, albumId }]) => {
-                        const foundAlbum = musicAlbumNames[albumId];
+                        const foundAlbum = musicAlbumsCache[albumId];
 
                         const albumName =
                           albumId === ''
                             ? 'No album'
-                            : foundAlbum || 'Unknown album';
+                            : foundAlbum.name || 'Unknown album';
 
                         return {
                           id,

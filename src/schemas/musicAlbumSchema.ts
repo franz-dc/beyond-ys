@@ -7,13 +7,7 @@ export const musicAlbumSchema = z.object({
   musicIds: z.string().array(),
   // releaseDate is string because some albums might not have a release date
   // or have partial dates which is not supported by firestore's timestamp
-  releaseDate: z.string().refine(
-    (v) => {
-      const date = new Date(v);
-      return date instanceof Date && !isNaN(date.valueOf());
-    },
-    { message: 'Invalid date' }
-  ),
+  releaseDate: z.string().or(z.date()).nullable(),
   updatedAt: z.any(),
   // for reducing the amount of reads
   // to be used in the music (albums) page
