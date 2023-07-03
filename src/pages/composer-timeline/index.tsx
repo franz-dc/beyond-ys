@@ -69,7 +69,7 @@ const ComposerTimeline = () => {
       if (theadRef.current) {
         setTheadHeight(theadRef.current.clientHeight);
       }
-    }, 1500);
+    }, 2000);
     return () => clearTimeout(timeout);
   }, [theadRef]);
 
