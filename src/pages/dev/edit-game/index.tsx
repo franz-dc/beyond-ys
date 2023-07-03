@@ -47,6 +47,7 @@ import { GAME_PLATFORMS } from '~/constants';
 import {
   CharacterCacheSchema,
   GameSchema,
+  MusicAlbumCacheSchema,
   MusicCacheSchema,
   gameSchema,
 } from '~/schemas';
@@ -69,20 +70,20 @@ const EditGame = () => {
     return () => unsubscribe();
   }, []);
 
-  const [musicAlbumNames, setMusicAlbumNames] = useState<
-    Record<string, string>
+  const [cachedMusicAlbums, setCachedMusicAlbums] = useState<
+    Record<string, MusicAlbumCacheSchema>
   >({});
-  const [isLoadingMusicAlbumNames, setIsLoadingMusicAlbumNames] =
+  const [isCachedLoadingMusicAlbums, setIsLoadingCachedMusicAlbums] =
     useState(true);
 
   // doing this in case someone else added an album while the user is
   // filling this form. this will update the validation in real time
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'musicAlbumNames'),
+      doc(cacheCollection, 'musicAlbums'),
       (docSnap) => {
-        setMusicAlbumNames(docSnap.data() || {});
-        setIsLoadingMusicAlbumNames(false);
+        setCachedMusicAlbums(docSnap.data() || {});
+        setIsLoadingCachedMusicAlbums(false);
       }
     );
 
@@ -708,12 +709,12 @@ const EditGame = () => {
                     label={`Soundtrack ${idx + 1}`}
                     options={Object.entries(musicCache)
                       .map(([id, { title, albumId }]) => {
-                        const foundAlbum = musicAlbumNames[albumId];
+                        const foundAlbum = cachedMusicAlbums[albumId];
 
                         const albumName =
                           albumId === ''
                             ? 'No album'
-                            : foundAlbum || 'Unknown album';
+                            : foundAlbum.name || 'Unknown album';
 
                         return {
                           id,
@@ -728,7 +729,7 @@ const EditGame = () => {
                       )}
                     autocompleteProps={{ fullWidth: true }}
                     textFieldProps={{ margin: 'normal' }}
-                    loading={isLoadingMusicCache || isLoadingMusicAlbumNames}
+                    loading={isLoadingMusicCache || isCachedLoadingMusicAlbums}
                     matchId
                     required
                   />

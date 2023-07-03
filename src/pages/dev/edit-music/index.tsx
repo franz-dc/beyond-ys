@@ -40,23 +40,28 @@ import {
   musicCollection,
   staffInfosCollection,
 } from '~/configs';
-import { MusicCacheSchema, MusicSchema, musicSchema } from '~/schemas';
+import {
+  MusicAlbumCacheSchema,
+  MusicCacheSchema,
+  MusicSchema,
+  musicSchema,
+} from '~/schemas';
 
 const EditMusic = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [musicAlbumNames, setMusicAlbumNames] = useState<
-    Record<string, string>
+  const [cachedMusicAlbums, setCachedMusicAlbums] = useState<
+    Record<string, MusicAlbumCacheSchema>
   >({});
-  const [isLoadingMusicAlbumNames, setIsLoadingMusicAlbumNames] =
+  const [isLoadingCachedMusicAlbums, setIsLoadingCachedMusicAlbums] =
     useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'musicAlbumNames'),
+      doc(cacheCollection, 'musicAlbums'),
       (docSnap) => {
-        setMusicAlbumNames(docSnap.data() || {});
-        setIsLoadingMusicAlbumNames(false);
+        setCachedMusicAlbums(docSnap.data() || {});
+        setIsLoadingCachedMusicAlbums(false);
       }
     );
 
@@ -369,10 +374,12 @@ const EditMusic = () => {
             label='Music'
             options={Object.entries(musicCache).map(
               ([id, { title, albumId }]) => {
-                const foundAlbum = musicAlbumNames[albumId];
+                const foundAlbum = cachedMusicAlbums[albumId];
 
                 const albumName =
-                  albumId === '' ? 'No album' : foundAlbum || 'Unknown album';
+                  albumId === ''
+                    ? 'No album'
+                    : foundAlbum.name || 'Unknown album';
 
                 return {
                   id,
@@ -412,12 +419,14 @@ const EditMusic = () => {
                     id: '',
                     label: 'No Album',
                   },
-                  ...Object.entries(musicAlbumNames).map(([id, label]) => ({
-                    id,
-                    label,
-                  })),
+                  ...Object.entries(cachedMusicAlbums).map(
+                    ([id, { name: label }]) => ({
+                      id,
+                      label,
+                    })
+                  ),
                 ]}
-                loading={isLoadingMusicAlbumNames}
+                loading={isLoadingCachedMusicAlbums}
                 autocompleteProps={{
                   fullWidth: true,
                   onChange: (_, value) => {

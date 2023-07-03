@@ -39,6 +39,7 @@ import { GAME_PLATFORMS } from '~/constants';
 import {
   CharacterCacheSchema,
   GameSchema,
+  MusicAlbumCacheSchema,
   MusicCacheSchema,
   MusicSchema,
   gameSchema,
@@ -62,20 +63,20 @@ const AddGame = () => {
     return () => unsubscribe();
   }, []);
 
-  const [musicAlbumNames, setMusicAlbumNames] = useState<
-    Record<string, string>
+  const [cachedMusicAlbums, setCachedMusicAlbums] = useState<
+    Record<string, MusicAlbumCacheSchema>
   >({});
-  const [isLoadingMusicAlbumNames, setIsLoadingMusicAlbumNames] =
+  const [isLoadingCachedMusicAlbums, setIsLoadingCachedMusicAlbums] =
     useState(true);
 
   // doing this in case someone else added an album while the user is
   // filling this form. this will update the validation in real time
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'musicAlbumNames'),
+      doc(cacheCollection, 'musicAlbums'),
       (docSnap) => {
-        setMusicAlbumNames(docSnap.data() || {});
-        setIsLoadingMusicAlbumNames(false);
+        setCachedMusicAlbums(docSnap.data() || {});
+        setIsLoadingCachedMusicAlbums(false);
       }
     );
 
@@ -230,9 +231,9 @@ const AddGame = () => {
     characterSpoilerIds,
     soundtrackIds,
   }: Schema) => {
-    // check if id is already taken (using the musicAlbumNames cache)
+    // check if id is already taken (using the gameNames cache)
     // failsafe in case the user somehow bypasses the form validation
-    if (musicAlbumNames[id]) {
+    if (gameNames[id]) {
       enqueueSnackbar(`Slug '${id}' is already taken.`, {
         variant: 'error',
       });
@@ -601,12 +602,12 @@ const AddGame = () => {
                 label={`Soundtrack ${idx + 1}`}
                 options={Object.entries(musicCache)
                   .map(([id, { title, albumId }]) => {
-                    const foundAlbum = musicAlbumNames[albumId];
+                    const foundAlbum = cachedMusicAlbums[albumId];
 
                     const albumName =
                       albumId === ''
                         ? 'No album'
-                        : foundAlbum || 'Unknown album';
+                        : foundAlbum.name || 'Unknown album';
 
                     return {
                       id,
@@ -621,7 +622,7 @@ const AddGame = () => {
                   )}
                 autocompleteProps={{ fullWidth: true }}
                 textFieldProps={{ margin: 'normal' }}
-                loading={isLoadingMusicCache || isLoadingMusicAlbumNames}
+                loading={isLoadingMusicCache || isLoadingCachedMusicAlbums}
                 matchId
                 required
               />
