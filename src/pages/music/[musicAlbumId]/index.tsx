@@ -209,7 +209,7 @@ const AlbumInfo = ({
                 {name}
               </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
-                {formatReleaseDate(releaseDate)}
+                {formatReleaseDate(releaseDate as string)}
               </Typography>
             </Box>
           </Grid>
