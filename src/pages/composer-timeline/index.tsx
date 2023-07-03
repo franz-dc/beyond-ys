@@ -306,14 +306,14 @@ const ComposerTimeline = () => {
                 px: 0.5,
                 py: 1,
                 textAlign: 'left',
+                '&:first-of-type': {
+                  pl: 2,
+                },
               },
               '& td': {
                 // px: 0.5,
                 // py: 1,
                 textAlign: 'center',
-              },
-              '& > *:first-child:not(td)': {
-                pl: 2,
               },
               '&:nth-of-type(even)': {
                 '& > *:first-child': {
