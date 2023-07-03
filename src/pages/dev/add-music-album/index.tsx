@@ -152,9 +152,11 @@ const AddMusicAlbum = () => {
     id,
     name,
     musicIds,
-    releaseDate = '',
+    releaseDate,
     releaseDatePrecision,
   }: Schema) => {
+    releaseDate = releaseDate || '';
+
     // check if id is already taken (using the musicAlbums cache)
     // failsafe in case the user somehow bypasses the form validation
     if (musicAlbumsCache[id]) {

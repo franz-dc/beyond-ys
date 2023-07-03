@@ -122,6 +122,7 @@ const MusicItem: FC<MusicItemProps> = ({
               <Image
                 src={albumUrl}
                 alt={albumName}
+                title={albumName}
                 width={42}
                 height={42}
                 style={{

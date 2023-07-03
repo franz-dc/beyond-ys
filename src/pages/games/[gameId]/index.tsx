@@ -26,12 +26,12 @@ import {
   // GAME_PLATFORMS,
 } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
-import { GameSchema } from '~/schemas';
+import { GameSchema, MusicAlbumCacheSchema } from '~/schemas';
 
 type ExtendedGameSchema = GameSchema & {
   id: string;
   staffNames: Record<string, string>;
-  albumNames: Record<string, string>;
+  cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
 export const getServerSideProps: GetServerSideProps<
@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<
     id: gameId,
     updatedAt: docSnap.data().updatedAt.toMillis(),
     staffNames: {},
-    albumNames: {},
+    cachedMusicAlbums: {},
     // convert cachedSoundtracks updatedAt to milliseconds
     cachedSoundtracks: Object.entries(docSnap.data().cachedSoundtracks).reduce(
       (acc, [key, value]) => ({
@@ -69,17 +69,17 @@ export const getServerSideProps: GetServerSideProps<
   };
 
   // doing it this way to parallelize the requests and save time
-  const [staffNamesRes, albumNamesRes] = await Promise.allSettled([
+  const [staffNamesRes, cachedMusicAlbumsRes] = await Promise.allSettled([
     getDoc(doc(cacheCollection, 'staffNames')),
-    getDoc(doc(cacheCollection, 'albumNames')),
+    getDoc(doc(cacheCollection, 'musicAlbums')),
   ]);
 
   if (staffNamesRes.status === 'fulfilled') {
     data.staffNames = staffNamesRes.value.data() || {};
   }
 
-  if (albumNamesRes.status === 'fulfilled') {
-    data.albumNames = albumNamesRes.value.data() || {};
+  if (cachedMusicAlbumsRes.status === 'fulfilled') {
+    data.cachedMusicAlbums = cachedMusicAlbumsRes.value.data() || {};
   }
 
   return { props: data };
@@ -98,7 +98,7 @@ const GamePage = ({
   soundtrackIds,
   cachedSoundtracks,
   staffNames,
-  albumNames,
+  cachedMusicAlbums,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -418,7 +418,7 @@ const GamePage = ({
                 youtubeId={soundtrack.youtubeId}
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
-                albumName={albumNames[soundtrack.albumId]}
+                albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                 albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                 onPlay={
                   !!soundtrack.youtubeId
@@ -428,7 +428,8 @@ const GamePage = ({
                           title: soundtrack.title,
                           youtubeId: soundtrack.youtubeId,
                           artists: soundtrack.artists,
-                          albumName: albumNames[soundtrack.albumId],
+                          albumName:
+                            cachedMusicAlbums[soundtrack.albumId]?.name,
                           albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                         });
                         setQueue(
@@ -437,7 +438,8 @@ const GamePage = ({
                             title: s.title,
                             youtubeId: s.youtubeId,
                             artists: s.artists,
-                            albumName: albumNames[soundtrack.albumId],
+                            albumName:
+                              cachedMusicAlbums[soundtrack.albumId]?.name,
                             albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                           }))
                         );
@@ -458,7 +460,7 @@ const GamePage = ({
                       youtubeId={soundtrack.youtubeId}
                       duration={soundtrack.duration}
                       trackNumber={idx + 11}
-                      albumName={albumNames[soundtrack.albumId]}
+                      albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                       albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                       onPlay={
                         !!soundtrack.youtubeId
@@ -468,7 +470,8 @@ const GamePage = ({
                                 title: soundtrack.title,
                                 youtubeId: soundtrack.youtubeId,
                                 artists: soundtrack.artists,
-                                albumName: albumNames[soundtrack.albumId],
+                                albumName:
+                                  cachedMusicAlbums[soundtrack.albumId]?.name,
                                 albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                               });
                               setQueue(
@@ -477,7 +480,8 @@ const GamePage = ({
                                   title: s.title,
                                   youtubeId: s.youtubeId,
                                   artists: s.artists,
-                                  albumName: albumNames[soundtrack.albumId],
+                                  albumName:
+                                    cachedMusicAlbums[soundtrack.albumId]?.name,
                                   albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                                 }))
                               );

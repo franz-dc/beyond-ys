@@ -17,13 +17,13 @@ import { Link, MainLayout, MusicItem } from '~/components';
 import { cacheCollection, staffInfosCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
-import { StaffInfoSchema } from '~/schemas';
+import { MusicAlbumCacheSchema, StaffInfoSchema } from '~/schemas';
 
 type Props = StaffInfoSchema & {
   id: string;
   staffNames: Record<string, string>;
   gameNames: Record<string, string>;
-  albumNames: Record<string, string>;
+  cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -47,7 +47,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     updatedAt: docSnap.data().updatedAt.toMillis(),
     staffNames: {},
     gameNames: {},
-    albumNames: {},
+    cachedMusicAlbums: {},
     // remove updatedAt from cachedMusic values to prevent next.js errors
     cachedMusic: Object.fromEntries(
       Object.entries(docSnap.data().cachedMusic).map(
@@ -56,13 +56,12 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ),
   };
 
-  const [staffNamesRes, gameNamesRes, albumNamesRes] = await Promise.allSettled(
-    [
+  const [staffNamesRes, gameNamesRes, cachedMusicAlbumsRes] =
+    await Promise.allSettled([
       getDoc(doc(cacheCollection, 'staffNames')),
       getDoc(doc(cacheCollection, 'gameNames')),
-      getDoc(doc(cacheCollection, 'albumNames')),
-    ]
-  );
+      getDoc(doc(cacheCollection, 'musicAlbums')),
+    ]);
 
   if (staffNamesRes.status === 'fulfilled') {
     data.staffNames = staffNamesRes.value.data() || {};
@@ -72,8 +71,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     data.gameNames = gameNamesRes.value.data() || {};
   }
 
-  if (albumNamesRes.status === 'fulfilled') {
-    data.albumNames = albumNamesRes.value.data() || {};
+  if (cachedMusicAlbumsRes.status === 'fulfilled') {
+    data.cachedMusicAlbums = cachedMusicAlbumsRes.value.data() || {};
   }
 
   return { props: data };
@@ -89,7 +88,7 @@ const StaffInfo = ({
   games,
   musicIds,
   cachedMusic,
-  albumNames,
+  cachedMusicAlbums,
   staffNames,
   gameNames,
   hasAvatar,
@@ -333,7 +332,7 @@ const StaffInfo = ({
                 youtubeId={soundtrack.youtubeId}
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
-                albumName={albumNames[soundtrack.albumId]}
+                albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                 albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                 onPlay={
                   !!soundtrack.youtubeId
@@ -343,7 +342,8 @@ const StaffInfo = ({
                           title: soundtrack.title,
                           youtubeId: soundtrack.youtubeId,
                           artists: soundtrack.artists,
-                          albumName: albumNames[soundtrack.albumId],
+                          albumName:
+                            cachedMusicAlbums[soundtrack.albumId]?.name,
                           albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                         });
                         setQueue(
@@ -352,7 +352,8 @@ const StaffInfo = ({
                             title: s.title,
                             youtubeId: s.youtubeId,
                             artists: s.artists,
-                            albumName: albumNames[soundtrack.albumId],
+                            albumName:
+                              cachedMusicAlbums[soundtrack.albumId]?.name,
                             albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                           }))
                         );
@@ -373,7 +374,7 @@ const StaffInfo = ({
                       youtubeId={soundtrack.youtubeId}
                       duration={soundtrack.duration}
                       trackNumber={idx + 11}
-                      albumName={albumNames[soundtrack.albumId]}
+                      albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                       albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
                       onPlay={
                         !!soundtrack.youtubeId
@@ -383,7 +384,8 @@ const StaffInfo = ({
                                 title: soundtrack.title,
                                 youtubeId: soundtrack.youtubeId,
                                 artists: soundtrack.artists,
-                                albumName: albumNames[soundtrack.albumId],
+                                albumName:
+                                  cachedMusicAlbums[soundtrack.albumId]?.name,
                                 albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                               });
                               setQueue(
@@ -392,7 +394,8 @@ const StaffInfo = ({
                                   title: s.title,
                                   youtubeId: s.youtubeId,
                                   artists: s.artists,
-                                  albumName: albumNames[soundtrack.albumId],
+                                  albumName:
+                                    cachedMusicAlbums[soundtrack.albumId]?.name,
                                   albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
                                 }))
                               );
