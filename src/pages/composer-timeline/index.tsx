@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 
 import {
   Box,
@@ -24,10 +24,6 @@ import {
 } from '~/constants/composerTimeline';
 
 const ComposerTimeline = () => {
-  // approx rounded up height using inspector
-  // change this if another staff member with longer name is added
-  const theadHeight = 156;
-
   // arbitrary max width to not make it too wide
   // add 30px every time a new staff member is added
   const maxFullWidth = 1650;
@@ -63,7 +59,19 @@ const ComposerTimeline = () => {
   const closeOptionsMenu = () => setOptionsAnchorEl(null);
 
   const [isFullWidth, setIsFullWidth] = useState(false);
-  const [isFullHeight, setIsFullHeight] = useState(false);
+  const [isFullPageHeight, setIsFullPageHeight] = useState(false);
+
+  const theadRef = useRef<HTMLTableSectionElement>(null);
+  const [theadHeight, setTheadHeight] = useState(150);
+  useEffect(() => {
+    // height is wrong on first render, so wait a bit
+    const timeout = setTimeout(() => {
+      if (theadRef.current) {
+        setTheadHeight(theadRef.current.clientHeight);
+      }
+    }, 1500);
+    return () => clearTimeout(timeout);
+  }, [theadRef]);
 
   const involvementIcons = {
     composer: (
@@ -237,12 +245,12 @@ const ComposerTimeline = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            setIsFullHeight((prev) => !prev);
+            setIsFullPageHeight((prev) => !prev);
             closeOptionsMenu();
           }}
         >
           <Checkbox
-            checked={isFullHeight}
+            checked={isFullPageHeight}
             size='small'
             disableRipple
             sx={{
@@ -250,11 +258,13 @@ const ComposerTimeline = () => {
               pr: 1.5,
             }}
           />
-          Full Height
+          Full Page Height
         </MenuItem>
       </Menu>
       <Box
+        id='composer-timeline-table'
         sx={{
+          height: '100vh',
           mb: 3,
           overflowX: 'auto',
           // workaround for buggy responsive table
@@ -266,23 +276,25 @@ const ComposerTimeline = () => {
           [`@media (min-width: ${maxFullWidth}px)`]: {
             width: isFullWidth ? maxFullWidth - 48 : '100%',
           },
-          maxHeight: 'calc(100vh - 64px - 100px)',
+          maxHeight: isFullPageHeight ? 'none' : 'calc(100vh - 64px - 100px)',
+          // approx rounded up height using inspector
+          // change this if another staff member with longer name is added
           scrollPaddingTop: theadHeight,
           borderTopLeftRadius: '8px',
           scrollBehavior: 'smooth',
           '& thead': {
             '& tr': {
               '& th': {
-                height: theadHeight,
+                verticalAlign: 'bottom',
                 textAlign: 'left',
                 fontWeight: 'medium',
                 px: 0.65,
                 py: 1,
                 backgroundColor: 'headerBackground',
-                '&:first-child': {
+                '&:first-of-type:not(.staff-member-header)': {
                   pl: 2,
                 },
-                '&:last-child': {
+                '&:last-of-type': {
                   borderTopRightRadius: '8px',
                 },
               },
@@ -300,7 +312,7 @@ const ComposerTimeline = () => {
                 // py: 1,
                 textAlign: 'center',
               },
-              '& > *:first-child': {
+              '& > *:first-child:not(td)': {
                 pl: 2,
               },
               '&:nth-of-type(even)': {
@@ -340,7 +352,7 @@ const ComposerTimeline = () => {
             borderCollapse: 'collapse',
           }}
         >
-          <Box component='thead'>
+          <Box component='thead' ref={theadRef}>
             <Box
               component='tr'
               sx={{
@@ -381,9 +393,11 @@ const ComposerTimeline = () => {
                 ([key, { name, firstGame }], idx) =>
                   shownColumnIndexes.includes(idx + 2) ? (
                     <Box
+                      className='staff-member-header'
                       component='th'
                       key={key}
                       sx={{
+                        width: 30,
                         maxWidth: 30,
                       }}
                     >
@@ -391,15 +405,32 @@ const ComposerTimeline = () => {
                         focusRipple
                         onClick={() => {
                           if (!firstGame) return;
+
                           document
-                            ?.querySelector(`#${key}-first-appearance`)
+                            .querySelector(`#${key}-first-appearance`)
                             ?.scrollIntoView();
-                          window.scrollTo(0, 0);
+
+                          // FIXME: chrome has delay so this doesn't work
+                          // run below if firefox only
+                          if (!navigator.userAgent.includes('Firefox')) return;
+
+                          if (isFullPageHeight) {
+                            // TODO: scroll to '#composer-timeline-table'
+                            const coords = document
+                              .querySelector('#composer-timeline-table')
+                              ?.getBoundingClientRect();
+
+                            if (!coords) return;
+
+                            const x = window.scrollX + coords.left;
+                            const y = window.scrollY + coords.top;
+
+                            window.scrollTo(x, y);
+                          } else {
+                            window.scrollTo(0, 0);
+                          }
                         }}
                         sx={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                          height: theadHeight - 16,
                           color: 'text.primary',
                           textDecoration: 'none',
                           writingMode: 'vertical-rl',
@@ -467,6 +498,10 @@ const ComposerTimeline = () => {
                               ? `${staffId}-first-appearance`
                               : undefined
                           }
+                          sx={{
+                            width: 30,
+                            maxWidth: 30,
+                          }}
                         >
                           {/* @ts-ignore */}
                           {involvementIcons?.[
