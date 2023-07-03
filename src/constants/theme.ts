@@ -19,7 +19,7 @@ declare module '@mui/material/styles' {
 }
 
 export const urbanist = Urbanist({
-  weight: ['400', '700', '900'],
+  weight: ['400', '500', '700', '900'],
   subsets: ['latin'],
   display: 'swap',
   fallback: ['Helvetica', 'Arial', 'sans-serif'],
