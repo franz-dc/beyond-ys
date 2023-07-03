@@ -6,6 +6,8 @@
   "description": "A fan website dedicated to Nihon Falcom's works.",
   "scripts": {
     "dev": "next dev -p 9000",
+    "ts": "tsc --noEmit --incremental",
+    "ts:watch": "yarn ts --watch",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
