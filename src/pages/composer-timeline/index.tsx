@@ -26,7 +26,7 @@ import {
 const ComposerTimeline = () => {
   // arbitrary max width to not make it too wide
   // add 30px every time a new staff member is added
-  const maxFullWidth = 1650;
+  const maxFullWidth = 1680;
 
   const columns = [
     'Release Date',
