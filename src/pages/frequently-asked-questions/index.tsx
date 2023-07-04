@@ -41,7 +41,24 @@ const Faqs = () => (
       >
         hello@beyondys.com
       </Link>{' '}
-      for suggestions, new features, or new content for this site.
+      or by creating an issue at{' '}
+      <Link
+        href='https://github.com/franz-dc/beyond-ys/issues'
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        GitHub
+      </Link>{' '}
+      for suggestions, new features, or new content for this site. If you are
+      interested in contributing to the codebase, please refer to the{' '}
+      <Link
+        href='https://github.com/franz-dc/beyond-ys'
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        GitHub repository
+      </Link>{' '}
+      for more information.
     </FaqContainer>
     <FaqContainer question='Why is there an embedded video while playing music?'>
       All music tracks are from YouTube (Falcom Music Channel) and are embedded
