@@ -88,7 +88,7 @@ export default function MyApp(props: MyAppProps) {
                 />
               )}
               <Component {...pageProps} />
-              <Analytics />
+              <Analytics debug={false} />
             </MusicPlayerProvider>
           </SnackbarProvider>
         </LocalizationProvider>
