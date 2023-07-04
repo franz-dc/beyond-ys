@@ -80,7 +80,10 @@ const HomePage = () => {
           sm: 2,
         }}
         sx={{
-          mb: 2,
+          mb: {
+            xs: 6,
+            md: 2,
+          },
         }}
       >
         <Grid item xs={12} sm>
@@ -659,7 +662,10 @@ const HomePage = () => {
       <Typography
         variant='h2'
         sx={{
-          mt: 10,
+          mt: {
+            xs: 6,
+            md: 10,
+          },
           mb: 3,
           textAlign: 'center',
         }}
