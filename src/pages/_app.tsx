@@ -7,6 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Analytics } from '@vercel/analytics/react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import NextTopLoader from 'nextjs-toploader';
@@ -87,6 +88,7 @@ export default function MyApp(props: MyAppProps) {
                 />
               )}
               <Component {...pageProps} />
+              <Analytics />
             </MusicPlayerProvider>
           </SnackbarProvider>
         </LocalizationProvider>
