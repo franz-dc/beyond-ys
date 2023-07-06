@@ -242,6 +242,9 @@ const AddGame = () => {
 
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
       const formattedCharacterIds = characterIds.map(({ value }) => value);
+      const formattedReleaseDate = releaseDate
+        ? formatISO(releaseDate as Date, { representation: 'date' })
+        : '';
 
       // get all the soundtrack docs
       const cachedSoundtracks: Record<string, MusicSchema> = {};
@@ -278,9 +281,7 @@ const AddGame = () => {
         category,
         subcategory,
         platforms: platforms.map(({ value }) => value),
-        releaseDate: releaseDate
-          ? formatISO(releaseDate as Date, { representation: 'date' })
-          : '',
+        releaseDate: formattedReleaseDate,
         description,
         descriptionSourceName,
         descriptionSourceUrl,
@@ -310,6 +311,7 @@ const AddGame = () => {
         [id]: {
           name,
           category,
+          releaseDate: formattedReleaseDate,
         },
       });
 
@@ -326,6 +328,7 @@ const AddGame = () => {
           [`cachedGames.${id}`]: {
             name,
             category,
+            releaseDate: formattedReleaseDate,
           },
         });
       });

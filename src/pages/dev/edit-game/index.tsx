@@ -225,15 +225,16 @@ const EditGame = () => {
 
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
       const formattedCharacterIds = characterIds.map(({ value }) => value);
+      const formattedReleaseDate = releaseDate
+        ? formatISO(releaseDate as Date, { representation: 'date' })
+        : '';
 
       const newData: GameSchema = {
         name,
         category,
         subcategory,
         platforms: platforms.map(({ value }) => value),
-        releaseDate: releaseDate
-          ? formatISO(releaseDate as Date, { representation: 'date' })
-          : '',
+        releaseDate: formattedReleaseDate,
         description,
         descriptionSourceName,
         descriptionSourceUrl,
@@ -341,6 +342,7 @@ const EditGame = () => {
             [`cachedGame.${id}`]: {
               name,
               category,
+              releaseDate: formattedReleaseDate,
             },
           });
 
@@ -364,6 +366,7 @@ const EditGame = () => {
             [`cachedGames.${id}`]: {
               name,
               category,
+              releaseDate: formattedReleaseDate,
             },
           });
         });
@@ -373,6 +376,7 @@ const EditGame = () => {
           [id]: {
             name,
             category,
+            releaseDate: formattedReleaseDate,
           },
         });
       }
