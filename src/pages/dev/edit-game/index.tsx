@@ -55,17 +55,14 @@ import {
 const EditGame = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [gameNames, setGameNames] = useState<Record<string, string>>({});
-  const [isLoadingGameNames, setIsLoadingGameNames] = useState(true);
+  const [cachedGames, setCachedGames] = useState<Record<string, string>>({});
+  const [isLoadingCachedGames, setIsLoadingCachedGames] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'gameNames'),
-      (docSnap) => {
-        setGameNames(docSnap.data() || {});
-        setIsLoadingGameNames(false);
-      }
-    );
+    const unsubscribe = onSnapshot(doc(cacheCollection, 'games'), (docSnap) => {
+      setCachedGames(docSnap.data() || {});
+      setIsLoadingCachedGames(false);
+    });
 
     return () => unsubscribe();
   }, []);
@@ -248,18 +245,27 @@ const EditGame = () => {
         cachedCharacters: currentGameData?.cachedCharacters || {},
       };
 
-      // update these if the name has changed
-      if (currentGameData?.name !== name) {
+      // update these if the name or category have changed
+      if (
+        currentGameData?.name !== name ||
+        currentGameData?.category !== category
+      ) {
         // update all character docs that depend on this game
         currentGameData?.characterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
-            [`cachedGameNames.${id}`]: name,
+            [`cachedGames.${id}`]: {
+              name,
+              category,
+            },
           });
         });
 
-        // update the gameName cache
-        batch.update(doc(cacheCollection, 'game'), {
-          [id]: name,
+        // update the games cache
+        batch.update(doc(cacheCollection, 'games'), {
+          [id]: {
+            name,
+            category,
+          },
         });
       }
 
@@ -315,7 +321,7 @@ const EditGame = () => {
         removedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayRemove(id),
-            [`cachedGameNames.${id}`]: deleteField(),
+            [`cachedGames.${id}`]: deleteField(),
           });
 
           // remove the character from the game's cachedCharacters
@@ -332,7 +338,10 @@ const EditGame = () => {
         addedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayUnion(id),
-            [`cachedGameNames.${id}`]: name,
+            [`cachedGame.${id}`]: {
+              name,
+              category,
+            },
           });
 
           // add the character to the game's cachedCharacters
@@ -352,13 +361,19 @@ const EditGame = () => {
         // update all character docs that depend on this game
         retainedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
-            [`cachedGameNames.${id}`]: name,
+            [`cachedGames.${id}`]: {
+              name,
+              category,
+            },
           });
         });
 
-        // update the gameName cache
-        batch.update(doc(cacheCollection, 'game'), {
-          [id]: name,
+        // update the games cache
+        batch.update(doc(cacheCollection, 'games'), {
+          [id]: {
+            name,
+            category,
+          },
         });
       }
 
@@ -476,11 +491,11 @@ const EditGame = () => {
           <AutocompleteElement
             name='id'
             label='Game'
-            options={Object.entries(gameNames).map(([id, label]) => ({
+            options={Object.entries(cachedGames).map(([id, label]) => ({
               id,
               label,
             }))}
-            loading={isLoadingGameNames}
+            loading={isLoadingCachedGames}
             autocompleteProps={{
               onChange: (_, v) => changeGame(v.id),
               fullWidth: true,

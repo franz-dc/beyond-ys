@@ -17,12 +17,16 @@ import { Link, MainLayout, MusicItem } from '~/components';
 import { cacheCollection, staffInfosCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
-import { MusicAlbumCacheSchema, StaffInfoSchema } from '~/schemas';
+import {
+  GameCacheSchema,
+  MusicAlbumCacheSchema,
+  StaffInfoSchema,
+} from '~/schemas';
 
 type Props = StaffInfoSchema & {
   id: string;
   staffNames: Record<string, string>;
-  gameNames: Record<string, string>;
+  cachedGames: Record<string, GameCacheSchema>;
   cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
@@ -46,7 +50,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     id: staffId,
     updatedAt: docSnap.data().updatedAt.toMillis(),
     staffNames: {},
-    gameNames: {},
+    cachedGames: {},
     cachedMusicAlbums: {},
     // remove updatedAt from cachedMusic values to prevent next.js errors
     cachedMusic: Object.fromEntries(
@@ -56,10 +60,10 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ),
   };
 
-  const [staffNamesRes, gameNamesRes, cachedMusicAlbumsRes] =
+  const [staffNamesRes, cachedGamesRes, cachedMusicAlbumsRes] =
     await Promise.allSettled([
       getDoc(doc(cacheCollection, 'staffNames')),
-      getDoc(doc(cacheCollection, 'gameNames')),
+      getDoc(doc(cacheCollection, 'games')),
       getDoc(doc(cacheCollection, 'musicAlbums')),
     ]);
 
@@ -67,8 +71,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     data.staffNames = staffNamesRes.value.data() || {};
   }
 
-  if (gameNamesRes.status === 'fulfilled') {
-    data.gameNames = gameNamesRes.value.data() || {};
+  if (cachedGamesRes.status === 'fulfilled') {
+    data.cachedGames = cachedGamesRes.value.data() || {};
   }
 
   if (cachedMusicAlbumsRes.status === 'fulfilled') {
@@ -90,7 +94,7 @@ const StaffInfo = ({
   cachedMusic,
   cachedMusicAlbums,
   staffNames,
-  gameNames,
+  cachedGames,
   hasAvatar,
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
@@ -300,7 +304,7 @@ const StaffInfo = ({
                   </Box>
                   <Box sx={{ width: '100%' }}>
                     <Typography sx={{ fontWeight: 'medium' }}>
-                      {gameNames[game.gameId] || 'Unknown game'}
+                      {cachedGames[game.gameId]?.name || 'Unknown game'}
                     </Typography>
                     <Typography
                       sx={{

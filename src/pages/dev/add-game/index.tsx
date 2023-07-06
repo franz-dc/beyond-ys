@@ -48,17 +48,14 @@ import {
 const AddGame = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [gameNames, setGameNames] = useState<Record<string, string>>({});
-  const [isLoadingGameNames, setIsLoadingGameNames] = useState(true);
+  const [cachedGames, setCachedGames] = useState<Record<string, string>>({});
+  const [isLoadingCachedGames, setIsLoadingCachedGames] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'gameNames'),
-      (docSnap) => {
-        setGameNames(docSnap.data() || {});
-        setIsLoadingGameNames(false);
-      }
-    );
+    const unsubscribe = onSnapshot(doc(cacheCollection, 'games'), (docSnap) => {
+      setCachedGames(docSnap.data() || {});
+      setIsLoadingCachedGames(false);
+    });
 
     return () => unsubscribe();
   }, []);
@@ -131,7 +128,7 @@ const AddGame = () => {
       id: z
         .string()
         .min(1)
-        .refine((value) => !gameNames[value], {
+        .refine((value) => !cachedGames[value], {
           message: 'Slug is already taken.',
         })
         .refine(
@@ -231,9 +228,9 @@ const AddGame = () => {
     characterSpoilerIds,
     soundtrackIds,
   }: Schema) => {
-    // check if id is already taken (using the gameNames cache)
+    // check if id is already taken (using the games cache)
     // failsafe in case the user somehow bypasses the form validation
-    if (gameNames[id]) {
+    if (cachedGames[id]) {
       enqueueSnackbar(`Slug '${id}' is already taken.`, {
         variant: 'error',
       });
@@ -301,13 +298,19 @@ const AddGame = () => {
       // update all character docs that depend on this game
       currentGameData?.characterIds.forEach((characterId) => {
         batch.update(doc(charactersCollection, characterId), {
-          [`cachedGameNames.${id}`]: name,
+          [`cachedGames.${id}`]: {
+            name,
+            category,
+          },
         });
       });
 
       // update the gameName cache
-      batch.update(doc(cacheCollection, 'gameNames'), {
-        [id]: name,
+      batch.update(doc(cacheCollection, 'games'), {
+        [id]: {
+          name,
+          category,
+        },
       });
 
       formattedSoundtrackIds.forEach((soundtrackId) => {
@@ -320,7 +323,10 @@ const AddGame = () => {
       formattedCharacterIds.forEach((characterId) => {
         batch.update(doc(charactersCollection, characterId), {
           gameIds: arrayUnion(id),
-          [`cachedGameNames.${id}`]: name,
+          [`cachedGames.${id}`]: {
+            name,
+            category,
+          },
         });
       });
 
@@ -673,7 +679,7 @@ const AddGame = () => {
         <LoadingButton
           type='submit'
           variant='contained'
-          loading={isSubmitting || isLoadingGameNames}
+          loading={isSubmitting || isLoadingCachedGames}
           fullWidth
         >
           Submit

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
+  Box,
   Button,
   CircularProgress,
   Paper,
@@ -39,6 +40,7 @@ import { COUNTRIES } from '~/constants';
 import {
   CharacterCacheSchema,
   CharacterSchema,
+  GameCacheSchema,
   characterSchema,
 } from '~/schemas';
 
@@ -77,17 +79,16 @@ const EditCharacter = () => {
     return () => unsubscribe();
   }, []);
 
-  const [gameNames, setGameNames] = useState<Record<string, string>>({});
-  const [isLoadingGameNames, setIsLoadingGameNames] = useState(true);
+  const [cachedGames, setCachedGames] = useState<
+    Record<string, GameCacheSchema>
+  >({});
+  const [isLoadingCachedGames, setIsLoadingCachedGames] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'gameNames'),
-      (docSnap) => {
-        setGameNames(docSnap.data() || {});
-        setIsLoadingGameNames(false);
-      }
-    );
+    const unsubscribe = onSnapshot(doc(cacheCollection, 'games'), (docSnap) => {
+      setCachedGames(docSnap.data() || {});
+      setIsLoadingCachedGames(false);
+    });
 
     return () => unsubscribe();
   }, []);
@@ -101,7 +102,7 @@ const EditCharacter = () => {
     .omit({
       extraImages: true,
       gameIds: true,
-      cachedGameNames: true,
+      cachedGames: true,
       hasMainImage: true,
       hasAvatar: true,
       updatedAt: true,
@@ -252,7 +253,7 @@ const EditCharacter = () => {
       const character = characterSnap.data();
 
       if (character) {
-        const { extraImages, gameIds, cachedGameNames, updatedAt, ...rest } =
+        const { extraImages, gameIds, cachedGames, updatedAt, ...rest } =
           character;
 
         setCurrentCharacterData(character);
@@ -276,7 +277,7 @@ const EditCharacter = () => {
           voiceActors: [],
           updatedAt: null,
           gameIds: [],
-          cachedGameNames: {},
+          cachedGames: {},
           hasMainImage: false,
           hasAvatar: false,
         });
@@ -411,9 +412,9 @@ const EditCharacter = () => {
                 <Stack key={gameId.id} direction='row' spacing={2}>
                   <TextField
                     value={
-                      isLoadingGameNames
+                      isLoadingCachedGames
                         ? 'Loading...'
-                        : gameNames[gameId.value] ||
+                        : cachedGames[gameId.value]?.name ||
                           `Unknown game (${gameId.value})`
                     }
                     label={`Game ${idx + 1}`}
@@ -451,12 +452,14 @@ const EditCharacter = () => {
               ))}
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-              <Typography variant='h2'>Voice Actors</Typography>
-              {voiceActors.length === 0 && (
-                <Typography color='warning.main' sx={{ mb: 2 }}>
-                  No voice actors added yet.
-                </Typography>
-              )}
+              <Box sx={{ mb: 2 }}>
+                <Typography variant='h2'>Voice Actors</Typography>
+                {voiceActors.length === 0 && (
+                  <Typography color='warning.main'>
+                    No voice actors added yet.
+                  </Typography>
+                )}
+              </Box>
               {voiceActors.map((voiceActor, idx) => (
                 <Paper
                   key={voiceActor.id}

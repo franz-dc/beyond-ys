@@ -28,22 +28,21 @@ import { z } from 'zod';
 
 import { GenericHeader, MainLayout } from '~/components';
 import { cacheCollection, db, staffInfosCollection } from '~/configs';
-import { StaffInfoSchema, staffInfoSchema } from '~/schemas';
+import { GameCacheSchema, StaffInfoSchema, staffInfoSchema } from '~/schemas';
 
 const EditStaff = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [gameNames, setGameNames] = useState<Record<string, string>>({});
-  const [isLoadingGameNames, setIsLoadingGameNames] = useState(true);
+  const [cachedGames, setCachedGames] = useState<
+    Record<string, GameCacheSchema>
+  >({});
+  const [isLoadingCachedGames, setIsLoadingCachedGames] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'gameNames'),
-      (docSnap) => {
-        setGameNames(docSnap.data() || {});
-        setIsLoadingGameNames(false);
-      }
-    );
+    const unsubscribe = onSnapshot(doc(cacheCollection, 'games'), (docSnap) => {
+      setCachedGames(docSnap.data() || {});
+      setIsLoadingCachedGames(false);
+    });
 
     return () => unsubscribe();
   }, []);
@@ -370,8 +369,8 @@ const EditStaff = () => {
                     <AutocompleteElement
                       name={`games.${idx}.gameId`}
                       label={`Game ${idx + 1}`}
-                      options={Object.entries(gameNames)
-                        .map(([id, label]) => ({
+                      options={Object.entries(cachedGames)
+                        .map(([id, { name: label }]) => ({
                           id,
                           label,
                         }))
@@ -381,7 +380,7 @@ const EditStaff = () => {
                             !games.some((g) => g.gameId === id) ||
                             game.gameId === id
                         )}
-                      loading={isLoadingGameNames}
+                      loading={isLoadingCachedGames}
                       autocompleteProps={{ fullWidth: true }}
                       textFieldProps={{ margin: 'normal' }}
                       matchId
@@ -453,7 +452,7 @@ const EditStaff = () => {
                 variant='outlined'
                 onClick={() => appendGame({ gameId: '', roles: [] })}
                 fullWidth
-                disabled={games.length >= Object.keys(gameNames).length}
+                disabled={games.length >= Object.keys(cachedGames).length}
               >
                 Add Game
               </Button>

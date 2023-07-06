@@ -35,7 +35,12 @@ export const characterSchema = z.object({
   // not to be edited directly
   // for reducing the amount of reads
   gameIds: z.string().min(1).array(),
-  cachedGameNames: z.record(z.string()),
+  cachedGames: z.record(
+    z.object({
+      name: z.string(),
+      category: z.string(),
+    })
+  ),
 });
 
 export type CharacterSchema = z.infer<typeof characterSchema>;

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Button, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import {
   doc,
   onSnapshot,
@@ -65,7 +65,7 @@ const AddCharacter = () => {
     .omit({
       extraImages: true,
       gameIds: true,
-      cachedGameNames: true,
+      cachedGames: true,
       hasMainImage: true,
       hasAvatar: true,
       updatedAt: true,
@@ -148,7 +148,7 @@ const AddCharacter = () => {
         accentColor,
         extraImages: [],
         gameIds: [],
-        cachedGameNames: {},
+        cachedGames: {},
         hasMainImage: false,
         hasAvatar: false,
         updatedAt: serverTimestamp(),
@@ -306,12 +306,14 @@ const AddCharacter = () => {
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-          <Typography variant='h2'>Voice Actors</Typography>
-          {voiceActors.length === 0 && (
-            <Typography color='warning.main' sx={{ mb: 2 }}>
-              No voice actors added yet.
-            </Typography>
-          )}
+          <Box sx={{ mb: 2 }}>
+            <Typography variant='h2'>Voice Actors</Typography>
+            {voiceActors.length === 0 && (
+              <Typography color='warning.main'>
+                No voice actors added yet.
+              </Typography>
+            )}
+          </Box>
           {voiceActors.map((voiceActor, idx) => (
             <Paper
               key={voiceActor.id}

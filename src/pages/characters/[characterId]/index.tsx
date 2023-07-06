@@ -64,7 +64,7 @@ const CharacterInfo = ({
   descriptionSourceUrl,
   imageDirection,
   gameIds,
-  cachedGameNames,
+  cachedGames,
   voiceActors,
   staffNames,
   extraImages,
@@ -73,7 +73,7 @@ const CharacterInfo = ({
   const formattedGames = gameIds
     .map((gameId) => ({
       id: gameId,
-      name: cachedGameNames[gameId],
+      name: cachedGames[gameId]?.name,
     }))
     .filter((g) => !!g.name);
 
