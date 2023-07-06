@@ -491,7 +491,7 @@ const HomePage = () => {
                 justifyContent: 'center',
                 height: '100%',
                 pl: {
-                  xs: '134px',
+                  xs: '144px',
                   sm: '184px',
                 },
                 pr: 4,
@@ -524,7 +524,7 @@ const HomePage = () => {
                 bottom: 0,
                 left: 16,
                 width: {
-                  xs: 110,
+                  xs: 120,
                   sm: 160,
                 },
                 height: 'auto',
@@ -614,7 +614,7 @@ const HomePage = () => {
                     xs2: 4,
                   },
                   pr: {
-                    xs: '140px',
+                    xs: '150px',
                     sm: '180px',
                   },
                   textAlign: 'right',
@@ -647,7 +647,7 @@ const HomePage = () => {
                   bottom: 0,
                   right: 16,
                   width: {
-                    xs: 110,
+                    xs: 120,
                     sm: 150,
                   },
                   height: 'auto',
