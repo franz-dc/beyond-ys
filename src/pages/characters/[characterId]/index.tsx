@@ -364,7 +364,7 @@ const CharacterInfo = ({
                     ...(hasMainImage
                       ? [
                           {
-                            src: `${CLOUD_STORAGE_URL}/character/${id}`,
+                            src: `${CLOUD_STORAGE_URL}/characters/${id}`,
                             alt: name,
                             title: name,
                           },
