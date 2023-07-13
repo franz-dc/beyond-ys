@@ -15,6 +15,7 @@ declare module '@mui/material/styles' {
     xs3: true;
     sm2: true;
     sm3: true;
+    sm4: true;
   }
 }
 
@@ -34,6 +35,7 @@ export const theme = createTheme({
       sm: 600,
       sm2: 670, // for character item
       sm3: 750, // for music album item
+      sm4: 780, // for game item
       md: 900,
       lg: 1200,
       xl: 1536,

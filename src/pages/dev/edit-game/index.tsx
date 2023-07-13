@@ -46,6 +46,7 @@ import {
 import { GAME_PLATFORMS } from '~/constants';
 import {
   CharacterCacheSchema,
+  GameCacheSchema,
   GameSchema,
   MusicAlbumCacheSchema,
   MusicCacheSchema,
@@ -55,7 +56,9 @@ import {
 const EditGame = () => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const [cachedGames, setCachedGames] = useState<Record<string, string>>({});
+  const [cachedGames, setCachedGames] = useState<
+    Record<string, GameCacheSchema>
+  >({});
   const [isLoadingCachedGames, setIsLoadingCachedGames] = useState(true);
 
   useEffect(() => {
@@ -495,10 +498,12 @@ const EditGame = () => {
           <AutocompleteElement
             name='id'
             label='Game'
-            options={Object.entries(cachedGames).map(([id, label]) => ({
-              id,
-              label,
-            }))}
+            options={Object.entries(cachedGames).map(
+              ([id, { name: label }]) => ({
+                id,
+                label,
+              })
+            )}
             loading={isLoadingCachedGames}
             autocompleteProps={{
               onChange: (_, v) => changeGame(v.id),

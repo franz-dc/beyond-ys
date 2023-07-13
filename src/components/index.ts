@@ -6,6 +6,9 @@ export { default as Footer } from './Footer';
 export { default as FaqContainer } from './FaqContainer';
 export * from './FaqContainer';
 
+export { default as GameItem } from './GameItem';
+export * from './GameItem';
+
 export { default as GenericHeader } from './GenericHeader';
 export * from './GenericHeader';
 
