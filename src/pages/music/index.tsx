@@ -76,10 +76,7 @@ const AlbumArt = ({ id }: { id: string }) => {
             objectFit: 'cover',
             borderRadius: 1,
           }}
-          onError={() => {
-            console.error(`Failed to load album art for ${id}`);
-            setIsError(true);
-          }}
+          onError={() => setIsError(true)}
         />
       )}
     </Box>
