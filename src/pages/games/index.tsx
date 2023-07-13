@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
+import slugify from 'slugify';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { GameItem, GenericHeader, MainLayout, Searchbar } from '~/components';
@@ -99,7 +100,14 @@ const GameList = ({ description, categorizedGames }: Props) => {
 
         return (
           <Box key={category} sx={{ mb: 4 }}>
-            <Typography variant='h2' sx={{ mb: 1 }}>
+            <Typography
+              variant='h2'
+              sx={{ mb: 1 }}
+              id={slugify(category, {
+                lower: true,
+                remove: /[*+~.()'"!:@/]/g,
+              })}
+            >
               {category}
             </Typography>
             <Divider light sx={{ mb: 2 }} />
