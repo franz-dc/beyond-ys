@@ -232,13 +232,10 @@ const GamePage = ({
                   xs: 120,
                   md: 175,
                 },
-                borderRadius: 2,
+                aspectRatio: '2 / 3',
                 backgroundColor: 'background.paper',
-                minHeight: {
-                  xs: 120,
-                  md: 175,
-                },
                 color: 'transparent',
+                borderRadius: 2,
               }}
             >
               <Box
@@ -247,7 +244,8 @@ const GamePage = ({
                 alt='game cover'
                 sx={{
                   width: '100%',
-                  height: 'auto',
+                  height: '100%',
+                  objectFit: 'cover',
                   borderRadius: 2,
                 }}
               />
