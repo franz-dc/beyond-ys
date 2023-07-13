@@ -88,25 +88,31 @@ const GameList = ({ description, categorizedGames }: Props) => {
         onChange={(e) => debounce(e.target.value)}
         ContainerProps={{ sx: { mb: 3 } }}
       />
-      {categorizedGames.map(([category, games]) => (
-        <Box key={category} sx={{ mb: 4 }}>
-          <Typography variant='h2' sx={{ mb: 1 }}>
-            {category}
-          </Typography>
-          <Divider light sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-            {games
-              .filter(({ name }) =>
-                name.toLowerCase().includes(searchQuery.toLowerCase())
-              )
-              .map((game) => (
+      {categorizedGames.map(([category, games]) => {
+        const filteredGames = searchQuery
+          ? games.filter(({ name }) =>
+              name.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+          : games;
+
+        if (!filteredGames.length) return null;
+
+        return (
+          <Box key={category} sx={{ mb: 4 }}>
+            <Typography variant='h2' sx={{ mb: 1 }}>
+              {category}
+            </Typography>
+            <Divider light sx={{ mb: 2 }} />
+            <Grid container spacing={2}>
+              {filteredGames.map((game) => (
                 <Grid item xs={6} xs3={4} sm4={3} md={2.4} key={game.id}>
                   <GameItem {...game} />
                 </Grid>
               ))}
-          </Grid>
-        </Box>
-      ))}
+            </Grid>
+          </Box>
+        );
+      })}
     </MainLayout>
   );
 };
