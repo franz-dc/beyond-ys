@@ -19,7 +19,7 @@ import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
 
-import { Link, MainLayout } from '~/components';
+import { GameItem, Link, MainLayout } from '~/components';
 import { cacheCollection, charactersCollection } from '~/configs';
 import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
 import { CharacterSchema } from '~/schemas';
@@ -63,19 +63,23 @@ const CharacterInfo = ({
   descriptionSourceName,
   descriptionSourceUrl,
   imageDirection,
-  gameIds,
   cachedGames,
   voiceActors,
   staffNames,
   extraImages,
   hasMainImage,
 }: Props) => {
-  const formattedGames = gameIds
-    .map((gameId) => ({
-      id: gameId,
-      name: cachedGames[gameId]?.name,
+  const formattedGames = Object.entries(cachedGames)
+    .map(([id, game]) => ({
+      id,
+      ...game,
     }))
-    .filter((g) => !!g.name);
+    // sorting: most recent first, empty release date last
+    .sort(({ releaseDate: a }, { releaseDate: b }) => {
+      if (!a) return 1;
+      if (!b) return -1;
+      return (b as string).localeCompare(a as string);
+    });
 
   const [photoIndex, setPhotoIndex] = useState(-1);
 
@@ -428,70 +432,24 @@ const CharacterInfo = ({
                 <Typography variant='h2' sx={{ mb: 2 }}>
                   Game Appearances
                 </Typography>
-                <Stack direction='column' spacing={1}>
-                  {formattedGames.slice(0, 10).map((game) => (
-                    <ButtonBase
-                      key={game.id}
-                      focusRipple
-                      component={Link}
-                      href={`/games/${game.id}`}
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: 2,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          width: '100%',
-                          height: '100%',
-                          px: 2,
-                          py: 1.5,
-                          backgroundColor: 'background.paper',
-                          borderRadius: 2,
-                        }}
-                      >
-                        <Typography>{game.name}</Typography>
-                      </Box>
-                    </ButtonBase>
+                <Grid container spacing={2}>
+                  {formattedGames.slice(0, 8).map((game) => (
+                    <Grid item xs={6} xs3={4} sm4={3} key={game.id}>
+                      <GameItem {...game} />
+                    </Grid>
                   ))}
-                </Stack>
-                {formattedGames.length > 10 && (
+                </Grid>
+                {formattedGames.length > 8 && (
                   <>
                     <Collapse in={isGamesExpanded}>
-                      <Box sx={{ mt: 1 }}>
-                        <Stack direction='column' spacing={1}>
-                          {formattedGames.slice(10).map((game) => (
-                            <ButtonBase
-                              key={game.id}
-                              focusRipple
-                              component={Link}
-                              href={`/games/${game.id}`}
-                              sx={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: 2,
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  width: '100%',
-                                  height: '100%',
-                                  px: 2,
-                                  py: 1.5,
-                                  backgroundColor: 'background.paper',
-                                  borderRadius: 2,
-                                }}
-                              >
-                                <Typography>{game.name}</Typography>
-                              </Box>
-                            </ButtonBase>
+                      <Box sx={{ mt: 2 }}>
+                        <Grid container spacing={2}>
+                          {formattedGames.slice(8).map((game) => (
+                            <Grid item xs={6} xs3={4} sm4={3} key={game.id}>
+                              <GameItem {...game} />
+                            </Grid>
                           ))}
-                        </Stack>
+                        </Grid>
                       </Box>
                     </Collapse>
                     <ButtonBase
@@ -506,7 +464,7 @@ const CharacterInfo = ({
                       <Typography color='text.secondary' fontSize={14}>
                         {isGamesExpanded
                           ? 'Show less'
-                          : `Show all (+${formattedGames.length - 10})`}
+                          : `Show all (+${formattedGames.length - 8})`}
                       </Typography>
                     </ButtonBase>
                   </>
