@@ -179,6 +179,7 @@ const GamePage = ({
           src={`${CLOUD_STORAGE_URL}/game-banners/${id}`}
           alt='game banner'
           sx={{
+            display: 'block',
             width: {
               xs: 'calc(100% + 32px)',
               sm: '100%',
@@ -243,6 +244,7 @@ const GamePage = ({
                 src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
                 alt='game cover'
                 sx={{
+                  display: 'block',
                   width: '100%',
                   height: '100%',
                   objectFit: 'cover',
