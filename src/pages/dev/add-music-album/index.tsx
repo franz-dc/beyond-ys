@@ -173,18 +173,21 @@ const AddMusicAlbum = () => {
 
       // populate cachedMusic from musicIds
       const formattedMusicIds = musicIds.map(({ value }) => value);
-      const newMusicQuery = query(
-        musicCollection,
-        where(documentId(), 'in', formattedMusicIds)
-      );
-      const newMusicQuerySnap = await getDocs(newMusicQuery);
 
       const cachedMusic: Record<string, MusicSchema> = {};
 
-      newMusicQuerySnap.forEach((doc) => {
-        if (!doc.exists()) return;
-        cachedMusic[doc.id] = doc.data();
-      });
+      if (formattedMusicIds.length > 0) {
+        const newMusicQuery = query(
+          musicCollection,
+          where(documentId(), 'in', formattedMusicIds)
+        );
+        const newMusicQuerySnap = await getDocs(newMusicQuery);
+
+        newMusicQuerySnap.forEach((doc) => {
+          if (!doc.exists()) return;
+          cachedMusic[doc.id] = doc.data();
+        });
+      }
 
       let formattedReleaseDate = '';
 
