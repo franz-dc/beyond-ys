@@ -131,6 +131,8 @@ const MusicItem: FC<MusicItemProps> = ({
                   height: 42,
                   objectFit: 'cover',
                   userSelect: 'none',
+                  // hide alt text on firefox
+                  color: 'transparent',
                 }}
                 unoptimized
               />

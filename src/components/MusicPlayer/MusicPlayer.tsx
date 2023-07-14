@@ -502,6 +502,8 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                     height: 42,
                     objectFit: 'cover',
                     userSelect: 'none',
+                    // hide alt text on firefox
+                    color: 'transparent',
                   }}
                   unoptimized
                 />
