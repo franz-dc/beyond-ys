@@ -95,7 +95,7 @@ const AddCharacter = () => {
       descriptionSourceName: '',
       descriptionSourceUrl: '',
       containsSpoilers: false,
-      accentColor: '#000000',
+      accentColor: '#161a22',
       imageDirection: 'left',
     },
     resolver: zodResolver(schema),
