@@ -41,3 +41,14 @@ export const COUNTRIES = [
     language: 'Korean',
   },
 ];
+
+export const LANGUAGES = [
+  {
+    id: '',
+    label: 'Unknown',
+  },
+  ...COUNTRIES.map((c) => ({
+    id: c.language,
+    label: c.language,
+  })),
+];
