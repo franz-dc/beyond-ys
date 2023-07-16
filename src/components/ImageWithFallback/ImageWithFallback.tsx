@@ -20,6 +20,7 @@ const ImageWithFallback: FC<ImageProps> = (props) => {
           draggable={false}
           style={{
             objectFit: 'contain',
+            ...props.style,
           }}
         />
       ) : (
