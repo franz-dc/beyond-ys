@@ -700,7 +700,6 @@ const EditGame = () => {
                         }}
                       />
                     }
-                    id={`characterSpoilerIds.${idx}.isSpoiler`}
                     label='Spoiler'
                     sx={{
                       mt: '16px !important',
@@ -750,9 +749,6 @@ const EditGame = () => {
               >
                 Add Character
               </Button>
-            </Paper>
-            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
-              <Typography variant='h2'>Character Spoilers</Typography>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Soundtracks</Typography>

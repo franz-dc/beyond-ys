@@ -562,7 +562,6 @@ const AddGame = () => {
                     }}
                   />
                 }
-                id={`characterSpoilerIds.${idx}.isSpoiler`}
                 label='Spoiler'
                 sx={{
                   mt: '16px !important',
