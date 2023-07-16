@@ -342,7 +342,7 @@ const EditGame = () => {
         addedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayUnion(id),
-            [`cachedGame.${id}`]: {
+            [`cachedGames.${id}`]: {
               name,
               category,
               releaseDate: formattedReleaseDate,

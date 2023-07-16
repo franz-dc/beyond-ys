@@ -38,7 +38,6 @@ import {
 import { GAME_PLATFORMS } from '~/constants';
 import {
   CharacterCacheSchema,
-  GameSchema,
   MusicAlbumCacheSchema,
   MusicCacheSchema,
   MusicSchema,
@@ -210,10 +209,6 @@ const AddGame = () => {
     name: 'characterIds',
   });
 
-  const [currentGameData, setCurrentGameData] = useState<GameSchema | null>(
-    null
-  );
-
   const handleSave = async ({
     id,
     name,
@@ -296,16 +291,6 @@ const AddGame = () => {
       // update the game doc
       batch.set(doc(gamesCollection, id), newData);
 
-      // update all character docs that depend on this game
-      currentGameData?.characterIds.forEach((characterId) => {
-        batch.update(doc(charactersCollection, characterId), {
-          [`cachedGames.${id}`]: {
-            name,
-            category,
-          },
-        });
-      });
-
       // update the gameName cache
       batch.update(doc(cacheCollection, 'games'), {
         [id]: {
@@ -334,14 +319,6 @@ const AddGame = () => {
       });
 
       await batch.commit();
-
-      setCurrentGameData((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          ...newData,
-        };
-      });
 
       reset();
 
