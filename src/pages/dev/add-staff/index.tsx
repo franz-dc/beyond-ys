@@ -139,12 +139,14 @@ const AddStaff = () => {
     try {
       const staffInfoDocRef = doc(staffInfosCollection, id);
 
+      const formattedRoles = roles.map(({ value }) => value);
+
       const batch = writeBatch(db);
 
       // create the staff info doc and fill the rest with blank data
       batch.set(staffInfoDocRef, {
         name,
-        roles: roles.map(({ value }) => value),
+        roles: formattedRoles,
         updatedAt: serverTimestamp(),
         cachedMusic: {},
         musicIds: [],
@@ -159,7 +161,7 @@ const AddStaff = () => {
 
       // update the staffRoles cache
       batch.update(doc(cacheCollection, 'staffRoles'), {
-        [id]: [],
+        [id]: formattedRoles,
       });
 
       await batch.commit();

@@ -189,12 +189,14 @@ const EditStaff = () => {
     try {
       const staffInfoDocRef = doc(staffInfosCollection, id);
 
+      const formattedRoles = values.roles.map((role) => role.value);
+
       const batch = writeBatch(db);
 
       // update staff info
       batch.update(staffInfoDocRef, {
         ...values,
-        roles: values.roles.map((role) => role.value),
+        roles: formattedRoles,
         updatedAt: serverTimestamp(),
       });
 
@@ -214,7 +216,7 @@ const EditStaff = () => {
         const StaffRolesDocRef = doc(cacheCollection, 'staffRoles');
 
         batch.update(StaffRolesDocRef, {
-          [id]: values.roles.map((role) => role.value),
+          [id]: formattedRoles,
         });
       }
 
@@ -223,7 +225,7 @@ const EditStaff = () => {
       setCurrentStaffData((prev) => ({
         ...prev!,
         ...values,
-        roles: values.roles.map((role) => role.value),
+        roles: formattedRoles,
       }));
 
       setStaffNames((prev) => ({
