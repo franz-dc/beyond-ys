@@ -145,6 +145,10 @@ const AddCharacter = () => {
       containsSpoilers: false,
       accentColor: '#161a22',
       imageDirection: 'left',
+      // images
+      avatar: null,
+      mainImage: null,
+      extraImages: [],
     },
     resolver: zodResolver(schema),
   });
