@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 
 import { Box, Container } from '@mui/material';
-import type { ContainerProps } from '@mui/material';
+import type { BoxProps, ContainerProps } from '@mui/material';
 import Head from 'next/head';
 
 import { SITE_NAME } from '~/constants';
@@ -9,7 +9,7 @@ import { SITE_NAME } from '~/constants';
 import Footer from '../Footer';
 import Navbar from '../Navbar';
 
-export interface MainLayoutProps {
+export interface MainLayoutProps extends BoxProps {
   title?: string;
   description?: string;
   image?: string;
@@ -22,12 +22,15 @@ const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
   image,
   children,
   ContainerProps,
+  ...rest
 }) => (
   <Box
+    {...rest}
     sx={{
       minHeight: '100vh',
       display: 'grid',
       gridTemplateRows: 'auto 1fr auto',
+      ...rest?.sx,
     }}
   >
     <Head>
