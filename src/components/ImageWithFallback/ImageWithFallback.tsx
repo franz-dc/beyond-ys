@@ -13,7 +13,15 @@ const ImageWithFallback: FC<ImageProps> = (props) => {
     <>
       {!isError ? (
         // eslint-disable-next-line jsx-a11y/alt-text
-        <Image {...props} onError={() => setIsError(true)} />
+        <Image
+          {...props}
+          onError={() => setIsError(true)}
+          unoptimized
+          draggable={false}
+          style={{
+            objectFit: 'contain',
+          }}
+        />
       ) : (
         <Box
           sx={{

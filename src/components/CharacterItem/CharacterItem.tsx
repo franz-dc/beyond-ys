@@ -17,6 +17,7 @@ export interface CharacterItemProps
   isSpoiler?: boolean;
   isSpoilerShown?: boolean;
   BoxProps?: BoxProps;
+  disableLink?: boolean; // for use in avatar preview
 }
 
 const CharacterItem: FC<CharacterItemProps> = ({
@@ -27,14 +28,16 @@ const CharacterItem: FC<CharacterItemProps> = ({
   isSpoiler = false,
   isSpoilerShown = true,
   BoxProps,
+  disableLink = false,
   ...rest
 }) => {
   return (
+    // @ts-ignore
     <ButtonBase
       {...rest}
-      component={Link}
       focusRipple
-      href={`/characters/${id}`}
+      component={disableLink ? 'div' : Link}
+      href={disableLink ? undefined : `/characters/${id}`}
       sx={{
         width: '100%',
         borderRadius: 2,
@@ -51,6 +54,7 @@ const CharacterItem: FC<CharacterItemProps> = ({
           height: 64,
           width: '100%',
           borderRadius: 2,
+          transition: 'background-color 0.1s ease-in-out',
         }}
         {...BoxProps}
       >
