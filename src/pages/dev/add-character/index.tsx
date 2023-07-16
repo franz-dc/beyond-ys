@@ -2,7 +2,14 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Paper, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import {
   doc,
   onSnapshot,
@@ -321,11 +328,25 @@ const AddCharacter = () => {
   const avatar = watch('avatar');
   const mainImage = watch('mainImage');
 
-  // Debounce the accent color input due to the color picker firing too many
-  // onChange events. Also, this affects the performance from watch('accentColor')
+  // debounce frequently changing inputs that uses watch()
   const debounceAccentColor = useDebouncedCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setValue('accentColor', e.target.value);
+    },
+    500
+  );
+
+  const debounceName = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue('name', e.target.value);
+      if (customSlug) return;
+      const name = e.target.value;
+      const id = slugify(name, {
+        lower: true,
+        remove: /[*+~.()'"!:@/]/g,
+      });
+
+      setValue('id', id, { shouldValidate: true });
     },
     500
   );
@@ -371,22 +392,13 @@ const AddCharacter = () => {
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>General Info</Typography>
-          <TextFieldElement
-            name='name'
+          <TextField
             label='Name'
             required
             fullWidth
             margin='normal'
-            onChange={(e) => {
-              if (customSlug) return;
-              const name = e.target.value;
-              const id = slugify(name, {
-                lower: true,
-                remove: /[*+~.()'"!:@/]/g,
-              });
-
-              setValue('id', id, { shouldValidate: true });
-            }}
+            {...register('name')}
+            onChange={debounceName}
           />
           <TextFieldElement
             name='category'
