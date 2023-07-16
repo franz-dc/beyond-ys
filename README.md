@@ -9,7 +9,6 @@ A fan website dedicated to [Nihon Falcom](https://www.falcom.co.jp)'s works. You
 
 - **Music player**: Listen to your favorite Falcom music while browsing the site.
 - **Responsive design**: Built with mobile devices in mind.
-- **Dark mode**: Switch between light and dark themes (under construction).
 
 ## Technologies Used
 
@@ -47,7 +46,7 @@ A fan website dedicated to [Nihon Falcom](https://www.falcom.co.jp)'s works. You
    cp .env .env.local
    ```
 
-4. Run this command to seed the database with sample data:
+4. Run this command to seed the database with sample data (under construction):
 
    ```sh
    npm run seed
