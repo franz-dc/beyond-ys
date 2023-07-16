@@ -4,7 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
   Button,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
   Paper,
   Stack,
   Typography,
@@ -131,14 +133,12 @@ const EditGame = () => {
       // conform to useFieldArray's format
       platforms: true,
       characterIds: true,
-      characterSpoilerIds: true,
       soundtrackIds: true,
     })
     .extend({
       id: z.string().nullable(),
       platforms: z.object({ value: z.string().min(1) }).array(),
       characterIds: z.object({ value: z.string().min(1) }).array(),
-      characterSpoilerIds: z.object({ value: z.string().min(1) }).array(),
       soundtrackIds: z.object({ value: z.string().min(1) }).array(),
     });
 
@@ -165,12 +165,14 @@ const EditGame = () => {
     control,
     reset,
     watch,
+    getValues,
     setValue,
     formState: { isSubmitting },
     handleSubmit,
   } = formContext;
 
   const currentId = watch('id');
+  const characterSpoilerIds = watch('characterSpoilerIds');
 
   const {
     fields: platforms,
@@ -242,7 +244,7 @@ const EditGame = () => {
         descriptionSourceName,
         descriptionSourceUrl,
         characterIds: characterIds.map(({ value }) => value),
-        characterSpoilerIds: characterSpoilerIds.map(({ value }) => value),
+        characterSpoilerIds,
         soundtrackIds: formattedSoundtrackIds,
         updatedAt: serverTimestamp(),
         cachedSoundtracks: currentGameData?.cachedSoundtracks || {},
@@ -434,9 +436,7 @@ const EditGame = () => {
           characterIds: characterIds.map((value) => ({
             value,
           })),
-          characterSpoilerIds: characterSpoilerIds.map((value) => ({
-            value,
-          })),
+          characterSpoilerIds,
           soundtrackIds: soundtrackIds.map((value) => ({
             value,
           })),
@@ -671,6 +671,41 @@ const EditGame = () => {
                     loading={isLoadingCharactersCache}
                     matchId
                     required
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={characterSpoilerIds.includes(
+                          characterId.value
+                        )}
+                        edge='start'
+                        onChange={(e) => {
+                          if (!characterId.value) return;
+                          const prevCharacterSpoilerIds = getValues(
+                            'characterSpoilerIds'
+                          );
+                          if (e.target.checked) {
+                            setValue('characterSpoilerIds', [
+                              ...prevCharacterSpoilerIds,
+                              characterId.value,
+                            ]);
+                          } else {
+                            setValue(
+                              'characterSpoilerIds',
+                              prevCharacterSpoilerIds.filter(
+                                (id) => id !== characterId.value
+                              )
+                            );
+                          }
+                        }}
+                      />
+                    }
+                    id={`characterSpoilerIds.${idx}.isSpoiler`}
+                    label='Spoiler'
+                    sx={{
+                      mt: '16px !important',
+                      height: 56,
+                    }}
                   />
                   <Button
                     variant='outlined'

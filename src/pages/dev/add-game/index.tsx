@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Button, Paper, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { formatISO } from 'date-fns';
 import {
   arrayUnion,
@@ -120,7 +127,6 @@ const AddGame = () => {
       // conform to useFieldArray's format
       platforms: true,
       characterIds: true,
-      characterSpoilerIds: true,
       soundtrackIds: true,
     })
     .extend({
@@ -144,7 +150,6 @@ const AddGame = () => {
       customSlug: z.boolean(),
       platforms: z.object({ value: z.string().min(1) }).array(),
       characterIds: z.object({ value: z.string().min(1) }).array(),
-      characterSpoilerIds: z.object({ value: z.string().min(1) }).array(),
       soundtrackIds: z.object({ value: z.string().min(1) }).array(),
     });
 
@@ -281,7 +286,7 @@ const AddGame = () => {
         descriptionSourceName,
         descriptionSourceUrl,
         characterIds: characterIds.map(({ value }) => value),
-        characterSpoilerIds: characterSpoilerIds.map(({ value }) => value),
+        characterSpoilerIds,
         soundtrackIds: formattedSoundtrackIds,
         updatedAt: serverTimestamp(),
         cachedSoundtracks,
@@ -330,6 +335,7 @@ const AddGame = () => {
   };
 
   const customSlug = watch('customSlug');
+  const characterSpoilerIds = watch('characterSpoilerIds');
 
   return (
     <MainLayout title='Add Game'>
@@ -529,6 +535,39 @@ const AddGame = () => {
                 loading={isLoadingCharactersCache}
                 matchId
                 required
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={characterSpoilerIds.includes(characterId.value)}
+                    edge='start'
+                    onChange={(e) => {
+                      if (!characterId.value) return;
+                      const prevCharacterSpoilerIds = getValues(
+                        'characterSpoilerIds'
+                      );
+                      if (e.target.checked) {
+                        setValue('characterSpoilerIds', [
+                          ...prevCharacterSpoilerIds,
+                          characterId.value,
+                        ]);
+                      } else {
+                        setValue(
+                          'characterSpoilerIds',
+                          prevCharacterSpoilerIds.filter(
+                            (id) => id !== characterId.value
+                          )
+                        );
+                      }
+                    }}
+                  />
+                }
+                id={`characterSpoilerIds.${idx}.isSpoiler`}
+                label='Spoiler'
+                sx={{
+                  mt: '16px !important',
+                  height: 56,
+                }}
               />
               <Button
                 variant='outlined'
