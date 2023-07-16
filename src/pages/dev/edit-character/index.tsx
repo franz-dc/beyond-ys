@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   Paper,
   Stack,
@@ -18,6 +19,7 @@ import {
   serverTimestamp,
   writeBatch,
 } from 'firebase/firestore';
+import { deleteObject, ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
@@ -27,21 +29,25 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form-mui';
+import { useDebouncedCallback } from 'use-debounce';
+import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
-import { GenericHeader, MainLayout } from '~/components';
+import { CharacterItem, GenericHeader, MainLayout } from '~/components';
 import {
   cacheCollection,
   charactersCollection,
   db,
   gamesCollection,
+  storage,
 } from '~/configs';
-import { COUNTRIES } from '~/constants';
+import { CLOUD_STORAGE_URL, LANGUAGES } from '~/constants';
 import {
   CharacterCacheSchema,
   CharacterSchema,
   GameCacheSchema,
   characterSchema,
+  imageSchema,
 } from '~/schemas';
 
 const EditCharacter = () => {
@@ -103,13 +109,48 @@ const EditCharacter = () => {
       extraImages: true,
       gameIds: true,
       cachedGames: true,
-      hasMainImage: true,
-      hasAvatar: true,
       updatedAt: true,
     })
     .extend({
       id: z.string().nullable(),
       gameIds: z.object({ value: z.string().min(1) }).array(),
+      avatar: imageSchema
+        // check if less than 200x200
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 200 && height <= 200);
+                };
+              };
+            });
+          },
+          { message: 'Image must not be bigger than 200x200.' }
+        ),
+      mainImage: imageSchema,
+      extraImages: z
+        .object({
+          path: z.string().min(1),
+          caption: z.string(),
+          isNew: z.boolean(),
+          file: imageSchema,
+        })
+        // check if file is present if it's a new image
+        .refine(
+          (value) => {
+            if (!value.isNew) return true;
+            return !!value.file;
+          },
+          { message: 'File is required.' }
+        )
+        .array(),
     });
 
   type Schema = z.infer<typeof schema> & {
@@ -129,18 +170,36 @@ const EditCharacter = () => {
       imageDirection: 'left',
       gameIds: [],
       voiceActors: [],
+      // images
+      avatar: null,
+      mainImage: null,
+      extraImages: [],
     },
     resolver: zodResolver(schema),
   });
 
   const {
     control,
+    register,
+    trigger,
+    getValues,
     setValue,
     watch,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     handleSubmit,
   } = formContext;
+
+  const currentId = watch('id');
+  const name = watch('name');
+  const accentColor = watch('accentColor');
+  // const imageDirection = watch('imageDirection');
+
+  const avatar = watch('avatar');
+  const mainImage = watch('mainImage');
+
+  const hasAvatar = watch('hasAvatar');
+  const hasMainImage = watch('hasMainImage');
 
   const {
     fields: voiceActors,
@@ -159,7 +218,17 @@ const EditCharacter = () => {
     name: 'gameIds',
   });
 
-  const currentId = watch('id');
+  const {
+    fields: extraImages,
+    append: appendExtraImage,
+    remove: removeExtraImage,
+    swap: swapExtraImage,
+    update: updateExtraImage,
+    replace: replaceExtraImages,
+  } = useFieldArray({
+    control,
+    name: 'extraImages',
+  });
 
   const handleSave = async ({
     id,
@@ -168,10 +237,88 @@ const EditCharacter = () => {
     imageDirection,
     accentColor,
     gameIds,
+    hasAvatar,
+    hasMainImage,
+    // images
+    avatar,
+    mainImage,
+    extraImages,
     ...rest
   }: Schema) => {
     if (!id) return;
     try {
+      // upload images first to update hasAvatar/hasMainImage
+      let newHasAvatar = hasAvatar;
+      if (avatar) {
+        await uploadBytes(ref(storage, `character-avatars/${id}`), avatar);
+        newHasAvatar = true;
+      }
+
+      let newHasMainImage = hasMainImage;
+      if (mainImage) {
+        await uploadBytes(ref(storage, `characters/${id}`), mainImage);
+        newHasMainImage = true;
+      }
+
+      // get removed images to be deleted
+      const removedExtraImages =
+        currentCharacterData?.extraImages.filter(
+          ({ path }) => !extraImages.some((image) => image.path === path)
+        ) || [];
+
+      // upload extra images
+      const newExtraImages = extraImages.filter(({ isNew }) => isNew);
+      const formattedExtraImages: CharacterSchema['extraImages'] = [];
+      const newExtraImagesWithStatus: (Schema['extraImages'][number] & {
+        status: 'fulfilled' | 'rejected';
+      })[] = [];
+      if (newExtraImages.length > 0) {
+        const res = await Promise.allSettled(
+          newExtraImages.map((image) =>
+            uploadBytes(
+              ref(storage, `character-gallery/${id}/${image.path}`),
+              image.file!
+            )
+          )
+        );
+
+        // update extraImages - only successful uploads
+        // doing it this way to preserve the order of the images
+        newExtraImages.forEach((image, i) =>
+          newExtraImagesWithStatus.push({
+            ...image,
+            status: res[i].status,
+          })
+        );
+
+        extraImages.forEach(({ path, isNew, caption }) => {
+          if (removedExtraImages.some((image) => image.path === path)) return;
+          if (isNew) {
+            const newImage = newExtraImagesWithStatus.find(
+              (newImage) => newImage.path === path
+            );
+            if (newImage?.status !== 'fulfilled') return;
+            formattedExtraImages.push({
+              path,
+              caption,
+            });
+          } else {
+            formattedExtraImages.push({
+              path,
+              caption,
+            });
+          }
+        });
+      } else {
+        extraImages.forEach(({ path, caption }) => {
+          if (removedExtraImages.some((image) => image.path === path)) return;
+          formattedExtraImages.push({
+            path,
+            caption,
+          });
+        });
+      }
+
       const characterDocRef = doc(charactersCollection, id);
 
       const formattedGameIds = gameIds.map(({ value }) => value);
@@ -185,7 +332,10 @@ const EditCharacter = () => {
         imageDirection,
         accentColor,
         gameIds: formattedGameIds,
+        hasAvatar: newHasAvatar,
+        hasMainImage: newHasMainImage,
         updatedAt: serverTimestamp(),
+        extraImages: formattedExtraImages,
         ...rest,
       });
 
@@ -194,13 +344,15 @@ const EditCharacter = () => {
         currentCharacterData?.name !== name ||
         currentCharacterData?.category !== category ||
         currentCharacterData?.imageDirection !== imageDirection ||
-        currentCharacterData?.accentColor !== accentColor
+        currentCharacterData?.accentColor !== accentColor ||
+        currentCharacterData?.hasAvatar !== newHasAvatar
       ) {
         const newCharacterCacheData = {
           name,
           category,
           imageDirection,
           accentColor,
+          hasAvatar: newHasAvatar,
         };
 
         // cache collection
@@ -218,6 +370,16 @@ const EditCharacter = () => {
 
       await batch.commit();
 
+      // delete removed images at the end to ensure they're not deleted if
+      // batch fails
+      if (removedExtraImages.length > 0) {
+        await Promise.allSettled(
+          removedExtraImages.map((image) =>
+            deleteObject(ref(storage, `character-gallery/${id}/${image.path}`))
+          )
+        );
+      }
+
       // don't wait for onSnapshot to update the characterNames state
       setCharactersCache((prev) => ({
         ...prev,
@@ -227,6 +389,7 @@ const EditCharacter = () => {
           category,
           imageDirection,
           accentColor,
+          hasAvatar: newHasAvatar,
         },
       }));
 
@@ -239,9 +402,27 @@ const EditCharacter = () => {
         gameIds: formattedGameIds,
       }));
 
-      enqueueSnackbar('Character edited.', { variant: 'success' });
+      // make extra images not new
+      replaceExtraImages(
+        formattedExtraImages.map((image) => ({
+          ...image,
+          isNew: false,
+          file: null,
+        }))
+      );
+
+      if (
+        newExtraImagesWithStatus.some(({ status }) => status === 'rejected')
+      ) {
+        enqueueSnackbar(
+          'Some images failed to upload. All other changes were saved.',
+          { variant: 'warning' }
+        );
+      } else {
+        enqueueSnackbar('Character updated.', { variant: 'success' });
+      }
     } catch (err) {
-      enqueueSnackbar('Failed to edit character.', { variant: 'error' });
+      enqueueSnackbar('Failed to update character.', { variant: 'error' });
       console.error(err);
     }
   };
@@ -261,6 +442,14 @@ const EditCharacter = () => {
           ...rest,
           gameIds: gameIds.map((value) => ({ value })),
           id,
+          // images
+          avatar: null,
+          mainImage: null,
+          extraImages: extraImages.map((image) => ({
+            ...image,
+            isNew: false,
+            file: null,
+          })),
         });
         setLastCharacterId(id);
       } else {
@@ -293,6 +482,10 @@ const EditCharacter = () => {
           imageDirection: 'left',
           gameIds: [],
           voiceActors: [],
+          // images
+          avatar: null,
+          mainImage: null,
+          extraImages: [],
         });
         setLastCharacterId(id);
       }
@@ -306,6 +499,21 @@ const EditCharacter = () => {
       setIsLoadingCharacter(false);
     }
   };
+
+  // debounce frequently changing inputs that uses watch()
+  const debounceAccentColor = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue('accentColor', e.target.value);
+    },
+    500
+  );
+
+  const debounceName = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue('name', e.target.value);
+    },
+    500
+  );
 
   return (
     <MainLayout title='Edit Character'>
@@ -340,12 +548,13 @@ const EditCharacter = () => {
           <>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>General Info</Typography>
-              <TextFieldElement
-                name='name'
+              <TextField
                 label='Name'
                 required
                 fullWidth
                 margin='normal'
+                {...register('name')}
+                onChange={debounceName}
               />
               <TextFieldElement
                 name='category'
@@ -353,25 +562,14 @@ const EditCharacter = () => {
                 fullWidth
                 margin='normal'
               />
-              <TextFieldElement
-                name='accentColor'
+              <TextField
                 label='Accent Color'
                 fullWidth
                 margin='normal'
                 type='color'
-                helperText='This will be used for the character and game page.'
-              />
-              <AutocompleteElement
-                name='imageDirection'
-                label='Image Direction'
-                options={[
-                  { id: 'left', label: 'Left' },
-                  { id: 'right', label: 'Right' },
-                ]}
-                autocompleteProps={{ fullWidth: true, disableClearable: true }}
-                textFieldProps={{ margin: 'normal' }}
-                matchId
-                required
+                helperText='Used in the character and game pages. Make sure it has enough contrast with white text.'
+                {...register('accentColor')}
+                onChange={debounceAccentColor}
               />
               <CheckboxElement
                 name='containsSpoilers'
@@ -489,7 +687,7 @@ const EditCharacter = () => {
                     <AutocompleteElement
                       name={`voiceActors.${idx}.language`}
                       label={`Voice Actor ${idx + 1} Language`}
-                      options={COUNTRIES.map(({ language }) => language)}
+                      options={LANGUAGES}
                       autocompleteProps={{
                         fullWidth: true,
                         // freeSolo: true,
@@ -497,6 +695,7 @@ const EditCharacter = () => {
                       textFieldProps={{
                         margin: 'normal',
                       }}
+                      matchId
                       required
                     />
                     <TextFieldElement
@@ -557,6 +756,445 @@ const EditCharacter = () => {
               >
                 Add Voice Actor
               </LoadingButton>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Avatar</Typography>
+              <Typography color='text.secondary'>
+                Accepted file type: .webp
+              </Typography>
+              <Typography color='text.secondary'>Max size: 5MB.</Typography>
+              <Typography color='text.secondary'>
+                Max dimensions: 200x200.
+              </Typography>
+              <Typography color='text.secondary' sx={{ mb: 2 }}>
+                Character must be facing left or center. Face should be around
+                50% image height. Transparent background is recommended.
+              </Typography>
+              {/* display current avatar if hasAvatar is true */}
+              {hasAvatar ? (
+                <Box
+                  sx={{
+                    mb: 2,
+                    p: 1.5,
+                    backgroundColor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography color='text.secondary'>
+                    Current avatar usage:
+                  </Typography>
+                  <Box sx={{ mt: 6 }}>
+                    <CharacterItem
+                      id={currentId}
+                      name={name}
+                      accentColor={accentColor}
+                      image={`${CLOUD_STORAGE_URL}/character-avatars/${currentId}`}
+                      sx={{
+                        width: '100%',
+                        maxWidth: 200,
+                      }}
+                      disableLink
+                    />
+                  </Box>
+                </Box>
+              ) : (
+                <Typography color='text.secondary' sx={{ mb: 2 }}>
+                  No avatar uploaded yet.
+                </Typography>
+              )}
+              <Box>
+                <Box>
+                  <Box display='inline-block'>
+                    <input
+                      style={{ display: 'none' }}
+                      id='avatar'
+                      type='file'
+                      accept='image/webp'
+                      {...register('avatar', {
+                        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files?.[0].type === 'image/webp') {
+                            setValue('avatar', e.target.files[0]);
+                          } else {
+                            setValue('avatar', null);
+                            enqueueSnackbar(
+                              'Invalid file type. Only .webp is accepted.',
+                              { variant: 'error' }
+                            );
+                          }
+                          trigger('avatar');
+                        },
+                      })}
+                    />
+                    <label htmlFor='avatar'>
+                      <Button
+                        variant='contained'
+                        color={errors.avatar ? 'error' : 'primary'}
+                        component='span'
+                      >
+                        {hasAvatar || !!avatar
+                          ? 'Replace Avatar'
+                          : 'Upload Avatar'}
+                      </Button>
+                    </label>
+                  </Box>
+                  {avatar && (
+                    <Button
+                      variant='outlined'
+                      onClick={() =>
+                        setValue('avatar', null, {
+                          shouldValidate: true,
+                        })
+                      }
+                      sx={{ ml: 2 }}
+                    >
+                      Remove Selected Avatar
+                    </Button>
+                  )}
+                </Box>
+                {/* display selected image */}
+                {avatar && (
+                  <Box sx={{ mt: 2 }}>
+                    {errors.avatar && (
+                      <Typography color='error.main' sx={{ mb: 2 }}>
+                        {/* @ts-ignore .any() will be checked on .refine() */}
+                        {errors.avatar.message}
+                      </Typography>
+                    )}
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        backgroundColor: 'background.default',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Typography color='text.secondary'>
+                        Selected image usage:
+                      </Typography>
+                      <Box sx={{ mt: 6 }}>
+                        <CharacterItem
+                          id={currentId}
+                          name={name}
+                          accentColor={accentColor}
+                          image={URL.createObjectURL(avatar)}
+                          sx={{
+                            width: '100%',
+                            maxWidth: 200,
+                          }}
+                          disableLink
+                        />
+                      </Box>
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Main Image</Typography>
+              <Typography color='text.secondary'>
+                Accepted file type: .webp
+              </Typography>
+              <Typography color='text.secondary'>Max size: 5MB.</Typography>
+              <Typography color='text.secondary' sx={{ mb: 1 }}>
+                Transparent background is recommended.
+              </Typography>
+              <AutocompleteElement
+                name='imageDirection'
+                label='Image Direction'
+                options={[
+                  { id: 'left', label: 'Left' },
+                  { id: 'right', label: 'Right' },
+                ]}
+                autocompleteProps={{ fullWidth: true, disableClearable: true }}
+                textFieldProps={{
+                  margin: 'normal',
+                  helperText:
+                    'Used to make main images face right on the character page.',
+                }}
+                matchId
+                required
+              />
+              {/* display main image if hasMainImage is true */}
+              {hasMainImage ? (
+                <Box
+                  sx={{
+                    mb: 2,
+                    p: 1.5,
+                    backgroundColor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography color='text.secondary' sx={{ mb: 1 }}>
+                    Current main image:
+                  </Typography>
+                  <Box
+                    component='img'
+                    src={`${CLOUD_STORAGE_URL}/characters/${currentId}`}
+                    alt='current main image'
+                    sx={{
+                      width: '100%',
+                      height: 'auto',
+                      maxWidth: 180,
+                      // transform: `scaleX(${
+                      //   imageDirection === 'left' ? 1 : -1
+                      // })`,
+                    }}
+                  />
+                </Box>
+              ) : (
+                <Typography color='text.secondary' sx={{ mb: 2 }}>
+                  No main image uploaded yet.
+                </Typography>
+              )}
+              <Box>
+                <Box>
+                  <Box display='inline-block'>
+                    <input
+                      style={{ display: 'none' }}
+                      id='mainImage'
+                      type='file'
+                      accept='image/webp'
+                      {...register('mainImage', {
+                        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files?.[0].type === 'image/webp') {
+                            setValue('mainImage', e.target.files[0]);
+                          } else {
+                            setValue('mainImage', null);
+                            enqueueSnackbar(
+                              'Invalid file type. Only .webp is accepted.',
+                              { variant: 'error' }
+                            );
+                          }
+                          trigger('mainImage');
+                        },
+                      })}
+                    />
+                    <label htmlFor='mainImage'>
+                      <Button
+                        variant='contained'
+                        color={errors.mainImage ? 'error' : 'primary'}
+                        component='span'
+                      >
+                        {hasMainImage || !!mainImage
+                          ? 'Replace Main Image'
+                          : 'Upload Main Image'}
+                      </Button>
+                    </label>
+                  </Box>
+                  {mainImage && (
+                    <Button
+                      variant='outlined'
+                      onClick={() =>
+                        setValue('mainImage', null, {
+                          shouldValidate: true,
+                        })
+                      }
+                      sx={{ ml: 2 }}
+                    >
+                      Remove Selected Main Image
+                    </Button>
+                  )}
+                </Box>
+                {/* display selected image */}
+                {mainImage && (
+                  <Box sx={{ mt: 2 }}>
+                    {errors.mainImage && (
+                      <Typography color='error.main' sx={{ mb: 2 }}>
+                        {errors.mainImage.message}
+                      </Typography>
+                    )}
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        backgroundColor: 'background.default',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Typography color='text.secondary' sx={{ mb: 1 }}>
+                        Selected main image:
+                      </Typography>
+                      <Box
+                        component='img'
+                        src={URL.createObjectURL(mainImage)}
+                        alt='selected main image'
+                        sx={{
+                          width: '100%',
+                          height: 'auto',
+                          maxWidth: 180,
+                          // transform: `scaleX(${
+                          //   imageDirection === 'left' ? 1 : -1
+                          // })`,
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Character Gallery</Typography>
+              <Typography color='text.secondary'>
+                Accepted file type: .webp
+              </Typography>
+              <Typography color='text.secondary' sx={{ mb: 2 }}>
+                Max size: 5MB.
+              </Typography>
+              {extraImages.length === 0 && (
+                <Typography color='warning.main'>
+                  No images uploaded yet.
+                </Typography>
+              )}
+              {extraImages.map((extraImage, idx) => (
+                <Paper
+                  key={extraImage.id}
+                  sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
+                >
+                  <Stack direction='row' sx={{ mb: 2 }}>
+                    <Typography
+                      component='p'
+                      variant='h3'
+                      sx={{ mb: 0.5, mr: 1 }}
+                    >
+                      Extra Image {idx + 1}
+                    </Typography>
+                    {extraImage.isNew ? (
+                      <Chip
+                        variant='outlined'
+                        color='success'
+                        size='small'
+                        label='New'
+                      />
+                    ) : (
+                      <Chip variant='outlined' size='small' label='Existing' />
+                    )}
+                  </Stack>
+                  {(!extraImage.isNew || !!extraImage.file) && (
+                    <Box
+                      component='img'
+                      src={
+                        extraImage.isNew
+                          ? URL.createObjectURL(extraImage.file!)
+                          : `${CLOUD_STORAGE_URL}/character-gallery/${currentId}/${extraImage.path}`
+                      }
+                      alt={`Extra Image ${idx + 1}`}
+                      sx={{
+                        width: '100%',
+                        height: 'auto',
+                        maxWidth: 180,
+                        mb: 2,
+                        // hide alt text on firefox
+                        color: 'transparent',
+                      }}
+                    />
+                  )}
+                  {extraImage.isNew && (
+                    <Box>
+                      <input
+                        style={{ display: 'none' }}
+                        id={`extraImages.${idx}.file`}
+                        type='file'
+                        accept='image/webp'
+                        {...register(`extraImages.${idx}.file`, {
+                          onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                            // doing this because useFieldArray's fields does
+                            // not always have the latest value
+                            const prevExtraImage = getValues(
+                              `extraImages.${idx}`
+                            );
+                            if (e.target.files?.[0].type === 'image/webp') {
+                              updateExtraImage(idx, {
+                                ...prevExtraImage,
+                                file: e.target.files[0],
+                              });
+                            } else {
+                              updateExtraImage(idx, {
+                                ...prevExtraImage,
+                                file: null,
+                              });
+                              enqueueSnackbar(
+                                'Invalid file type. Only .webp is accepted.',
+                                { variant: 'error' }
+                              );
+                            }
+                            trigger(`extraImages.${idx}.file`);
+                          },
+                        })}
+                      />
+                      <label htmlFor={`extraImages.${idx}.file`}>
+                        <Button
+                          variant='contained'
+                          color={errors.mainImage ? 'error' : 'primary'}
+                          component='span'
+                        >
+                          {!!extraImages[idx].file
+                            ? 'Replace Image'
+                            : 'Upload Image'}
+                        </Button>
+                      </label>
+                    </Box>
+                  )}
+                  <TextFieldElement
+                    name={`extraImages.${idx}.caption`}
+                    label='Caption'
+                    fullWidth
+                    margin='normal'
+                  />
+                  <Stack direction='row' spacing={2} sx={{ mt: 1 }}>
+                    <Button
+                      variant='outlined'
+                      onClick={() => removeExtraImage(idx)}
+                      fullWidth
+                    >
+                      Remove
+                    </Button>
+                    <Button
+                      variant='outlined'
+                      onClick={() => {
+                        if (idx === 0) return;
+                        swapExtraImage(idx, idx - 1);
+                      }}
+                      disabled={idx === 0}
+                      fullWidth
+                    >
+                      Up
+                    </Button>
+                    <Button
+                      variant='outlined'
+                      onClick={() => {
+                        if (idx === extraImages.length - 1) return;
+                        swapExtraImage(idx, idx + 1);
+                      }}
+                      disabled={idx === extraImages.length - 1}
+                      fullWidth
+                    >
+                      Down
+                    </Button>
+                  </Stack>
+                </Paper>
+              ))}
+              <Button
+                variant='outlined'
+                onClick={() =>
+                  appendExtraImage({
+                    // make sure the path is unique
+                    path: (() => {
+                      let path = '';
+                      do {
+                        path = uuidv4();
+                      } while (
+                        extraImages.some((image) => image.path === path)
+                      );
+                      return path;
+                    })(),
+                    caption: '',
+                    isNew: true,
+                    file: null,
+                  })
+                }
+                fullWidth
+                sx={{ mt: 1 }}
+              >
+                Add Image
+              </Button>
             </Paper>
             <LoadingButton
               type='submit'
