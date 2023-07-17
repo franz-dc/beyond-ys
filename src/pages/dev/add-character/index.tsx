@@ -171,6 +171,7 @@ const AddCharacter = () => {
       containsSpoilers: false,
       accentColor: '#161a22',
       imageDirection: 'left',
+      voiceActors: [],
       // images
       avatar: null,
       mainImage: null,
@@ -425,7 +426,7 @@ const AddCharacter = () => {
             fullWidth
             margin='normal'
           />
-          <TextFieldElement
+          <TextField
             label='Accent Color'
             fullWidth
             margin='normal'
