@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps<
       categorizedStaffNames,
       staffAvatarPresence,
       description:
-        "Current and former members involved with the production of Falcom's works",
+        "Current and former people involved with the production of Falcom's works",
     },
   };
 };
@@ -137,7 +137,13 @@ const StaffList: FC<StaffListProps> = ({
                 <Typography variant='h3' component='h2' sx={{ mb: 1 }}>
                   {letter}
                 </Typography>
-                <Grid container spacing={2}>
+                <Grid
+                  container
+                  spacing={{
+                    xs: 1,
+                    sm: 2,
+                  }}
+                >
                   {filteredStaffMembers.map(({ id, name, roles }) => (
                     <Grid item key={id} xs={12} sm={6} md={4}>
                       <ButtonBase
@@ -146,7 +152,6 @@ const StaffList: FC<StaffListProps> = ({
                         href={`/staff/${id}`}
                         sx={{
                           display: 'block',
-                          mb: 1,
                           borderRadius: 2,
                         }}
                       >
