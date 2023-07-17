@@ -134,7 +134,7 @@ const EditCharacter = () => {
               };
             });
           },
-          { message: 'Image must not be bigger than 200x200 pixels.' }
+          { message: 'Avatar must not be bigger than 200x200 pixels.' }
         ),
       mainImage: imageSchema
         // check if less than 1000x1000
@@ -154,7 +154,7 @@ const EditCharacter = () => {
               };
             });
           },
-          { message: 'Image must not be bigger than 1000x1000 pixels.' }
+          { message: 'Main image must not be bigger than 1000x1000 pixels.' }
         ),
       extraImages: z
         .object({
