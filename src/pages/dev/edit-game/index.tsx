@@ -866,8 +866,8 @@ const EditGame = () => {
                     alt='current cover image'
                     sx={{
                       width: '100%',
-                      height: 'auto',
                       maxWidth: 180,
+                      aspectRatio: '2 / 3',
                     }}
                   />
                 </Box>

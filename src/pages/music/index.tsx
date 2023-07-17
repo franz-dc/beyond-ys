@@ -31,7 +31,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
   };
 };
 
-const AlbumArt = ({ id }: { id: string }) => {
+const AlbumArt = ({
+  id,
+  hasAlbumArt,
+}: {
+  id: string;
+  hasAlbumArt: boolean;
+}) => {
   const [isError, setIsError] = useState(false);
 
   return (
@@ -55,7 +61,7 @@ const AlbumArt = ({ id }: { id: string }) => {
         backgroundColor: 'background.default',
       }}
     >
-      {isError ? (
+      {isError || !hasAlbumArt ? (
         <Box
           component={MdAlbum}
           sx={{
@@ -153,7 +159,7 @@ const Music = ({ description, musicAlbumCache }: Props) => {
                   xs3: 0.5,
                 }}
               >
-                <AlbumArt id={id} />
+                <AlbumArt id={id} hasAlbumArt={album.hasAlbumArt} />
                 <Box>
                   <Typography
                     sx={{

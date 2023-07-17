@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
+  Box,
   Button,
   CircularProgress,
   Paper,
@@ -21,6 +22,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
@@ -39,11 +41,14 @@ import {
   db,
   musicAlbumsCollection,
   musicCollection,
+  storage,
 } from '~/configs';
+import { CLOUD_STORAGE_URL } from '~/constants';
 import {
   MusicAlbumCacheSchema,
   MusicAlbumSchema,
   MusicCacheSchema,
+  imageSchema,
   musicAlbumSchema,
 } from '~/schemas';
 
@@ -100,6 +105,26 @@ const EditMusicAlbum = () => {
         })
         .array(),
       releaseDatePrecision: z.enum(['day', 'month', 'year', 'unknown']),
+      albumArt: imageSchema
+        // check if less than 500x500
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 500 && height <= 500);
+                };
+              };
+            });
+          },
+          { message: 'Album art must not be bigger than 500x500 pixels.' }
+        ),
     })
     .refine(
       (data) => {
@@ -136,16 +161,20 @@ const EditMusicAlbum = () => {
       musicIds: [],
       releaseDate: null,
       releaseDatePrecision: 'unknown',
+      albumArt: null,
+      hasAlbumArt: false,
     },
     resolver: zodResolver(schema),
   });
 
   const {
     control,
+    register,
+    trigger,
     reset,
     setValue,
     watch,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     handleSubmit,
   } = formContext;
 
@@ -160,6 +189,8 @@ const EditMusicAlbum = () => {
   });
 
   const currentId = watch('id');
+  const albumArt = watch('albumArt');
+  const hasAlbumArt = watch('hasAlbumArt');
 
   const changeMusicAlbum = async (id: string) => {
     try {
@@ -194,6 +225,7 @@ const EditMusicAlbum = () => {
           musicIds: musicIds.map((value) => ({ value })),
           releaseDate: releaseDate ? new Date(releaseDate) : null,
           releaseDatePrecision,
+          albumArt: null,
         });
         setLastMusicAlbumId(id);
       } else {
@@ -202,6 +234,7 @@ const EditMusicAlbum = () => {
           musicIds: [],
           cachedMusic: {},
           releaseDate: '',
+          hasAlbumArt: false,
           updatedAt: null,
         });
         reset({
@@ -210,6 +243,7 @@ const EditMusicAlbum = () => {
           musicIds: [],
           releaseDate: null,
           releaseDatePrecision: 'unknown',
+          hasAlbumArt: false,
         });
         setLastMusicAlbumId(id);
       }
@@ -228,10 +262,19 @@ const EditMusicAlbum = () => {
     id,
     releaseDate,
     releaseDatePrecision,
+    hasAlbumArt,
+    albumArt,
     ...values
   }: Schema) => {
     if (!id) return;
     try {
+      // upload image first to update hasAlbumArt
+      let newHasAlbumArt = hasAlbumArt;
+      if (albumArt) {
+        await uploadBytes(ref(storage, `album-arts/${id}`), albumArt);
+        newHasAlbumArt = true;
+      }
+
       const albumId = id;
 
       const cachedMusic = {
@@ -261,7 +304,8 @@ const EditMusicAlbum = () => {
       // update musicAlbums cache if name is changed
       if (
         currentMusicAlbumData?.name !== values.name ||
-        currentMusicAlbumData?.releaseDate !== formattedReleaseDate
+        currentMusicAlbumData?.releaseDate !== formattedReleaseDate ||
+        currentMusicAlbumData?.hasAlbumArt !== newHasAlbumArt
       ) {
         const musicAlbumCacheDocRef = doc(cacheCollection, 'musicAlbums');
 
@@ -269,6 +313,7 @@ const EditMusicAlbum = () => {
           [id]: {
             name: values.name,
             releaseDate: formattedReleaseDate,
+            hasAlbumArt: newHasAlbumArt,
           },
         });
       }
@@ -348,6 +393,7 @@ const EditMusicAlbum = () => {
         musicIds: values.musicIds.map(({ value }) => value),
         updatedAt: serverTimestamp(),
         releaseDate: formattedReleaseDate,
+        hasAlbumArt: newHasAlbumArt,
         // @ts-ignore
         cachedMusic,
       });
@@ -370,6 +416,7 @@ const EditMusicAlbum = () => {
         [id]: {
           name: values.name,
           releaseDate: formattedReleaseDate,
+          hasAlbumArt: newHasAlbumArt,
         },
       }));
 
@@ -455,9 +502,134 @@ const EditMusicAlbum = () => {
               />
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Album Art</Typography>
+              <Typography color='text.secondary'>
+                Accepted file type: .webp
+              </Typography>
+              <Typography color='text.secondary'>Max size: 5MB.</Typography>
+              <Typography color='text.secondary'>
+                Max dimensions: 500x500.
+              </Typography>
+              <Typography color='text.secondary' sx={{ mb: 2 }}>
+                Note that album arts are cropped to 1:1 aspect ratio.
+              </Typography>
+              {/* display album art if hasAlbumArt is true */}
+              {hasAlbumArt ? (
+                <Box
+                  sx={{
+                    mb: 2,
+                    p: 1.5,
+                    backgroundColor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography color='text.secondary' sx={{ mb: 1 }}>
+                    Current album art (cropped):
+                  </Typography>
+                  <Box
+                    component='img'
+                    src={`${CLOUD_STORAGE_URL}/album-arts/${currentId}`}
+                    alt='current album art'
+                    sx={{
+                      width: '100%',
+                      maxWidth: 300,
+                      aspectRatio: '1 / 1',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
+              ) : (
+                <Typography color='text.secondary' sx={{ mb: 2 }}>
+                  No album art uploaded yet.
+                </Typography>
+              )}
+              <Box>
+                <Box>
+                  <Box display='inline-block'>
+                    <input
+                      style={{ display: 'none' }}
+                      id='albumArt'
+                      type='file'
+                      accept='image/webp'
+                      {...register('albumArt', {
+                        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files?.[0].type === 'image/webp') {
+                            setValue('albumArt', e.target.files[0]);
+                          } else {
+                            setValue('albumArt', null);
+                            enqueueSnackbar(
+                              'Invalid file type. Only .webp is accepted.',
+                              { variant: 'error' }
+                            );
+                          }
+                          trigger('albumArt');
+                        },
+                      })}
+                    />
+                    <label htmlFor='albumArt'>
+                      <Button
+                        variant='contained'
+                        color={errors.albumArt ? 'error' : 'primary'}
+                        component='span'
+                      >
+                        {hasAlbumArt || !!albumArt
+                          ? 'Replace Album Art'
+                          : 'Upload Album Art'}
+                      </Button>
+                    </label>
+                  </Box>
+                  {albumArt && (
+                    <Button
+                      variant='outlined'
+                      onClick={() =>
+                        setValue('albumArt', null, {
+                          shouldValidate: true,
+                        })
+                      }
+                      sx={{ ml: 2 }}
+                    >
+                      Remove Selected Album Art
+                    </Button>
+                  )}
+                </Box>
+                {/* display selected image */}
+                {albumArt && (
+                  <Box sx={{ mt: 2 }}>
+                    {errors.albumArt && (
+                      <Typography color='error.main' sx={{ mb: 2 }}>
+                        {errors.albumArt.message}
+                      </Typography>
+                    )}
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        backgroundColor: 'background.default',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Typography color='text.secondary' sx={{ mb: 1 }}>
+                        Selected album art (cropped):
+                      </Typography>
+                      <Box
+                        component='img'
+                        src={URL.createObjectURL(albumArt)}
+                        alt='selected album art'
+                        sx={{
+                          width: '100%',
+                          maxWidth: 300,
+                          aspectRatio: '1 / 1',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Music</Typography>
               <Typography color='text.secondary'>
-                Music from a different album will be overwritten by this one.
+                Music from a different album will be changed to this album.
               </Typography>
               {musicIds.map((musicId, idx) => (
                 <Stack direction='row' spacing={2} key={musicId.id}>
