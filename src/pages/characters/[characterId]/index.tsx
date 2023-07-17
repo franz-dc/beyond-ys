@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Alert,
@@ -87,6 +87,12 @@ const CharacterInfo = ({
   const [photoIndex, setPhotoIndex] = useState(-1);
 
   const [isGamesExpanded, setIsGamesExpanded] = useState(false);
+
+  // NextJS keeps the states on page change, so we need to reset it
+  useEffect(() => {
+    setPhotoIndex(-1);
+    setIsGamesExpanded(false);
+  }, [id]);
 
   return (
     <MainLayout

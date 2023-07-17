@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Box,
@@ -156,6 +156,12 @@ const GamePage = ({
     useState(false);
 
   const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
+
+  // NextJS keeps the states on page change, so we need to reset it
+  useEffect(() => {
+    setIsCharacterSpoilersShown(false);
+    setIsSoundtracksExpanded(false);
+  }, [id]);
 
   return (
     <MainLayout

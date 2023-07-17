@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Avatar,
@@ -146,6 +146,11 @@ const StaffInfo = ({
     .filter((s): s is Exclude<typeof s, null> => !!s);
 
   const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
+
+  // NextJS keeps the states on page change, so we need to reset it
+  useEffect(() => {
+    setIsSoundtracksExpanded(false);
+  }, [id]);
 
   return (
     <MainLayout
