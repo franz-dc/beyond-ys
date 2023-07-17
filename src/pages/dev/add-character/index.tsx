@@ -119,7 +119,26 @@ const AddCharacter = () => {
           },
           { message: 'Image must not be bigger than 200x200.' }
         ),
-      mainImage: imageSchema,
+      mainImage: imageSchema
+        // check if less than 1000x1000
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 1000 && height <= 1000);
+                };
+              };
+            });
+          },
+          { message: 'Image must not be bigger than 1000x1000 pixels.' }
+        ),
       extraImages: z
         .object({
           path: z.string().min(1),
@@ -415,18 +434,6 @@ const AddCharacter = () => {
             {...register('accentColor')}
             onChange={debounceAccentColor}
           />
-          <AutocompleteElement
-            name='imageDirection'
-            label='Image Direction'
-            options={[
-              { id: 'left', label: 'Left' },
-              { id: 'right', label: 'Right' },
-            ]}
-            autocompleteProps={{ fullWidth: true, disableClearable: true }}
-            textFieldProps={{ margin: 'normal' }}
-            matchId
-            required
-          />
           <CheckboxElement
             name='containsSpoilers'
             label='Character info contains spoilers'
@@ -664,6 +671,9 @@ const AddCharacter = () => {
             Accepted file type: .webp
           </Typography>
           <Typography color='text.secondary'>Max size: 5MB.</Typography>
+          <Typography color='text.secondary'>
+            Max dimensions: 1000x1000.
+          </Typography>
           <Typography color='text.secondary' sx={{ mb: 1 }}>
             Transparent background is recommended.
           </Typography>

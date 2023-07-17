@@ -1,3 +1,5 @@
+// TODO: reset images after submit
+
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -132,9 +134,28 @@ const EditCharacter = () => {
               };
             });
           },
-          { message: 'Image must not be bigger than 200x200.' }
+          { message: 'Image must not be bigger than 200x200 pixels.' }
         ),
-      mainImage: imageSchema,
+      mainImage: imageSchema
+        // check if less than 1000x1000
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 1000 && height <= 1000);
+                };
+              };
+            });
+          },
+          { message: 'Image must not be bigger than 1000x1000 pixels.' }
+        ),
       extraImages: z
         .object({
           path: z.string().min(1),
@@ -894,6 +915,9 @@ const EditCharacter = () => {
                 Accepted file type: .webp
               </Typography>
               <Typography color='text.secondary'>Max size: 5MB.</Typography>
+              <Typography color='text.secondary'>
+                Max dimensions: 1000x1000.
+              </Typography>
               <Typography color='text.secondary' sx={{ mb: 1 }}>
                 Transparent background is recommended.
               </Typography>
