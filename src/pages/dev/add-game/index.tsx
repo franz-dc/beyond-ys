@@ -774,6 +774,7 @@ const AddGame = () => {
                       width: '100%',
                       maxWidth: 180,
                       aspectRatio: '2 / 3',
+                      objectFit: 'cover',
                     }}
                   />
                 </Box>
