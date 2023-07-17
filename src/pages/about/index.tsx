@@ -229,7 +229,16 @@ const About = ({ description, contributors }: AboutProps) => (
         >
           hello@beyondys.com
         </Link>{' '}
-        for suggestions, new features, or new content for this site.
+        for suggestions, new features, or new content for this site. If you are
+        interested in contributing to the codebase, please refer to the{' '}
+        <Link
+          href='https://github.com/franz-dc/beyond-ys'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          GitHub repository
+        </Link>{' '}
+        for more information.
       </Typography>
       {/* cspell:disable */}
       <Typography>
