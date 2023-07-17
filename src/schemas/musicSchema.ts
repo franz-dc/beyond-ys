@@ -11,7 +11,7 @@ export const musicSchema = z.object({
       role: z.string(),
     })
     .array(),
-  duration: z.number().int().min(0),
+  duration: z.number().int().min(0), // in seconds
   youtubeId: z.string().refine((v) => v.length === 0 || v.length === 11, {
     message: 'Youtube ID must be 11 characters long',
   }),
