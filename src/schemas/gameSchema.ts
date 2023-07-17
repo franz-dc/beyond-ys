@@ -18,6 +18,9 @@ export const gameSchema = z.object({
   characterSpoilerIds: z.string().min(1).array(),
   soundtrackIds: z.string().array(),
   updatedAt: z.any(),
+  // to prevent unnecessary requests
+  hasCoverImage: z.boolean(),
+  hasBannerImage: z.boolean(),
   // for reducing the amount of reads
   cachedSoundtracks: z.record(musicSchema),
   cachedCharacters: z.record(characterCacheSchema),

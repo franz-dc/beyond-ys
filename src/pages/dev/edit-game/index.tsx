@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -26,6 +27,7 @@ import {
   where,
   writeBatch,
 } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
@@ -44,8 +46,9 @@ import {
   db,
   gamesCollection,
   musicCollection,
+  storage,
 } from '~/configs';
-import { GAME_PLATFORMS } from '~/constants';
+import { CLOUD_STORAGE_URL, GAME_PLATFORMS } from '~/constants';
 import {
   CharacterCacheSchema,
   GameCacheSchema,
@@ -53,6 +56,7 @@ import {
   MusicAlbumCacheSchema,
   MusicCacheSchema,
   gameSchema,
+  imageSchema,
 } from '~/schemas';
 
 const EditGame = () => {
@@ -140,6 +144,46 @@ const EditGame = () => {
       platforms: z.object({ value: z.string().min(1) }).array(),
       characterIds: z.object({ value: z.string().min(1) }).array(),
       soundtrackIds: z.object({ value: z.string().min(1) }).array(),
+      coverImage: imageSchema
+        // check if less than 500x500
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 500 && height <= 500);
+                };
+              };
+            });
+          },
+          { message: 'Cover must not be bigger than 500x500 pixels.' }
+        ),
+      bannerImage: imageSchema
+        // check if less than 2000x2000
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 2000 && height <= 2000);
+                };
+              };
+            });
+          },
+          { message: 'Banner must not be bigger than 2000x2000 pixels.' }
+        ),
     });
 
   type Schema = z.infer<typeof schema>;
@@ -157,22 +201,32 @@ const EditGame = () => {
       characterIds: [],
       characterSpoilerIds: [],
       soundtrackIds: [],
+      hasCoverImage: false,
+      hasBannerImage: false,
+      coverImage: null,
+      bannerImage: null,
     },
     resolver: zodResolver(schema),
   });
 
   const {
     control,
+    register,
     reset,
+    trigger,
     watch,
     getValues,
     setValue,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     handleSubmit,
   } = formContext;
 
   const currentId = watch('id');
   const characterSpoilerIds = watch('characterSpoilerIds');
+  const coverImage = watch('coverImage');
+  const bannerImage = watch('bannerImage');
+  const hasCoverImage = watch('hasCoverImage');
+  const hasBannerImage = watch('hasBannerImage');
 
   const {
     fields: platforms,
@@ -223,9 +277,26 @@ const EditGame = () => {
     characterIds,
     characterSpoilerIds,
     soundtrackIds,
+    hasCoverImage,
+    hasBannerImage,
+    coverImage,
+    bannerImage,
   }: Schema) => {
     if (!id) return;
     try {
+      // upload images first to update hasCoverImage and hasBannerImage
+      let newHasCoverImage = hasCoverImage;
+      if (coverImage) {
+        await uploadBytes(ref(storage, `game-covers/${id}`), coverImage);
+        newHasCoverImage = true;
+      }
+
+      let newHasBannerImage = hasBannerImage;
+      if (bannerImage) {
+        await uploadBytes(ref(storage, `game-banners/${id}`), bannerImage);
+        newHasBannerImage = true;
+      }
+
       const batch = writeBatch(db);
 
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
@@ -249,6 +320,8 @@ const EditGame = () => {
         updatedAt: serverTimestamp(),
         cachedSoundtracks: currentGameData?.cachedSoundtracks || {},
         cachedCharacters: currentGameData?.cachedCharacters || {},
+        hasCoverImage: newHasCoverImage,
+        hasBannerImage: newHasBannerImage,
       };
 
       // update these if the name or category have changed
@@ -440,6 +513,8 @@ const EditGame = () => {
           soundtrackIds: soundtrackIds.map((value) => ({
             value,
           })),
+          coverImage: null,
+          bannerImage: null,
         });
         setLastGameId(id);
       } else {
@@ -456,6 +531,8 @@ const EditGame = () => {
           characterSpoilerIds: [],
           soundtrackIds: [],
           updatedAt: null,
+          hasCoverImage: false,
+          hasBannerImage: false,
           cachedSoundtracks: {},
           cachedCharacters: {},
         });
@@ -472,6 +549,10 @@ const EditGame = () => {
           characterIds: [],
           characterSpoilerIds: [],
           soundtrackIds: [],
+          hasCoverImage: false,
+          hasBannerImage: false,
+          coverImage: null,
+          bannerImage: null,
         });
         setLastGameId(id);
       }
@@ -753,6 +834,261 @@ const EditGame = () => {
               >
                 Add Character
               </Button>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Cover Image</Typography>
+              <Typography color='text.secondary'>
+                Accepted file type: .webp
+              </Typography>
+              <Typography color='text.secondary'>Max size: 5MB.</Typography>
+              <Typography color='text.secondary'>
+                Max dimensions: 500x500.
+              </Typography>
+              <Typography color='text.secondary' sx={{ mb: 2 }}>
+                Note that cover images are cropped to 2:3 aspect ratio.
+              </Typography>
+              {/* display cover image if hasCoverImage is true */}
+              {hasCoverImage ? (
+                <Box
+                  sx={{
+                    mb: 2,
+                    p: 1.5,
+                    backgroundColor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography color='text.secondary' sx={{ mb: 1 }}>
+                    Current cover image (cropped):
+                  </Typography>
+                  <Box
+                    component='img'
+                    src={`${CLOUD_STORAGE_URL}/game-covers/${currentId}`}
+                    alt='current cover image'
+                    sx={{
+                      width: '100%',
+                      height: 'auto',
+                      maxWidth: 180,
+                    }}
+                  />
+                </Box>
+              ) : (
+                <Typography color='text.secondary' sx={{ mb: 2 }}>
+                  No cover image uploaded yet.
+                </Typography>
+              )}
+              <Box>
+                <Box>
+                  <Box display='inline-block'>
+                    <input
+                      style={{ display: 'none' }}
+                      id='coverImage'
+                      type='file'
+                      accept='image/webp'
+                      {...register('coverImage', {
+                        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files?.[0].type === 'image/webp') {
+                            setValue('coverImage', e.target.files[0]);
+                          } else {
+                            setValue('coverImage', null);
+                            enqueueSnackbar(
+                              'Invalid file type. Only .webp is accepted.',
+                              { variant: 'error' }
+                            );
+                          }
+                          trigger('coverImage');
+                        },
+                      })}
+                    />
+                    <label htmlFor='coverImage'>
+                      <Button
+                        variant='contained'
+                        color={errors.coverImage ? 'error' : 'primary'}
+                        component='span'
+                      >
+                        {hasCoverImage || !!coverImage
+                          ? 'Replace Cover Image'
+                          : 'Upload Cover Image'}
+                      </Button>
+                    </label>
+                  </Box>
+                  {coverImage && (
+                    <Button
+                      variant='outlined'
+                      onClick={() =>
+                        setValue('coverImage', null, {
+                          shouldValidate: true,
+                        })
+                      }
+                      sx={{ ml: 2 }}
+                    >
+                      Remove Selected Cover Image
+                    </Button>
+                  )}
+                </Box>
+                {/* display selected image */}
+                {coverImage && (
+                  <Box sx={{ mt: 2 }}>
+                    {errors.coverImage && (
+                      <Typography color='error.main' sx={{ mb: 2 }}>
+                        {errors.coverImage.message}
+                      </Typography>
+                    )}
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        backgroundColor: 'background.default',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Typography color='text.secondary' sx={{ mb: 1 }}>
+                        Selected cover image (cropped):
+                      </Typography>
+                      <Box
+                        component='img'
+                        src={URL.createObjectURL(coverImage)}
+                        alt='selected cover image'
+                        sx={{
+                          width: '100%',
+                          maxWidth: 180,
+                          aspectRatio: '2 / 3',
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+              </Box>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Banner Image</Typography>
+              <Typography color='text.secondary'>
+                Accepted file type: .webp
+              </Typography>
+              <Typography color='text.secondary'>Max size: 5MB.</Typography>
+              <Typography color='text.secondary'>
+                Max dimensions: 2000x2000.
+              </Typography>
+              <Typography color='text.secondary' sx={{ mb: 2 }}>
+                Note that banner images are cropped to 100% width to 120-200px
+                height ratio.
+              </Typography>
+              {/* display banner image if hasBannerImage is true */}
+              {hasBannerImage ? (
+                <Box
+                  sx={{
+                    mb: 2,
+                    p: 1.5,
+                    backgroundColor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography color='text.secondary' sx={{ mb: 1 }}>
+                    Current banner image (cropped):
+                  </Typography>
+                  <Box
+                    component='img'
+                    src={`${CLOUD_STORAGE_URL}/game-banners/${currentId}`}
+                    alt='current banner image'
+                    sx={{
+                      width: '100%',
+                      height: {
+                        xs: 120,
+                        sm: 160,
+                        md: 200,
+                      },
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
+              ) : (
+                <Typography color='text.secondary' sx={{ mb: 2 }}>
+                  No banner image uploaded yet.
+                </Typography>
+              )}
+              <Box>
+                <Box>
+                  <Box display='inline-block'>
+                    <input
+                      style={{ display: 'none' }}
+                      id='bannerImage'
+                      type='file'
+                      accept='image/webp'
+                      {...register('bannerImage', {
+                        onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                          if (e.target.files?.[0].type === 'image/webp') {
+                            setValue('bannerImage', e.target.files[0]);
+                          } else {
+                            setValue('bannerImage', null);
+                            enqueueSnackbar(
+                              'Invalid file type. Only .webp is accepted.',
+                              { variant: 'error' }
+                            );
+                          }
+                          trigger('bannerImage');
+                        },
+                      })}
+                    />
+                    <label htmlFor='bannerImage'>
+                      <Button
+                        variant='contained'
+                        color={errors.bannerImage ? 'error' : 'primary'}
+                        component='span'
+                      >
+                        {hasBannerImage || !!bannerImage
+                          ? 'Replace Banner Image'
+                          : 'Upload Banner Image'}
+                      </Button>
+                    </label>
+                  </Box>
+                  {bannerImage && (
+                    <Button
+                      variant='outlined'
+                      onClick={() =>
+                        setValue('bannerImage', null, {
+                          shouldValidate: true,
+                        })
+                      }
+                      sx={{ ml: 2 }}
+                    >
+                      Remove Selected Banner Image
+                    </Button>
+                  )}
+                </Box>
+                {/* display selected image */}
+                {bannerImage && (
+                  <Box sx={{ mt: 2 }}>
+                    {errors.bannerImage && (
+                      <Typography color='error.main' sx={{ mb: 2 }}>
+                        {errors.bannerImage.message}
+                      </Typography>
+                    )}
+                    <Box
+                      sx={{
+                        p: 1.5,
+                        backgroundColor: 'background.default',
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Typography color='text.secondary' sx={{ mb: 1 }}>
+                        Selected banner image (cropped):
+                      </Typography>
+                      <Box
+                        component='img'
+                        src={URL.createObjectURL(bannerImage)}
+                        alt='selected banner image'
+                        sx={{
+                          width: '100%',
+                          height: {
+                            xs: 120,
+                            sm: 160,
+                            md: 200,
+                          },
+                          objectFit: 'cover',
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                )}
+              </Box>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Soundtracks</Typography>
