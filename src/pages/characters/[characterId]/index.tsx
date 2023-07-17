@@ -1,6 +1,8 @@
 import { useState } from 'react';
 
 import {
+  Alert,
+  AlertTitle,
   Avatar,
   Box,
   ButtonBase,
@@ -68,6 +70,7 @@ const CharacterInfo = ({
   staffNames,
   extraImages,
   hasMainImage,
+  containsSpoilers,
 }: Props) => {
   const formattedGames = Object.entries(cachedGames)
     .map(([id, game]) => ({
@@ -91,6 +94,13 @@ const CharacterInfo = ({
       description={description}
       image={hasMainImage ? `${CLOUD_STORAGE_URL}/characters/${id}` : undefined}
     >
+      {containsSpoilers && (
+        <Alert severity='info' sx={{ mb: 2 }}>
+          <AlertTitle>This page contains spoilers.</AlertTitle>
+          Play the games associated with this character first if you
+          haven&apos;t already.
+        </Alert>
+      )}
       <Box
         sx={{
           position: 'absolute',

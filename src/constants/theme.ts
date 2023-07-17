@@ -101,6 +101,13 @@ export const theme = createTheme({
         },
       },
     },
+    MuiAlertTitle: {
+      styleOverrides: {
+        root: {
+          marginBottom: '0.5rem',
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         root: {
