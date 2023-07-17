@@ -121,7 +121,7 @@ const CharacterList: FC<CharacterListProps> = ({
                               id={id}
                               name={name}
                               category={category}
-                              accentColor='#4e5051'
+                              accentColor='#3c4151'
                               image={
                                 hasAvatar
                                   ? `${CLOUD_STORAGE_URL}/character-avatars/${id}`
