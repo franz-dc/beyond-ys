@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Button, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Paper, Stack, Typography } from '@mui/material';
 import {
   doc,
   onSnapshot,
   serverTimestamp,
   writeBatch,
 } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
@@ -21,8 +22,8 @@ import slugify from 'slugify';
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
-import { cacheCollection, db, staffInfosCollection } from '~/configs';
-import { GameCacheSchema, staffInfoSchema } from '~/schemas';
+import { cacheCollection, db, staffInfosCollection, storage } from '~/configs';
+import { GameCacheSchema, imageSchema, staffInfoSchema } from '~/schemas';
 
 const AddStaff = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -79,6 +80,26 @@ const AddStaff = () => {
           value: z.string(),
         })
         .array(),
+      avatar: imageSchema
+        // check if less than 500x500
+        .refine(
+          async (value) => {
+            if (!value) return true;
+            return await new Promise<boolean>((resolve) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(value);
+              reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target?.result as string;
+                img.onload = () => {
+                  const { width, height } = img;
+                  resolve(width <= 500 && height <= 500);
+                };
+              };
+            });
+          },
+          { message: 'Avatar must not be bigger than 500x500 pixels.' }
+        ),
     });
 
   type Schema = z.infer<typeof schema> & {
@@ -101,11 +122,13 @@ const AddStaff = () => {
 
   const {
     control,
+    register,
     watch,
+    trigger,
     getValues,
     setValue,
     reset,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     handleSubmit,
   } = formContext;
 
@@ -129,7 +152,7 @@ const AddStaff = () => {
     name: 'games',
   });
 
-  const handleSave = async ({ id, name, roles, ...rest }: Schema) => {
+  const handleSave = async ({ id, name, roles, avatar, ...rest }: Schema) => {
     // check if id is already taken (using the staffNames cache)
     // failsafe in case the user somehow bypasses the form validation
     if (staffNames[id]) {
@@ -137,6 +160,13 @@ const AddStaff = () => {
     }
 
     try {
+      // upload images first to update hasAvatar
+      let hasAvatar = false;
+      if (avatar) {
+        await uploadBytes(ref(storage, `staff-avatars/${id}`), avatar);
+        hasAvatar = true;
+      }
+
       const staffInfoDocRef = doc(staffInfosCollection, id);
 
       const formattedRoles = roles.map(({ value }) => value);
@@ -150,7 +180,7 @@ const AddStaff = () => {
         updatedAt: serverTimestamp(),
         cachedMusic: {},
         musicIds: [],
-        hasAvatar: false,
+        hasAvatar,
         ...rest,
       });
 
@@ -162,6 +192,11 @@ const AddStaff = () => {
       // update the staffRoles cache
       batch.update(doc(cacheCollection, 'staffRoles'), {
         [id]: formattedRoles,
+      });
+
+      // update staffAvatarPresence cache
+      batch.update(doc(cacheCollection, 'staffAvatarPresence'), {
+        [id]: hasAvatar,
       });
 
       await batch.commit();
@@ -179,6 +214,7 @@ const AddStaff = () => {
   };
 
   const customSlug = watch('customSlug');
+  const avatar = watch('avatar');
 
   return (
     <MainLayout title='Add Staff'>
@@ -409,6 +445,101 @@ const AddStaff = () => {
           >
             Add Game
           </Button>
+        </Paper>
+        <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+          <Typography variant='h2'>Avatar</Typography>
+          <Typography color='text.secondary'>
+            Accepted file type: .webp
+          </Typography>
+          <Typography color='text.secondary'>Max size: 5MB.</Typography>
+          <Typography color='text.secondary'>
+            Max dimensions: 200x200.
+          </Typography>
+          <Typography color='text.secondary' sx={{ mb: 2 }}>
+            Character must be facing left or center. Face should be around 50%
+            image height. Transparent background is recommended.
+          </Typography>
+          <Box>
+            <Box>
+              <Box display='inline-block'>
+                <input
+                  style={{ display: 'none' }}
+                  id='avatar'
+                  type='file'
+                  accept='image/webp'
+                  {...register('avatar', {
+                    onChange: (e: ChangeEvent<HTMLInputElement>) => {
+                      if (e.target.files?.[0].type === 'image/webp') {
+                        setValue('avatar', e.target.files[0]);
+                      } else {
+                        setValue('avatar', null);
+                        enqueueSnackbar(
+                          'Invalid file type. Only .webp is accepted.',
+                          { variant: 'error' }
+                        );
+                      }
+                      trigger('avatar');
+                    },
+                  })}
+                />
+                <label htmlFor='avatar'>
+                  <Button
+                    variant='contained'
+                    color={errors.avatar ? 'error' : 'primary'}
+                    component='span'
+                  >
+                    {!!avatar ? 'Replace Avatar' : 'Upload Avatar'}
+                  </Button>
+                </label>
+              </Box>
+              {avatar && (
+                <Button
+                  variant='outlined'
+                  onClick={() =>
+                    setValue('avatar', null, {
+                      shouldValidate: true,
+                    })
+                  }
+                  sx={{ ml: 2 }}
+                >
+                  Remove Selected Avatar
+                </Button>
+              )}
+            </Box>
+            {/* display selected image */}
+            {avatar && (
+              <Box sx={{ mt: 2 }}>
+                {errors.avatar && (
+                  <Typography color='error.main' sx={{ mb: 2 }}>
+                    {/* @ts-ignore .any() will be checked on .refine() */}
+                    {errors.avatar.message}
+                  </Typography>
+                )}
+                <Box
+                  sx={{
+                    p: 1.5,
+                    backgroundColor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Typography color='text.secondary'>
+                    Selected avatar usage:
+                  </Typography>
+                  <Box
+                    component='img'
+                    src={URL.createObjectURL(avatar)}
+                    alt='selected avatar'
+                    sx={{
+                      width: '100%',
+                      maxWidth: 150,
+                      aspectRatio: '1 / 1',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
+              </Box>
+            )}
+          </Box>
         </Paper>
         <LoadingButton
           type='submit'
