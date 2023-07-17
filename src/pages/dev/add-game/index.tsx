@@ -539,23 +539,29 @@ const AddGame = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={characterSpoilerIds.includes(characterId.value)}
+                    checked={characterSpoilerIds.includes(
+                      getValues(`characterIds.${idx}.value`)
+                    )}
                     edge='start'
                     onChange={(e) => {
-                      if (!characterId.value) return;
+                      // useFieldArray's fields doesn't update immediately
+                      const currentCharacterId = getValues(
+                        `characterIds.${idx}.value`
+                      );
+                      if (!currentCharacterId) return;
                       const prevCharacterSpoilerIds = getValues(
                         'characterSpoilerIds'
                       );
                       if (e.target.checked) {
                         setValue('characterSpoilerIds', [
                           ...prevCharacterSpoilerIds,
-                          characterId.value,
+                          currentCharacterId,
                         ]);
                       } else {
                         setValue(
                           'characterSpoilerIds',
                           prevCharacterSpoilerIds.filter(
-                            (id) => id !== characterId.value
+                            (id) => id !== currentCharacterId
                           )
                         );
                       }
