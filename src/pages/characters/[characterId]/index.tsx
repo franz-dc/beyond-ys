@@ -24,11 +24,11 @@ import 'yet-another-react-lightbox/plugins/counter.css';
 import { GameItem, Link, MainLayout } from '~/components';
 import { cacheCollection, charactersCollection } from '~/configs';
 import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
-import { CharacterSchema } from '~/schemas';
+import { CharacterSchema, StaffInfoCacheSchema } from '~/schemas';
 
 interface Props extends CharacterSchema {
   id: string;
-  staffNames: Record<string, string>;
+  staffInfoCache: Record<string, StaffInfoCacheSchema>;
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async (
@@ -44,13 +44,13 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     return { notFound: true };
   }
 
-  const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
+  const staffInfoCacheDoc = await getDoc(doc(cacheCollection, 'staffInfo'));
 
   const data: Props = {
     ...docSnap.data(),
     id: characterId,
     updatedAt: docSnap.data()?.updatedAt?.toMillis() || null,
-    staffNames: staffNamesDoc.data() || {},
+    staffInfoCache: staffInfoCacheDoc.data() || {},
   };
 
   return { props: data };
@@ -67,7 +67,7 @@ const CharacterInfo = ({
   imageDirection,
   cachedGames,
   voiceActors,
-  staffNames,
+  staffInfoCache,
   extraImages,
   hasMainImage,
   containsSpoilers,
@@ -521,7 +521,11 @@ const CharacterInfo = ({
                             }}
                           >
                             <Avatar
-                              src={`${CLOUD_STORAGE_URL}/staff/${voiceActor.staffId}`}
+                              src={
+                                staffInfoCache[voiceActor.staffId]?.hasAvatar
+                                  ? `${CLOUD_STORAGE_URL}/staff/${voiceActor.staffId}`
+                                  : undefined
+                              }
                               imgProps={{
                                 loading: 'lazy',
                               }}
@@ -564,7 +568,7 @@ const CharacterInfo = ({
                           </Box>
                           <Box>
                             <Typography sx={{ fontWeight: 'medium' }}>
-                              {staffNames[voiceActor.staffId] ||
+                              {staffInfoCache[voiceActor.staffId]?.name ||
                                 'Unknown staff'}
                             </Typography>
                             <Typography

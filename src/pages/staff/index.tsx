@@ -16,75 +16,46 @@ import { useDebouncedCallback } from 'use-debounce';
 import { GenericHeader, Link, MainLayout, Searchbar } from '~/components';
 import { cacheCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
+import { StaffInfoCacheSchema } from '~/schemas';
 interface StaffListProps {
-  categorizedStaffNames: Record<
+  categorizedStaffInfoCache: Record<
     string,
-    {
-      id: string;
-      name: string;
-      roles: string[];
-    }[]
+    (StaffInfoCacheSchema & { id: string })[]
   >;
-  staffAvatarPresence: Record<string, boolean>;
   description: string;
 }
 
 export const getServerSideProps: GetServerSideProps<
   StaffListProps
 > = async () => {
-  const [staffNamesDocRes, staffRolesDocRes, staffAvatarPresenceDocRes] =
-    await Promise.allSettled([
-      getDoc(doc(cacheCollection, 'staffNames')),
-      getDoc(doc(cacheCollection, 'staffRoles')),
-      getDoc(doc(cacheCollection, 'staffAvatarPresence')),
-    ]);
-
-  const staffNames =
-    staffNamesDocRes.status === 'fulfilled' && staffNamesDocRes.value.exists()
-      ? staffNamesDocRes.value?.data()
-      : {};
-  const staffRoles =
-    staffRolesDocRes.status === 'fulfilled' && staffRolesDocRes.value.exists()
-      ? staffRolesDocRes.value?.data()
-      : {};
-  const staffAvatarPresence =
-    staffAvatarPresenceDocRes.status === 'fulfilled' &&
-    staffAvatarPresenceDocRes.value.exists()
-      ? staffAvatarPresenceDocRes.value?.data()
-      : {};
+  const staffInfoCache = await getDoc<Record<string, StaffInfoCacheSchema>>(
+    doc(cacheCollection, 'staffInfo')
+  );
 
   // categorize staff members by their first letter
-  const categorizedStaffNames = Object.entries(staffNames)
-    .sort(([, a], [, b]) => a.localeCompare(b))
-    .reduce<
-      Record<
-        string,
-        {
-          id: string;
-          name: string;
-          roles: string[];
-        }[]
-      >
-    >((acc, [id, name]) => {
-      const firstLetter = name[0].toUpperCase();
+  const categorizedStaffInfoCache = Object.entries(staffInfoCache.data() || {})
+    .sort(([, { name: a }], [, { name: b }]) => a.localeCompare(b))
+    .reduce<StaffListProps['categorizedStaffInfoCache']>(
+      (acc, [id, staffMember]) => {
+        const firstLetter = staffMember.name[0].toUpperCase();
 
-      if (!acc[firstLetter]) {
-        acc[firstLetter] = [];
-      }
+        if (!acc[firstLetter]) {
+          acc[firstLetter] = [];
+        }
 
-      acc[firstLetter].push({
-        id,
-        name,
-        roles: staffRoles[id] || [],
-      });
+        acc[firstLetter].push({
+          id,
+          ...staffMember,
+        });
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {}
+    );
 
   return {
     props: {
-      categorizedStaffNames,
-      staffAvatarPresence,
+      categorizedStaffInfoCache,
       description:
         "Current and former people involved with the production of Falcom's works",
     },
@@ -92,9 +63,8 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 const StaffList: FC<StaffListProps> = ({
-  categorizedStaffNames,
+  categorizedStaffInfoCache,
   description,
-  staffAvatarPresence,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -115,7 +85,7 @@ const StaffList: FC<StaffListProps> = ({
       />
       {
         // render a list of letters
-        Object.entries(categorizedStaffNames)
+        Object.entries(categorizedStaffInfoCache)
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([letter, staffMembers]) => {
             // filter out staff members that don't match the search query
@@ -144,58 +114,60 @@ const StaffList: FC<StaffListProps> = ({
                     sm: 2,
                   }}
                 >
-                  {filteredStaffMembers.map(({ id, name, roles }) => (
-                    <Grid item key={id} xs={12} sm={6} md={4}>
-                      <ButtonBase
-                        focusRipple
-                        component={Link}
-                        href={`/staff/${id}`}
-                        sx={{
-                          display: 'block',
-                          borderRadius: 2,
-                        }}
-                      >
-                        <Paper
+                  {filteredStaffMembers.map(
+                    ({ id, name, roles, hasAvatar }) => (
+                      <Grid item key={id} xs={12} sm={6} md={4}>
+                        <ButtonBase
+                          focusRipple
+                          component={Link}
+                          href={`/staff/${id}`}
                           sx={{
-                            px: 2,
-                            py: 1.5,
+                            display: 'block',
+                            borderRadius: 2,
                           }}
                         >
-                          <Stack direction='row' spacing={2}>
-                            <Avatar
-                              src={
-                                staffAvatarPresence?.[id]
-                                  ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
-                                  : undefined
-                              }
-                              imgProps={{
-                                loading: 'lazy',
-                              }}
-                              sx={{
-                                width: 40,
-                                height: 40,
-                                backgroundColor: 'text.disabled',
-                              }}
-                            />
-                            <Box>
-                              <Typography sx={{ fontWeight: 'medium' }}>
-                                {name}
-                              </Typography>
-                              <Typography
-                                sx={{
-                                  fontSize: 14,
-                                  color: 'text.secondary',
+                          <Paper
+                            sx={{
+                              px: 2,
+                              py: 1.5,
+                            }}
+                          >
+                            <Stack direction='row' spacing={2}>
+                              <Avatar
+                                src={
+                                  hasAvatar
+                                    ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
+                                    : undefined
+                                }
+                                imgProps={{
+                                  loading: 'lazy',
                                 }}
-                                aria-label='artist'
-                              >
-                                {roles.join(', ') || 'Unknown role'}
-                              </Typography>
-                            </Box>
-                          </Stack>
-                        </Paper>
-                      </ButtonBase>
-                    </Grid>
-                  ))}
+                                sx={{
+                                  width: 40,
+                                  height: 40,
+                                  backgroundColor: 'text.disabled',
+                                }}
+                              />
+                              <Box>
+                                <Typography sx={{ fontWeight: 'medium' }}>
+                                  {name}
+                                </Typography>
+                                <Typography
+                                  sx={{
+                                    fontSize: 14,
+                                    color: 'text.secondary',
+                                  }}
+                                  aria-label='artist'
+                                >
+                                  {roles.join(', ') || 'Unknown role'}
+                                </Typography>
+                              </Box>
+                            </Stack>
+                          </Paper>
+                        </ButtonBase>
+                      </Grid>
+                    )
+                  )}
                 </Grid>
               </Box>
             );

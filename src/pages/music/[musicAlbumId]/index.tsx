@@ -6,13 +6,13 @@ import { MainLayout, MusicItem } from '~/components';
 import { cacheCollection, musicAlbumsCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
-import { MusicAlbumSchema } from '~/schemas';
+import { MusicAlbumSchema, StaffInfoCacheSchema } from '~/schemas';
 import { formatReleaseDate } from '~/utils';
 
 interface Props {
   id: string;
   musicAlbum: MusicAlbumSchema;
-  staffNames: Record<string, string>;
+  staffInfo: Record<string, StaffInfoCacheSchema>;
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 
   const musicAlbum = docSnap.data();
 
-  const staffNamesDoc = await getDoc(doc(cacheCollection, 'staffNames'));
+  const staffInfoCacheDoc = await getDoc(doc(cacheCollection, 'staffInfo'));
 
   return {
     props: {
@@ -46,7 +46,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
           )
         ),
       },
-      staffNames: staffNamesDoc.data() || {},
+      staffInfo: staffInfoCacheDoc.data() || {},
     },
   };
 };
@@ -54,7 +54,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 const AlbumInfo = ({
   id,
   musicAlbum: { name, releaseDate, musicIds, cachedMusic },
-  staffNames,
+  staffInfo,
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -71,34 +71,37 @@ const AlbumInfo = ({
         id: musicId,
         artists: [
           // populate composers
-          ...soundtrack.composerIds.map((c) =>
-            staffNames[c]
+          ...soundtrack.composerIds.map((c) => {
+            const foundStaffName = staffInfo[c]?.name;
+            return foundStaffName
               ? {
                   name: hasArrangerOrOtherArtists
-                    ? `${staffNames[c]} (Comp.)`
-                    : staffNames[c],
+                    ? `${foundStaffName} (Comp.)`
+                    : foundStaffName,
                   link: `/staff/${c}`,
                 }
-              : null
-          ),
+              : null;
+          }),
           // populate arrangers
-          ...soundtrack.arrangerIds.map((a) =>
-            staffNames[a]
+          ...soundtrack.arrangerIds.map((a) => {
+            const foundStaffName = staffInfo[a]?.name;
+            return foundStaffName
               ? {
-                  name: `${staffNames[a]} (Arr.)`,
+                  name: `${foundStaffName} (Arr.)`,
                   link: `/staff/${a}`,
                 }
-              : null
-          ),
+              : null;
+          }),
           // populate other artists
-          ...soundtrack.otherArtists.map((a) =>
-            staffNames[a.staffId]
+          ...soundtrack.otherArtists.map((a) => {
+            const foundStaffName = staffInfo[a.staffId]?.name;
+            return foundStaffName
               ? {
-                  name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
+                  name: `${foundStaffName} (${a.role || 'Other'})`,
                   link: `/staff/${a.staffId}`,
                 }
-              : null
-          ),
+              : null;
+          }),
         ].filter((a): a is Exclude<typeof a, null> => !!a),
       };
     })

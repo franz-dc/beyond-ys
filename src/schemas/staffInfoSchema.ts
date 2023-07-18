@@ -24,3 +24,8 @@ export const staffInfoSchema = z.object({
 });
 
 export type StaffInfoSchema = z.infer<typeof staffInfoSchema>;
+
+export type StaffInfoCacheSchema = Pick<
+  StaffInfoSchema,
+  'name' | 'roles' | 'hasAvatar'
+>;

@@ -42,6 +42,7 @@ import { LANGUAGES } from '~/constants';
 import {
   CharacterCacheSchema,
   CharacterSchema,
+  StaffInfoCacheSchema,
   characterSchema,
   imageSchema,
 } from '~/schemas';
@@ -66,15 +67,17 @@ const AddCharacter = () => {
     return () => unsubscribe();
   }, []);
 
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+  const [staffInfoCache, setStaffInfoCache] = useState<
+    Record<string, StaffInfoCacheSchema>
+  >({});
+  const [isLoadingStaffInfoCache, setIsLoadingStaffInfoCache] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'staffNames'),
+      doc(cacheCollection, 'staffInfo'),
       (docSnap) => {
-        setStaffNames(docSnap.data() || {});
-        setIsLoadingStaffNames(false);
+        setStaffInfoCache(docSnap.data() || {});
+        setIsLoadingStaffInfoCache(false);
       }
     );
 
@@ -481,8 +484,8 @@ const AddCharacter = () => {
                 <AutocompleteElement
                   name={`voiceActors.${idx}.staffId`}
                   label={`Voice Actor ${idx + 1}`}
-                  options={Object.entries(staffNames)
-                    .map(([id, label]) => ({
+                  options={Object.entries(staffInfoCache)
+                    .map(([id, { name: label }]) => ({
                       id,
                       label,
                     }))
@@ -492,7 +495,7 @@ const AddCharacter = () => {
                         !voiceActors.some((g) => g.staffId === id) ||
                         voiceActor.staffId === id
                     )}
-                  loading={isLoadingStaffNames}
+                  loading={isLoadingStaffInfoCache}
                   autocompleteProps={{ fullWidth: true }}
                   textFieldProps={{ margin: 'normal' }}
                   matchId
@@ -554,7 +557,7 @@ const AddCharacter = () => {
           ))}
           <LoadingButton
             variant='outlined'
-            loading={isLoadingStaffNames}
+            loading={isLoadingStaffInfoCache}
             onClick={() =>
               appendVoiceActor({
                 staffId: '',
@@ -563,7 +566,9 @@ const AddCharacter = () => {
               })
             }
             fullWidth
-            disabled={voiceActors.length >= Object.entries(staffNames).length}
+            disabled={
+              voiceActors.length >= Object.entries(staffInfoCache).length
+            }
             sx={{ mt: 1 }}
           >
             Add Voice Actor

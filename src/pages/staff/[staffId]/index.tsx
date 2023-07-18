@@ -20,12 +20,13 @@ import { useMusicPlayer } from '~/hooks';
 import {
   GameCacheSchema,
   MusicAlbumCacheSchema,
+  StaffInfoCacheSchema,
   StaffInfoSchema,
 } from '~/schemas';
 
 type Props = StaffInfoSchema & {
   id: string;
-  staffNames: Record<string, string>;
+  staffInfoCache: Record<string, StaffInfoCacheSchema>;
   cachedGames: Record<string, GameCacheSchema>;
   cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
@@ -49,7 +50,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ...docSnap.data(),
     id: staffId,
     updatedAt: docSnap.data().updatedAt.toMillis(),
-    staffNames: {},
+    staffInfoCache: {},
     cachedGames: {},
     cachedMusicAlbums: {},
     // remove updatedAt from cachedMusic values to prevent next.js errors
@@ -60,15 +61,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     ),
   };
 
-  const [staffNamesRes, cachedGamesRes, cachedMusicAlbumsRes] =
+  const [staffInfoCacheRes, cachedGamesRes, cachedMusicAlbumsRes] =
     await Promise.allSettled([
-      getDoc(doc(cacheCollection, 'staffNames')),
+      getDoc(doc(cacheCollection, 'staffInfo')),
       getDoc(doc(cacheCollection, 'games')),
       getDoc(doc(cacheCollection, 'musicAlbums')),
     ]);
 
-  if (staffNamesRes.status === 'fulfilled') {
-    data.staffNames = staffNamesRes.value.data() || {};
+  if (staffInfoCacheRes.status === 'fulfilled') {
+    data.staffInfoCache = staffInfoCacheRes.value.data() || {};
   }
 
   if (cachedGamesRes.status === 'fulfilled') {
@@ -93,7 +94,7 @@ const StaffInfo = ({
   musicIds,
   cachedMusic,
   cachedMusicAlbums,
-  staffNames,
+  staffInfoCache,
   cachedGames,
   hasAvatar,
 }: Props) => {
@@ -112,34 +113,37 @@ const StaffInfo = ({
         id: soundtrackId,
         artists: [
           // populate composers
-          ...soundtrack.composerIds.map((c) =>
-            staffNames[c]
+          ...soundtrack.composerIds.map((c) => {
+            const foundStaffName = staffInfoCache[c]?.name;
+            return foundStaffName
               ? {
                   name: hasArrangerOrOtherArtists
-                    ? `${staffNames[c]} (Comp.)`
-                    : staffNames[c],
+                    ? `${foundStaffName} (Comp.)`
+                    : foundStaffName,
                   link: `/staff/${c}`,
                 }
-              : null
-          ),
+              : null;
+          }),
           // populate arrangers
-          ...soundtrack.arrangerIds.map((a) =>
-            staffNames[a]
+          ...soundtrack.arrangerIds.map((a) => {
+            const foundStaffName = staffInfoCache[a]?.name;
+            return foundStaffName
               ? {
-                  name: `${staffNames[a]} (Arr.)`,
+                  name: `${foundStaffName} (Arr.)`,
                   link: `/staff/${a}`,
                 }
-              : null
-          ),
+              : null;
+          }),
           // populate other artists
-          ...soundtrack.otherArtists.map((a) =>
-            staffNames[a.staffId]
+          ...soundtrack.otherArtists.map((a) => {
+            const foundStaffName = staffInfoCache[a.staffId]?.name;
+            return foundStaffName
               ? {
-                  name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
+                  name: `${foundStaffName} (${a.role || 'Other'})`,
                   link: `/staff/${a.staffId}`,
                 }
-              : null
-          ),
+              : null;
+          }),
         ].filter((a): a is Exclude<typeof a, null> => !!a),
       };
     })

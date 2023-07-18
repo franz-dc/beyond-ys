@@ -23,7 +23,12 @@ import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
 import { cacheCollection, db, staffInfosCollection, storage } from '~/configs';
-import { GameCacheSchema, imageSchema, staffInfoSchema } from '~/schemas';
+import {
+  GameCacheSchema,
+  StaffInfoCacheSchema,
+  imageSchema,
+  staffInfoSchema,
+} from '~/schemas';
 
 const AddStaff = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -42,15 +47,17 @@ const AddStaff = () => {
     return () => unsubscribe();
   }, []);
 
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+  const [staffInfoCache, setStaffInfoCache] = useState<
+    Record<string, StaffInfoCacheSchema>
+  >({});
+  const [isLoadingStaffInfoCache, setIsLoadingStaffInfoCache] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'staffNames'),
+      doc(cacheCollection, 'staffInfo'),
       (docSnap) => {
-        setStaffNames(docSnap.data() || {});
-        setIsLoadingStaffNames(false);
+        setStaffInfoCache(docSnap.data() || {});
+        setIsLoadingStaffInfoCache(false);
       }
     );
 
@@ -70,7 +77,7 @@ const AddStaff = () => {
       id: z
         .string()
         .min(1)
-        .refine((id) => !staffNames[id], {
+        .refine((id) => !staffInfoCache[id], {
           message: 'Slug is already taken.',
         }),
       name: z.string().min(1),
@@ -153,9 +160,9 @@ const AddStaff = () => {
   });
 
   const handleSave = async ({ id, name, roles, avatar, ...rest }: Schema) => {
-    // check if id is already taken (using the staffNames cache)
+    // check if id is already taken (using the staffInfo cache)
     // failsafe in case the user somehow bypasses the form validation
-    if (staffNames[id]) {
+    if (staffInfoCache[id]) {
       throw new Error(`Slug '${id}' is already taken.`);
     }
 
@@ -184,25 +191,21 @@ const AddStaff = () => {
         ...rest,
       });
 
-      // update the staffNames cache
-      batch.update(doc(cacheCollection, 'staffNames'), {
-        [id]: name,
-      });
+      const newCacheData = {
+        name,
+        roles: formattedRoles,
+        hasAvatar,
+      };
 
-      // update the staffRoles cache
-      batch.update(doc(cacheCollection, 'staffRoles'), {
-        [id]: formattedRoles,
-      });
-
-      // update staffAvatarPresence cache
-      batch.update(doc(cacheCollection, 'staffAvatarPresence'), {
-        [id]: hasAvatar,
+      // update the staffInfo cache
+      batch.update(doc(cacheCollection, 'staffInfo'), {
+        [id]: newCacheData,
       });
 
       await batch.commit();
 
-      // don't wait for onSnapshot to update the staffNames state
-      setStaffNames((prev) => ({ ...prev, [id]: name }));
+      // don't wait for onSnapshot to update the staffInfoCache state
+      setStaffInfoCache((prev) => ({ ...prev, [id]: newCacheData }));
 
       reset();
 
@@ -544,7 +547,7 @@ const AddStaff = () => {
         <LoadingButton
           type='submit'
           variant='contained'
-          loading={isSubmitting || isLoadingStaffNames}
+          loading={isSubmitting || isLoadingStaffInfoCache}
           fullWidth
         >
           Submit

@@ -26,11 +26,15 @@ import {
   // GAME_PLATFORMS,
 } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
-import { GameSchema, MusicAlbumCacheSchema } from '~/schemas';
+import {
+  GameSchema,
+  MusicAlbumCacheSchema,
+  StaffInfoCacheSchema,
+} from '~/schemas';
 
 type ExtendedGameSchema = GameSchema & {
   id: string;
-  staffNames: Record<string, string>;
+  staffInfoCache: Record<string, StaffInfoCacheSchema>;
   cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
@@ -53,7 +57,7 @@ export const getServerSideProps: GetServerSideProps<
     ...docSnap.data(),
     id: gameId,
     updatedAt: docSnap.data().updatedAt.toMillis(),
-    staffNames: {},
+    staffInfoCache: {},
     cachedMusicAlbums: {},
     // convert cachedSoundtracks updatedAt to milliseconds
     cachedSoundtracks: Object.entries(docSnap.data().cachedSoundtracks).reduce(
@@ -69,13 +73,13 @@ export const getServerSideProps: GetServerSideProps<
   };
 
   // doing it this way to parallelize the requests and save time
-  const [staffNamesRes, cachedMusicAlbumsRes] = await Promise.allSettled([
-    getDoc(doc(cacheCollection, 'staffNames')),
+  const [staffInfoCache, cachedMusicAlbumsRes] = await Promise.allSettled([
+    getDoc(doc(cacheCollection, 'staffInfo')),
     getDoc(doc(cacheCollection, 'musicAlbums')),
   ]);
 
-  if (staffNamesRes.status === 'fulfilled') {
-    data.staffNames = staffNamesRes.value.data() || {};
+  if (staffInfoCache.status === 'fulfilled') {
+    data.staffInfoCache = staffInfoCache.value.data() || {};
   }
 
   if (cachedMusicAlbumsRes.status === 'fulfilled') {
@@ -97,7 +101,7 @@ const GamePage = ({
   cachedCharacters,
   soundtrackIds,
   cachedSoundtracks,
-  staffNames,
+  staffInfoCache,
   cachedMusicAlbums,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
@@ -119,34 +123,37 @@ const GamePage = ({
         id: soundtrackId,
         artists: [
           // populate composers
-          ...soundtrack.composerIds.map((c) =>
-            staffNames[c]
+          ...soundtrack.composerIds.map((c) => {
+            const foundStaffName = staffInfoCache[c]?.name;
+            return foundStaffName
               ? {
                   name: hasArrangerOrOtherArtists
-                    ? `${staffNames[c]} (Comp.)`
-                    : staffNames[c],
+                    ? `${foundStaffName} (Comp.)`
+                    : foundStaffName,
                   link: `/staff/${c}`,
                 }
-              : null
-          ),
+              : null;
+          }),
           // populate arrangers
-          ...soundtrack.arrangerIds.map((a) =>
-            staffNames[a]
+          ...soundtrack.arrangerIds.map((a) => {
+            const foundStaffName = staffInfoCache[a]?.name;
+            return foundStaffName
               ? {
-                  name: `${staffNames[a]} (Arr.)`,
+                  name: `${foundStaffName} (Arr.)`,
                   link: `/staff/${a}`,
                 }
-              : null
-          ),
+              : null;
+          }),
           // populate other artists
-          ...soundtrack.otherArtists.map((a) =>
-            staffNames[a.staffId]
+          ...soundtrack.otherArtists.map((a) => {
+            const foundStaff = staffInfoCache[a.staffId]?.name;
+            return foundStaff
               ? {
-                  name: `${staffNames[a.staffId]} (${a.role || 'Other'})`,
+                  name: `${foundStaff} (${a.role || 'Other'})`,
                   link: `/staff/${a.staffId}`,
                 }
-              : null
-          ),
+              : null;
+          }),
         ].filter((a): a is Exclude<typeof a, null> => !!a),
       };
     })

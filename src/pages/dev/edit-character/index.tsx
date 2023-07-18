@@ -46,6 +46,7 @@ import {
   CharacterCacheSchema,
   CharacterSchema,
   GameCacheSchema,
+  StaffInfoCacheSchema,
   characterSchema,
   imageSchema,
 } from '~/schemas';
@@ -70,15 +71,17 @@ const EditCharacter = () => {
     return () => unsubscribe();
   }, []);
 
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+  const [staffInfoCache, setStaffInfoCache] = useState<
+    Record<string, StaffInfoCacheSchema>
+  >({});
+  const [isLoadingStaffInfoCache, setIsLoadingStaffInfoCache] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'staffNames'),
+      doc(cacheCollection, 'staffInfo'),
       (docSnap) => {
-        setStaffNames(docSnap.data() || {});
-        setIsLoadingStaffNames(false);
+        setStaffInfoCache(docSnap.data() || {});
+        setIsLoadingStaffInfoCache(false);
       }
     );
 
@@ -690,8 +693,8 @@ const EditCharacter = () => {
                     <AutocompleteElement
                       name={`voiceActors.${idx}.staffId`}
                       label={`Voice Actor ${idx + 1}`}
-                      options={Object.entries(staffNames)
-                        .map(([id, label]) => ({
+                      options={Object.entries(staffInfoCache)
+                        .map(([id, { name: label }]) => ({
                           id,
                           label,
                         }))
@@ -701,7 +704,7 @@ const EditCharacter = () => {
                             !voiceActors.some((g) => g.staffId === id) ||
                             voiceActor.staffId === id
                         )}
-                      loading={isLoadingStaffNames}
+                      loading={isLoadingStaffInfoCache}
                       autocompleteProps={{ fullWidth: true }}
                       textFieldProps={{ margin: 'normal' }}
                       matchId
@@ -763,7 +766,7 @@ const EditCharacter = () => {
               ))}
               <LoadingButton
                 variant='outlined'
-                loading={isLoadingStaffNames}
+                loading={isLoadingStaffInfoCache}
                 onClick={() =>
                   appendVoiceActor({
                     staffId: '',
@@ -773,7 +776,7 @@ const EditCharacter = () => {
                 }
                 fullWidth
                 disabled={
-                  voiceActors.length >= Object.entries(staffNames).length
+                  voiceActors.length >= Object.entries(staffInfoCache).length
                 }
                 sx={{ mt: 1 }}
               >

@@ -33,6 +33,7 @@ import { cacheCollection, db, staffInfosCollection, storage } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import {
   GameCacheSchema,
+  StaffInfoCacheSchema,
   StaffInfoSchema,
   imageSchema,
   staffInfoSchema,
@@ -55,15 +56,17 @@ const EditStaff = () => {
     return () => unsubscribe();
   }, []);
 
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+  const [staffInfoCache, setStaffInfoCache] = useState<
+    Record<string, StaffInfoCacheSchema>
+  >({});
+  const [isLoadingStaffInfoCache, setIsLoadingStaffInfoCache] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'staffNames'),
+      doc(cacheCollection, 'staffInfo'),
       (docSnap) => {
-        setStaffNames(docSnap.data() || {});
-        setIsLoadingStaffNames(false);
+        setStaffInfoCache(docSnap.data() || {});
+        setIsLoadingStaffInfoCache(false);
       }
     );
 
@@ -241,26 +244,21 @@ const EditStaff = () => {
         updatedAt: serverTimestamp(),
       });
 
-      // update staff names cache if name is changed
-      if (currentStaffData?.name !== values.name) {
-        batch.update(doc(cacheCollection, 'staffNames'), {
-          [id]: values.name,
-        });
-      }
+      // update staff info cache if cache fields are changed
+      const newCacheData = {
+        name: values.name,
+        roles: formattedRoles,
+        hasAvatar: newHasAvatar,
+      };
 
-      // update staff roles cache if roles are changed
       if (
-        JSON.stringify(currentStaffData?.roles) !== JSON.stringify(values.roles)
+        currentStaffData?.name !== values.name ||
+        JSON.stringify(currentStaffData?.roles) !==
+          JSON.stringify(values.roles) ||
+        currentStaffData?.hasAvatar !== newHasAvatar
       ) {
-        batch.update(doc(cacheCollection, 'staffRoles'), {
-          [id]: formattedRoles,
-        });
-      }
-
-      // update staffAvatarPresence cache if avatar is changed
-      if (currentStaffData?.hasAvatar !== newHasAvatar) {
-        batch.update(doc(cacheCollection, 'staffAvatarPresence'), {
-          [id]: newHasAvatar,
+        batch.update(doc(cacheCollection, 'staffInfo'), {
+          [id]: newCacheData,
         });
       }
 
@@ -272,9 +270,9 @@ const EditStaff = () => {
         roles: formattedRoles,
       }));
 
-      setStaffNames((prev) => ({
+      setStaffInfoCache((prev) => ({
         ...prev,
-        [id]: values.name,
+        [id]: newCacheData,
       }));
 
       // reset images after submit
@@ -304,11 +302,11 @@ const EditStaff = () => {
           <AutocompleteElement
             name='id'
             label='Staff'
-            options={Object.entries(staffNames).map(([id, label]) => ({
+            options={Object.entries(staffInfoCache).map(([id, label]) => ({
               id,
               label,
             }))}
-            loading={isLoadingStaffNames}
+            loading={isLoadingStaffInfoCache}
             autocompleteProps={{
               onChange: (_, v) => changeStaff(v.id),
               fullWidth: true,

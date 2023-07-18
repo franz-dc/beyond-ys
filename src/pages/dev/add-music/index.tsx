@@ -29,7 +29,11 @@ import {
   musicCollection,
   staffInfosCollection,
 } from '~/configs';
-import { MusicAlbumCacheSchema, musicSchema } from '~/schemas';
+import {
+  MusicAlbumCacheSchema,
+  StaffInfoCacheSchema,
+  musicSchema,
+} from '~/schemas';
 
 const AddMusic = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -52,15 +56,17 @@ const AddMusic = () => {
     return () => unsubscribe();
   }, []);
 
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [isLoadingStaffNames, setIsLoadingStaffNames] = useState(true);
+  const [staffInfoCache, setStaffInfoCache] = useState<
+    Record<string, StaffInfoCacheSchema>
+  >({});
+  const [isLoadingStaffInfoCache, setIsLoadingStaffInfoCache] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      doc(cacheCollection, 'staffNames'),
+      doc(cacheCollection, 'staffInfo'),
       (docSnap) => {
-        setStaffNames(docSnap.data() || {});
-        setIsLoadingStaffNames(false);
+        setStaffInfoCache(docSnap.data() || {});
+        setIsLoadingStaffInfoCache(false);
       }
     );
 
@@ -345,8 +351,8 @@ const AddMusic = () => {
               <AutocompleteElement
                 name={`composerIds.${idx}.value`}
                 label={`Composer ${idx + 1}`}
-                options={Object.entries(staffNames)
-                  .map(([id, label]) => ({
+                options={Object.entries(staffInfoCache)
+                  .map(([id, { name: label }]) => ({
                     id,
                     label,
                   }))
@@ -355,7 +361,7 @@ const AddMusic = () => {
                       !composers.some((c) => c.value === id) ||
                       id === composer.value
                   )}
-                loading={isLoadingStaffNames}
+                loading={isLoadingStaffInfoCache}
                 autocompleteProps={{
                   fullWidth: true,
                 }}
@@ -404,7 +410,7 @@ const AddMusic = () => {
             variant='outlined'
             onClick={() => appendComposer({ value: '' })}
             fullWidth
-            disabled={composers.length === Object.keys(staffNames).length}
+            disabled={composers.length === Object.keys(staffInfoCache).length}
           >
             Add Composer
           </Button>
@@ -416,8 +422,8 @@ const AddMusic = () => {
               <AutocompleteElement
                 name={`arrangerIds.${idx}.value`}
                 label={`Arranger ${idx + 1}`}
-                options={Object.entries(staffNames)
-                  .map(([id, label]) => ({
+                options={Object.entries(staffInfoCache)
+                  .map(([id, { name: label }]) => ({
                     id,
                     label,
                   }))
@@ -426,7 +432,7 @@ const AddMusic = () => {
                       !arrangers.some((c) => c.value === id) ||
                       id === arranger.value
                   )}
-                loading={isLoadingStaffNames}
+                loading={isLoadingStaffInfoCache}
                 autocompleteProps={{
                   fullWidth: true,
                 }}
@@ -475,7 +481,7 @@ const AddMusic = () => {
             variant='outlined'
             onClick={() => appendArranger({ value: '' })}
             fullWidth
-            disabled={arrangers.length === Object.keys(staffNames).length}
+            disabled={arrangers.length === Object.keys(staffInfoCache).length}
           >
             Add Arranger
           </Button>
@@ -492,8 +498,8 @@ const AddMusic = () => {
               <AutocompleteElement
                 name={`otherArtists.${idx}.staffId`}
                 label={`Other Artist ${idx + 1}`}
-                options={Object.entries(staffNames)
-                  .map(([id, label]) => ({
+                options={Object.entries(staffInfoCache)
+                  .map(([id, { name: label }]) => ({
                     id,
                     label,
                   }))
@@ -502,7 +508,7 @@ const AddMusic = () => {
                       !otherArtists.some((c) => c.staffId === id) ||
                       id === otherArtist.staffId
                   )}
-                loading={isLoadingStaffNames}
+                loading={isLoadingStaffInfoCache}
                 autocompleteProps={{
                   fullWidth: true,
                 }}
@@ -559,7 +565,9 @@ const AddMusic = () => {
             variant='outlined'
             onClick={() => appendOtherArtist({ staffId: '', role: '' })}
             fullWidth
-            disabled={otherArtists.length === Object.keys(staffNames).length}
+            disabled={
+              otherArtists.length === Object.keys(staffInfoCache).length
+            }
           >
             Add Other Artist
           </Button>
