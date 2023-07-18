@@ -243,9 +243,13 @@ const GamePage = ({
             md: 3,
           }}
         >
-          <Grid item xs='auto'>
+          <Grid item xs={12} sm='auto'>
             <Box
               sx={{
+                mx: {
+                  xs: 'auto',
+                  sm: 0,
+                },
                 position: 'relative',
                 width: {
                   xs: 120,
@@ -290,12 +294,15 @@ const GamePage = ({
               )}
             </Box>
           </Grid>
-          <Grid item xs>
+          <Grid item xs={12} sm>
             <Box
               sx={{
                 mt: {
-                  xs: '96px',
-                  md: '96px',
+                  sm: '96px',
+                },
+                textAlign: {
+                  xs: 'center',
+                  sm: 'left',
                 },
               }}
             >
