@@ -310,7 +310,7 @@ const AddMusicAlbum = () => {
                 'id',
                 slugify(getValues('name'), {
                   lower: true,
-                  remove: /[*+~.()'"!:@/]/g,
+                  remove: /[*+~.,()'"!:@/]/g,
                 })
               );
             }}
@@ -338,7 +338,7 @@ const AddMusicAlbum = () => {
               const name = e.target.value;
               const id = slugify(name, {
                 lower: true,
-                remove: /[*+~.()'"!:@/]/g,
+                remove: /[*+~.,()'"!:@/]/g,
               });
 
               setValue('id', id, { shouldValidate: true });

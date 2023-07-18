@@ -105,7 +105,7 @@ const GameList = ({ description, categorizedGames }: Props) => {
               sx={{ mb: 1 }}
               id={slugify(category, {
                 lower: true,
-                remove: /[*+~.()'"!:@/]/g,
+                remove: /[*+~.,()'"!:@/]/g,
               })}
             >
               {category}
