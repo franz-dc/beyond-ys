@@ -412,6 +412,13 @@ const EditGame = () => {
       }
 
       // 2. added characters
+      const newGameCacheData = {
+        name,
+        category,
+        releaseDate: formattedReleaseDate,
+        hasCoverImage: newHasCoverImage,
+      };
+
       const addedCharacterIds = formattedCharacterIds.filter(
         (id) => !currentGameData?.characterIds.includes(id)
       );
@@ -420,11 +427,7 @@ const EditGame = () => {
         addedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayUnion(id),
-            [`cachedGames.${id}`]: {
-              name,
-              category,
-              releaseDate: formattedReleaseDate,
-            },
+            [`cachedGames.${id}`]: newGameCacheData,
           });
 
           // add the character to the game's cachedCharacters
@@ -435,7 +438,12 @@ const EditGame = () => {
         });
       }
 
-      if (currentGameData?.name !== name) {
+      if (
+        currentGameData?.name !== name ||
+        currentGameData?.category !== category ||
+        currentGameData?.releaseDate !== formattedReleaseDate ||
+        currentGameData?.hasCoverImage !== newHasCoverImage
+      ) {
         // 3. retained characters
         const retainedCharacterIds = formattedCharacterIds.filter((id) =>
           currentGameData?.characterIds.includes(id)
@@ -444,11 +452,7 @@ const EditGame = () => {
         // update all character docs that depend on this game
         retainedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
-            [`cachedGames.${id}`]: {
-              name,
-              category,
-              releaseDate: formattedReleaseDate,
-            },
+            [`cachedGames.${id}`]: newGameCacheData,
           });
         });
 

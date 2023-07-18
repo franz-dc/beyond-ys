@@ -365,14 +365,16 @@ const AddGame = () => {
       // update the game doc
       batch.set(doc(gamesCollection, id), newData);
 
+      const gameCacheData = {
+        name,
+        category,
+        releaseDate: formattedReleaseDate,
+        hasCoverImage,
+      };
+
       // update the games cache
       batch.update(doc(cacheCollection, 'games'), {
-        [id]: {
-          name,
-          category,
-          releaseDate: formattedReleaseDate,
-          hasCoverImage,
-        },
+        [id]: gameCacheData,
       });
 
       formattedSoundtrackIds.forEach((soundtrackId) => {
@@ -385,11 +387,7 @@ const AddGame = () => {
       formattedCharacterIds.forEach((characterId) => {
         batch.update(doc(charactersCollection, characterId), {
           gameIds: arrayUnion(id),
-          [`cachedGames.${id}`]: {
-            name,
-            category,
-            releaseDate: formattedReleaseDate,
-          },
+          [`cachedGames.${id}`]: gameCacheData,
         });
       });
 
