@@ -476,6 +476,12 @@ const EditGame = () => {
         };
       });
 
+      // reset images after submit
+      setValue('coverImage', null);
+      setValue('bannerImage', null);
+      setValue('hasCoverImage', newHasCoverImage);
+      setValue('hasBannerImage', newHasBannerImage);
+
       enqueueSnackbar('Game updated successfully.', { variant: 'success' });
     } catch (err) {
       enqueueSnackbar('Failed to update game.', { variant: 'error' });

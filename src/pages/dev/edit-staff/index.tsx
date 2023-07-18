@@ -277,6 +277,10 @@ const EditStaff = () => {
         [id]: values.name,
       }));
 
+      // reset images after submit
+      setValue('avatar', null);
+      setValue('hasAvatar', newHasAvatar);
+
       enqueueSnackbar('Staff updated successfully.', {
         variant: 'success',
       });

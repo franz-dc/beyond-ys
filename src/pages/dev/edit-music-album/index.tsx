@@ -420,6 +420,10 @@ const EditMusicAlbum = () => {
         },
       }));
 
+      // reset images after submit
+      setValue('albumArt', null);
+      setValue('hasAlbumArt', newHasAlbumArt);
+
       enqueueSnackbar('Music album updated successfully.', {
         variant: 'success',
       });

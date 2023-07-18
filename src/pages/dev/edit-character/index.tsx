@@ -1,5 +1,3 @@
-// TODO: reset images after submit
-
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -423,7 +421,11 @@ const EditCharacter = () => {
         gameIds: formattedGameIds,
       }));
 
-      // make extra images not new
+      // reset images after submit
+      setValue('avatar', null);
+      setValue('mainImage', null);
+      setValue('hasAvatar', newHasAvatar);
+      setValue('hasMainImage', newHasMainImage);
       replaceExtraImages(
         formattedExtraImages.map((image) => ({
           ...image,
