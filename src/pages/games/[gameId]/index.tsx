@@ -246,6 +246,7 @@ const GamePage = ({
           <Grid item xs='auto'>
             <Box
               sx={{
+                position: 'relative',
                 width: {
                   xs: 120,
                   md: 175,
@@ -257,18 +258,35 @@ const GamePage = ({
               }}
             >
               {hasCoverImage && (
-                <Box
-                  component='img'
-                  src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
-                  alt='game cover'
-                  sx={{
-                    display: 'block',
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    borderRadius: 2,
-                  }}
-                />
+                <>
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      display: 'block',
+                      top: -8,
+                      left: -8,
+                      right: -8,
+                      bottom: -8,
+                      backgroundColor: 'background.default',
+                      borderRadius: 3,
+                    }}
+                  >
+                    <Box
+                      component='img'
+                      src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
+                      alt='game cover'
+                      sx={{
+                        display: 'block',
+                        width: 'calc(100% - 16px)',
+                        height: 'calc(100% - 16px)',
+                        m: 1,
+                        objectFit: 'cover',
+                        borderRadius: 2,
+                        zIndex: 1,
+                      }}
+                    />
+                  </Box>
+                </>
               )}
             </Box>
           </Grid>
