@@ -9,6 +9,7 @@ import {
   FormControlLabel,
   Paper,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { formatISO } from 'date-fns';
@@ -34,6 +35,7 @@ import {
   useForm,
 } from 'react-hook-form-mui';
 import slugify from 'slugify';
+import { useDebouncedCallback } from 'use-debounce';
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
@@ -407,6 +409,21 @@ const AddGame = () => {
   const coverImage = watch('coverImage');
   const bannerImage = watch('bannerImage');
 
+  const debounceName = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue('name', e.target.value);
+      if (customSlug) return;
+      const name = e.target.value;
+      const id = slugify(name, {
+        lower: true,
+        remove: /[*+~.,()'"!:@/]/g,
+      });
+
+      setValue('id', id, { shouldValidate: true });
+    },
+    500
+  );
+
   return (
     <MainLayout title='Add Game'>
       <GenericHeader title='Add Game' gutterBottom />
@@ -431,7 +448,7 @@ const AddGame = () => {
                 'id',
                 slugify(getValues('name'), {
                   lower: true,
-                  remove: /[*+~.()'"!:@/]/g,
+                  remove: /[*+~.,()'"!:@/]/g,
                 })
               );
             }}
@@ -448,22 +465,13 @@ const AddGame = () => {
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>General Info</Typography>
-          <TextFieldElement
-            name='name'
+          <TextField
             label='Name'
-            onChange={(e) => {
-              if (customSlug) return;
-              const name = e.target.value;
-              const id = slugify(name, {
-                lower: true,
-                remove: /[*+~.()'"!:@/]/g,
-              });
-
-              setValue('id', id, { shouldValidate: true });
-            }}
             required
             fullWidth
             margin='normal'
+            {...register('name')}
+            onChange={debounceName}
           />
           <TextFieldElement
             name='category'
