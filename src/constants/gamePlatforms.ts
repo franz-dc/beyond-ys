@@ -79,6 +79,12 @@ export const GAME_PLATFORMS: Record<
     name: 'MSX',
     width: 16,
   },
+  msx2: {
+    icon: MdCircle,
+    iconType: 'component',
+    name: 'MSX2',
+    width: 16,
+  },
   necPc: {
     icon: SiNec,
     iconType: 'component',
