@@ -363,12 +363,13 @@ const AddGame = () => {
       // update the game doc
       batch.set(doc(gamesCollection, id), newData);
 
-      // update the gameName cache
+      // update the games cache
       batch.update(doc(cacheCollection, 'games'), {
         [id]: {
           name,
           category,
           releaseDate: formattedReleaseDate,
+          hasCoverImage,
         },
       });
 

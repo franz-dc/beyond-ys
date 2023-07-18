@@ -324,27 +324,30 @@ const EditGame = () => {
         hasBannerImage: newHasBannerImage,
       };
 
-      // update these if the name or category have changed
+      // update these if cache fields have changed
       if (
         currentGameData?.name !== name ||
-        currentGameData?.category !== category
+        currentGameData?.category !== category ||
+        currentGameData?.releaseDate !== formattedReleaseDate ||
+        currentGameData?.hasCoverImage !== newHasCoverImage
       ) {
+        const newCacheData = {
+          name,
+          category,
+          releaseDate: formattedReleaseDate,
+          hasCoverImage: newHasCoverImage,
+        };
+
         // update all character docs that depend on this game
         currentGameData?.characterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
-            [`cachedGames.${id}`]: {
-              name,
-              category,
-            },
+            [`cachedGames.${id}`]: newCacheData,
           });
         });
 
         // update the games cache
         batch.update(doc(cacheCollection, 'games'), {
-          [id]: {
-            name,
-            category,
-          },
+          [id]: newCacheData,
         });
       }
 

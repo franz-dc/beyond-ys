@@ -32,6 +32,7 @@ export const gameCacheSchema = gameSchema.pick({
   name: true,
   category: true,
   releaseDate: true,
+  hasCoverImage: true,
 });
 
 export type GameCacheSchema = z.infer<typeof gameCacheSchema>;
