@@ -40,6 +40,7 @@ export const characterSchema = z.object({
       name: z.string(),
       category: z.string(),
       releaseDate: z.string(),
+      hasCoverImage: z.boolean(),
     })
   ),
 });

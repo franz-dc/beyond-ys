@@ -11,7 +11,7 @@ export interface GameItemProps extends GameCacheSchema {
   id: string;
 }
 
-const GameItem: FC<GameItemProps> = ({ id, name }) => {
+const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
   // `isLoaded` disabled for now because it does not always trigger
   // const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -45,7 +45,7 @@ const GameItem: FC<GameItemProps> = ({ id, name }) => {
             aspectRatio: '2 / 3',
           }}
         >
-          {!isError && (
+          {(!isError || hasCoverImage) && (
             <Box
               component='img'
               src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
