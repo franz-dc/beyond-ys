@@ -103,6 +103,8 @@ const GamePage = ({
   cachedSoundtracks,
   staffInfoCache,
   cachedMusicAlbums,
+  hasBannerImage,
+  hasCoverImage,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -187,34 +189,36 @@ const GamePage = ({
           backgroundColor: 'headerBackground',
         }}
       >
-        <Box
-          component='img'
-          src={`${CLOUD_STORAGE_URL}/game-banners/${id}`}
-          alt='game banner'
-          sx={{
-            display: 'block',
-            width: {
-              xs: 'calc(100% + 32px)',
-              sm: '100%',
-            },
-            height: {
-              xs: 120,
-              sm: 160,
-              md: 200,
-            },
-            mx: {
-              xs: -2,
-              sm: 0,
-            },
-            objectFit: 'cover',
-            borderRadius: {
-              xs: 0,
-              sm: 4,
-            },
-            backgroundColor: 'headerBackground',
-            color: 'headerBackground',
-          }}
-        />
+        {hasBannerImage && (
+          <Box
+            component='img'
+            src={`${CLOUD_STORAGE_URL}/game-banners/${id}`}
+            alt='game banner'
+            sx={{
+              display: 'block',
+              width: {
+                xs: 'calc(100% + 32px)',
+                sm: '100%',
+              },
+              height: {
+                xs: 120,
+                sm: 160,
+                md: 200,
+              },
+              mx: {
+                xs: -2,
+                sm: 0,
+              },
+              objectFit: 'cover',
+              borderRadius: {
+                xs: 0,
+                sm: 4,
+              },
+              backgroundColor: 'headerBackground',
+              color: 'headerBackground',
+            }}
+          />
+        )}
       </Box>
       <Box
         sx={{
@@ -252,18 +256,20 @@ const GamePage = ({
                 borderRadius: 2,
               }}
             >
-              <Box
-                component='img'
-                src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
-                alt='game cover'
-                sx={{
-                  display: 'block',
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  borderRadius: 2,
-                }}
-              />
+              {hasCoverImage && (
+                <Box
+                  component='img'
+                  src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
+                  alt='game cover'
+                  sx={{
+                    display: 'block',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    borderRadius: 2,
+                  }}
+                />
+              )}
             </Box>
           </Grid>
           <Grid item xs>
