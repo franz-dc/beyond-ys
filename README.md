@@ -5,6 +5,10 @@
 
 A fan website dedicated to [Nihon Falcom](https://www.falcom.co.jp)'s works. You can find information about Falcom's games, characters, music, staff, and more!
 
+## Demo
+
+You can visit the demo site [here](https://beyond-ys.vercel.app).
+
 ## Features
 
 - **Music player**: Listen to your favorite Falcom music while browsing the site.
