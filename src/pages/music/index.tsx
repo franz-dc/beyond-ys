@@ -61,7 +61,7 @@ const AlbumArt = ({
         backgroundColor: 'background.default',
       }}
     >
-      {isError || !hasAlbumArt ? (
+      {isError && !hasAlbumArt ? (
         <Box
           component={MdAlbum}
           sx={{

@@ -45,7 +45,7 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
             aspectRatio: '2 / 3',
           }}
         >
-          {(!isError || hasCoverImage) && (
+          {!isError && hasCoverImage && (
             <Box
               component='img'
               src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
