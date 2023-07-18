@@ -217,6 +217,7 @@ const GamePage = ({
               backgroundColor: 'headerBackground',
               color: 'headerBackground',
             }}
+            key={id}
           />
         )}
       </Box>
@@ -288,6 +289,7 @@ const GamePage = ({
                         borderRadius: 2,
                         zIndex: 1,
                       }}
+                      key={id}
                     />
                   </Box>
                 </>
