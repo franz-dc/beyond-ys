@@ -7,6 +7,7 @@ import {
   MusicAlbumSchema,
   MusicSchema,
   StaffInfoSchema,
+  UserSchema,
 } from '~/schemas';
 
 import { db } from './firebaseConfig';
@@ -25,3 +26,4 @@ export const musicAlbumsCollection =
   createCollection<MusicAlbumSchema>('musicAlbums');
 export const musicCollection = createCollection<MusicSchema>('music');
 export const cacheCollection = createCollection<Record<string, any>>('cache');
+export const usersCollection = createCollection<UserSchema>('users');
