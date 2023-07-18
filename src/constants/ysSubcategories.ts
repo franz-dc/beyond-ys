@@ -25,8 +25,8 @@ export const ysSubcategories = [
         href: '/games/ys-memories-of-celceta',
       },
       {
-        name: 'Ys V: Kefin, Lost City of Sand',
-        href: '/games/ys-v-kefin-lost-city-of-sand',
+        name: 'Ys V: Kefin, Lost Kingdom of Sand',
+        href: '/games/ys-v-kefin-lost-kingdom-of-sand',
       },
       {
         name: 'Ys VI: The Ark of Napishtim',
