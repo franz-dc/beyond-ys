@@ -56,7 +56,7 @@ You can visit the demo site [here](https://beyond-ys.vercel.app).
 
    1. Make sure that `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` is set to `false` in `.env.local`.
 
-   2. Create a service account and download the JSON file.
+   2. Create a service account key and download the generated JSON file.
 
    3. Set `GOOGLE_APPLICATION_CREDENTIALS` to the path of the JSON file in `.env.local`.
 
