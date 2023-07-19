@@ -81,7 +81,7 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
             px: 1.5,
             py: 1,
             backgroundColor: ({ palette }) =>
-              alpha(palette.background.paper, 0.6),
+              alpha(palette.background.paper, 0.75),
             backdropFilter: 'blur(4px)',
             opacity: {
               xs: 1,
