@@ -8,7 +8,7 @@ import {
   MusicSchema,
   StaffInfoSchema,
   UserSchema,
-} from '~/schemas';
+} from '../schemas';
 
 import { db } from './firebaseConfig';
 

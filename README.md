@@ -50,7 +50,47 @@ You can visit the demo site [here](https://beyond-ys.vercel.app).
    cp .env .env.local
    ```
 
-4. Run this command to seed the database with sample data (under construction):
+4. Set up your **Firebase project** or **Firebase Local Emulator Suite**.
+
+   a. **Firebase Project**
+
+   1. Make sure that `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` is set to `false` in `.env.local`.
+
+   2. Create a service account and download the JSON file.
+
+   3. Set `GOOGLE_APPLICATION_CREDENTIALS` to the path of the JSON file in `.env.local`.
+
+   4. Make your storage bucket publicly readable. For more information, see [this](https://stackoverflow.com/a/61129057).
+
+   b. **Firebase Local Emulator Suite**
+
+   1. Make sure that `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` is set to `true` in `.env.local`.
+
+   2. Enable the following services in your Firebase project:
+
+      - Authentication
+      - Firestore
+      - Storage
+
+   3. Update Firestore emulator variables in `.env.local` if necessary. This is only needed if you're using a different host or port.
+
+   4. Run the following commands on your local Firebase directory to start the emulators:
+
+      First time:
+
+      ```sh
+      firebase emulators:start --export-on-exit=./emulator-data
+      ```
+
+      Subsequent times:
+
+      ```sh
+      firebase emulators:start --import=./emulator-data --export-on-exit=./emulator-data
+      ```
+
+      This is needed to persist the data in the emulator and avoid having to reseed the database every time you restart the emulator.
+
+5. Run this command to seed the database with sample data\*:
 
    ```sh
    npm run seed
@@ -58,7 +98,7 @@ You can visit the demo site [here](https://beyond-ys.vercel.app).
    yarn seed
    ```
 
-5. Run the development server:
+6. Run the development server:
 
    ```sh
    npm run dev
@@ -66,7 +106,9 @@ You can visit the demo site [here](https://beyond-ys.vercel.app).
    yarn dev
    ```
 
-6. Open [localhost:9000](http://localhost:9000) on your browser.
+7. Open [localhost:9000](http://localhost:9000) on your browser.
+
+\* _Only canon Ys games are seeded (with some of their characters, music, and staff)._
 
 ## Contributing
 

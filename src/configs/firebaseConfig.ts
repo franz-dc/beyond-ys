@@ -1,7 +1,8 @@
 // import { getAnalytics } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,5 +17,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 
+const useFirebaseEmulator =
+  process.env.NODE_ENV === 'development' &&
+  process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true';
+
 export const db = getFirestore(app);
+export const auth = getAuth(app);
 export const storage = getStorage(app);
+
+// https://stackoverflow.com/questions/65066963
+// @ts-ignore
+if (useFirebaseEmulator && !global.EMULATORS_STARTED) {
+  // @ts-ignore
+  global.EMULATORS_STARTED = true;
+
+  const emulatorUrl =
+    process.env.NEXT_PUBLIC_FIREBASE_EMULATOR_URL || 'localhost';
+  const firestorePort =
+    process.env.NEXT_PUBLIC_FIRESTORE_EMULATOR_PORT || '8080';
+  const authPort = process.env.NEXT_PUBLIC_AUTH_EMULATOR_PORT || '9099';
+  const storagePort = process.env.NEXT_PUBLIC_STORAGE_EMULATOR_PORT || '9199';
+
+  connectFirestoreEmulator(db, emulatorUrl, Number(firestorePort));
+  connectAuthEmulator(auth, `http://${emulatorUrl}:${authPort}/`);
+  connectStorageEmulator(storage, emulatorUrl, Number(storagePort));
+}

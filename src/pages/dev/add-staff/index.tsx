@@ -123,6 +123,7 @@ const AddStaff = () => {
       descriptionSourceUrl: '',
       roles: [],
       games: [],
+      avatar: null,
     },
     resolver: zodResolver(schema),
   });
