@@ -1588,7 +1588,7 @@ export const firestoreData = {
         'necPc',
         'sharpX1',
         'fujitsuFm7',
-        'msx',
+        'msx2',
         'nes',
         'segaMasterSystem',
         'ibmPc',
@@ -2109,7 +2109,7 @@ export const firestoreData = {
       platforms: [
         'necPc',
         'fujitsuFm7',
-        'msx',
+        'msx2',
         'nes',
         'pcEngine',
         'windows',
@@ -2865,7 +2865,7 @@ export const firestoreData = {
       characterSpoilerIds: [],
       platforms: [
         'necPc',
-        'msx',
+        'msx2',
         'sharpX68000',
         'pcEngine',
         'snes',
