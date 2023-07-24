@@ -249,6 +249,7 @@ const HomePage = () => {
               borderRadius: '16px 0 0 16px',
               zIndex: 1,
             }}
+            aria-label='Ys Series'
           />
           <Box
             sx={{
@@ -369,6 +370,7 @@ const HomePage = () => {
                 borderRadius: '0 16px 16px 0',
                 zIndex: 1,
               }}
+              aria-label='Trails Series'
             />
             <Box
               sx={{
@@ -486,6 +488,7 @@ const HomePage = () => {
                 borderRadius: '16px 0 0 16px',
                 zIndex: 1,
               }}
+              aria-label='Gagharv Trilogy'
             />
             <Box
               sx={{
@@ -606,6 +609,7 @@ const HomePage = () => {
                   borderRadius: '0 16px 16px 0',
                   zIndex: 1,
                 }}
+                aria-label='Other Games'
               />
               <Box
                 sx={{
