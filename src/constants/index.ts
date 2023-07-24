@@ -59,4 +59,5 @@ export const LANGUAGES = [
 export const USER_ROLES = {
   admin: 'Admin',
   moderator: 'Moderator',
+  contributor: 'Contributor',
 };

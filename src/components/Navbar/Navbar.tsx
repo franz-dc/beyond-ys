@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-indent */
-import { FC, MouseEvent, ReactNode, useEffect, useMemo, useState } from 'react';
+import { FC, MouseEvent, ReactNode, useEffect, useState } from 'react';
 
 import {
   AppBar,
@@ -25,13 +25,11 @@ import {
   Typography,
 } from '@mui/material';
 import { signInWithPopup } from 'firebase/auth';
-import jwtDecode from 'jwt-decode';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { FiChevronDown } from 'react-icons/fi';
 import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import {
-  MdAccountCircle,
   MdClose,
   MdExpandMore,
   MdLogin,
@@ -302,27 +300,6 @@ const Navbar = () => {
     }
   };
 
-  const { userAvatar, userRole } = useMemo<{
-    userAvatar?: string;
-    userRole: string;
-  }>(() => {
-    try {
-      const decodedToken = jwtDecode<{ picture?: string; role?: string }>(
-        // @ts-ignore
-        auth.currentUser?.accessToken
-      );
-      return {
-        userAvatar: decodedToken?.picture,
-        // @ts-ignore
-        userRole: USER_ROLES[decodedToken?.role || ''] || 'Contributor',
-      };
-    } catch (err) {
-      return { userRole: 'Contributor' };
-    }
-    // @ts-ignore
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth.currentUser]);
-
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   // change theme if changed in other tab
@@ -358,6 +335,29 @@ const Navbar = () => {
       </ListItemText>
     </MenuItem>
   );
+
+  const [photoURL, setPhotoURL] = useState<string | undefined>(undefined);
+  const [displayName, setDisplayName] = useState<string>('Unknown User');
+  const [userRole, setUserRole] = useState<string>('Contributor');
+
+  useEffect(() => {
+    return auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setPhotoURL(user.photoURL || undefined);
+        setDisplayName(user.displayName || 'Unknown User');
+        const tokenRes = await user.getIdTokenResult();
+        const role: string = tokenRes?.claims.role || 'contributor';
+        if (role) {
+          // @ts-ignore
+          setUserRole(USER_ROLES[role] || role);
+        }
+      } else {
+        setPhotoURL(undefined);
+        setDisplayName('Unknown User');
+        setUserRole('Contributor');
+      }
+    });
+  });
 
   return (
     <>
@@ -420,14 +420,20 @@ const Navbar = () => {
               sx={{
                 ml: 1,
                 mr: {
-                  md: '-10px',
+                  md: '-4px',
                 },
+                p: 0.5,
                 color: 'text.secondary',
               }}
             >
-              {/* not using avatar component due to SSR issues */}
-              {/* TODO: use avatar if solution is found */}
-              <MdAccountCircle />
+              <Avatar
+                src={photoURL}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  backgroundColor: 'text.secondary',
+                }}
+              />
             </IconButton>
             <Menu
               id='account-menu'
@@ -488,7 +494,7 @@ const Navbar = () => {
                         }}
                       >
                         <Avatar
-                          src={userAvatar}
+                          src={photoURL}
                           sx={{
                             width: 36,
                             height: 36,
@@ -497,7 +503,7 @@ const Navbar = () => {
                         />
                       </ListItemIcon>
                       <ListItemText
-                        primary={auth.currentUser?.displayName}
+                        primary={displayName}
                         secondary={userRole}
                       />
                     </ListItem>,
@@ -535,6 +541,7 @@ const Navbar = () => {
                   xs: 'inline-flex',
                   md: 'none',
                 },
+                ml: 0.5,
                 mr: '-10px',
                 color: 'text.secondary',
               }}
