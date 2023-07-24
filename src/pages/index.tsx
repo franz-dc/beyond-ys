@@ -3,6 +3,7 @@ import {
   Box,
   ButtonBase,
   Grid,
+  Paper,
   Stack,
   SvgIcon,
   Typography,
@@ -260,6 +261,7 @@ const HomePage = () => {
                 sm: '222px',
               },
               pr: 5,
+              color: 'white',
             }}
           >
             <Typography variant='h2' component='h3' sx={{ mb: 0.5 }}>
@@ -383,6 +385,7 @@ const HomePage = () => {
                   sm: '210px',
                 },
                 textAlign: 'right',
+                color: 'white',
               }}
             >
               <Typography variant='h2' component='h3' sx={{ mb: 0.5 }}>
@@ -495,6 +498,7 @@ const HomePage = () => {
                   sm: '184px',
                 },
                 pr: 4,
+                color: 'white',
               }}
             >
               <Typography variant='h2' component='h3' sx={{ mb: 0.5 }}>
@@ -618,6 +622,7 @@ const HomePage = () => {
                     sm: '180px',
                   },
                   textAlign: 'right',
+                  color: 'white',
                 }}
               >
                 <Typography variant='h2' component='h3' sx={{ mb: 0.5 }}>
@@ -681,15 +686,16 @@ const HomePage = () => {
         justifyContent='center'
       >
         {exploreItems.map(({ label, href, icon }) => (
-          <Box
+          <Paper
             key={label}
             sx={{
               width: 180,
-              backgroundColor: 'background.paper',
               borderRadius: 4,
-              transition: 'transform 0.1s ease-in-out',
+              transition:
+                'transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out',
               '&:hover, &:focus-within': {
                 transform: 'translateY(-4px)',
+                boxShadow: ({ shadows }) => shadows[6],
               },
             }}
           >
@@ -708,7 +714,10 @@ const HomePage = () => {
               <Box
                 sx={{
                   height: 90,
-                  backgroundColor: '#2a303d',
+                  backgroundColor: ({ palette }) =>
+                    palette.mode === 'dark'
+                      ? '#2a303d'
+                      : palette.headerBackground,
                   borderTopLeftRadius: 16,
                   borderTopRightRadius: 16,
                   mb: '50px',
@@ -717,6 +726,7 @@ const HomePage = () => {
                 }}
               />
               <Avatar
+                className='default-bg'
                 sx={{
                   position: 'absolute',
                   top: 30,
@@ -724,7 +734,6 @@ const HomePage = () => {
                   transform: 'translateX(-50%)',
                   width: 100,
                   height: 100,
-                  backgroundColor: 'background.default',
                   border: ({ palette }) =>
                     `12px solid ${palette.background.paper}`,
                 }}
@@ -751,7 +760,7 @@ const HomePage = () => {
                 {label}
               </Typography>
             </ButtonBase>
-          </Box>
+          </Paper>
         ))}
       </Stack>
     </MainLayout>

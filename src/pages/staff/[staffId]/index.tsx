@@ -223,6 +223,7 @@ const StaffInfo = ({
                   height: 128,
                   border: ({ palette }) =>
                     `8px solid ${palette.background.default}`,
+                  backgroundColor: 'avatarBackground',
                 }}
               />
             </Box>

@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 
-import { Box, ButtonBase, Typography, alpha } from '@mui/material';
+import { Box, ButtonBase, Paper, Typography, alpha } from '@mui/material';
 
 import { CLOUD_STORAGE_URL } from '~/constants';
 import { GameCacheSchema } from '~/schemas';
@@ -17,14 +17,12 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
   const [isError, setIsError] = useState(false);
 
   return (
-    <Box
+    <Paper
       sx={{
         position: 'relative',
         width: '100%',
         height: '100%',
         // p: 1.5,
-        backgroundColor: 'background.paper',
-        borderRadius: 2,
         overflow: 'hidden',
         '&:hover, &:focus-within': {
           '& .game-cover-overlay': {
@@ -33,6 +31,7 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
           '& img': {
             transform: 'scale(1.05)',
           },
+          boxShadow: ({ shadows }) => shadows[6],
         },
       }}
     >
@@ -58,7 +57,6 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
                 objectFit: 'cover',
                 // hide alt text on firefox
                 color: 'transparent',
-                borderRadius: 2,
                 // opacity: isLoaded ? 1 : 0,
                 // transition: [
                 //   'opacity 0.1s ease-in-out',
@@ -122,7 +120,7 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
         }}
         aria-labelledby={`${id}-name`}
       />
-    </Box>
+    </Paper>
   );
 };
 

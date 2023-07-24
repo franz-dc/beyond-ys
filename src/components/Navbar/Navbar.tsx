@@ -1,7 +1,9 @@
-import { FC, ReactNode, useState } from 'react';
+/* eslint-disable react/jsx-indent */
+import { FC, MouseEvent, ReactNode, useEffect, useMemo, useState } from 'react';
 
 import {
   AppBar,
+  Avatar,
   Box,
   Collapse,
   Container,
@@ -9,20 +11,37 @@ import {
   Drawer,
   IconButton,
   List,
+  ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
   ListSubheader,
+  Menu,
+  MenuItem,
   Stack,
   SvgIcon,
   Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material';
+import { signInWithPopup } from 'firebase/auth';
+import jwtDecode from 'jwt-decode';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
 import { FiChevronDown } from 'react-icons/fi';
-import { MdClose, MdExpandMore, MdMenu } from 'react-icons/md';
-
+import { IoMdMoon, IoMdSunny } from 'react-icons/io';
 import {
+  MdAccountCircle,
+  MdClose,
+  MdExpandMore,
+  MdLogin,
+  MdLogout,
+  MdMenu,
+} from 'react-icons/md';
+
+import { auth, googleAuthProvider } from '~/configs';
+import {
+  USER_ROLES,
   exploreMenuItems,
   otherGamesSubcategories,
   trailsSubcategories,
@@ -61,63 +80,67 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
   name,
   href,
   MenuComponent,
-}) => (
-  <Tooltip
-    title={MenuComponent}
-    arrow
-    componentsProps={{
-      tooltip: {
-        sx: {
-          maxWidth: 'unset',
-          backgroundColor: 'background.paper',
-          p: 3,
-          fontSize: 'unset',
-          borderRadius: 2,
-        },
-      },
-      arrow: {
-        sx: {
-          color: 'background.paper',
-        },
-      },
-    }}
-    PopperProps={{
-      keepMounted: true,
-      disablePortal: true,
-    }}
-  >
-    <Link
-      id={`${id}-link`}
-      href={href}
-      sx={{
-        color: 'text.secondary',
-        '&:hover': {
-          color: 'text.primary',
-          '& svg': {
-            transform: 'rotate(180deg) !important',
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Tooltip
+      onOpen={() => setIsOpen(true)}
+      onClose={() => setIsOpen(false)}
+      title={MenuComponent}
+      arrow
+      componentsProps={{
+        tooltip: {
+          sx: {
+            maxWidth: 'unset',
+            backgroundColor: 'background.paper',
+            p: 3,
+            fontSize: 'unset',
+            borderRadius: 2,
+            // @ts-ignore - strong type causes error though
+            boxShadow: ({ shadows }) => shadows[6],
           },
         },
-        '&:focus, &:focus-visible': {
-          color: 'text.primary',
-          outline: 'none',
-          textDecoration: 'underline',
+        arrow: {
+          sx: {
+            color: 'background.paper',
+          },
         },
       }}
+      PopperProps={{
+        keepMounted: true,
+        disablePortal: true,
+      }}
     >
-      {name}
-      <FiChevronDown
-        style={{
-          display: 'inline-block',
-          marginLeft: '0.25rem',
-          verticalAlign: 'middle',
-          // transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-          transition: 'transform 0.2s ease-in-out',
-          fontSize: '1rem',
+      <Link
+        id={`${id}-link`}
+        href={href}
+        sx={{
+          color: isOpen ? 'text.primary' : 'text.secondary',
+          '&:focus, &:focus-visible': {
+            outline: 'none',
+            textDecoration: 'underline',
+          },
+          '& svg': {
+            transform: isOpen ? 'rotate(180deg)' : 'none',
+          },
         }}
-      />
-    </Link>
-  </Tooltip>
-);
+      >
+        {name}
+        <FiChevronDown
+          style={{
+            display: 'inline-block',
+            marginLeft: '0.25rem',
+            verticalAlign: 'middle',
+            // transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.2s ease-in-out',
+            fontSize: '1rem',
+          }}
+        />
+      </Link>
+    </Tooltip>
+  );
+};
 
 const DrawerItem = ({
   id,
@@ -249,9 +272,100 @@ const Navbar = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
+  // account menu
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    // triggering isSignedIn state on click due to SSR
+    setIsSignedIn(typeof window !== 'undefined' && !!auth.currentUser);
+    setAnchorEl(e.currentTarget);
+  };
+  const handleClose = () => setAnchorEl(null);
+
+  const signIn = async () => {
+    try {
+      handleClose();
+      await signInWithPopup(auth, googleAuthProvider);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      handleClose();
+      await auth.signOut();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const { userAvatar, userRole } = useMemo<{
+    userAvatar?: string;
+    userRole: string;
+  }>(() => {
+    try {
+      const decodedToken = jwtDecode<{ picture?: string; role?: string }>(
+        // @ts-ignore
+        auth.currentUser?.accessToken
+      );
+      return {
+        userAvatar: decodedToken?.picture,
+        // @ts-ignore
+        userRole: USER_ROLES[decodedToken?.role || ''] || 'Contributor',
+      };
+    } catch (err) {
+      return { userRole: 'Contributor' };
+    }
+    // @ts-ignore
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auth.currentUser]);
+
+  const { theme, resolvedTheme, setTheme } = useTheme();
+
+  // change theme if changed in other tab
+  useEffect(() => {
+    const channel = new BroadcastChannel('theme');
+    channel.onmessage = (e: MessageEvent<string>) => {
+      if (['light', 'dark'].includes(e.data) && e.data !== resolvedTheme) {
+        setTheme(e.data);
+      }
+    };
+    return () => channel.close();
+  }, [resolvedTheme, setTheme]);
+
+  // reuse toggle theme component
+  const ToggleThemeComponent = (
+    <MenuItem
+      key='toggle-theme'
+      onClick={() => {
+        setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+        // broadcast theme change to other tabs
+        const channel = new BroadcastChannel('theme');
+        channel.postMessage(resolvedTheme === 'dark' ? 'light' : 'dark');
+        channel.close();
+      }}
+    >
+      <ListItemIcon>
+        <SvgIcon fontSize='small' inheritViewBox>
+          {theme === 'dark' ? <IoMdMoon /> : <IoMdSunny />}
+        </SvgIcon>
+      </ListItemIcon>
+      <ListItemText>
+        Theme: {resolvedTheme === 'dark' ? 'Dark' : 'Light'}
+      </ListItemText>
+    </MenuItem>
+  );
+
   return (
     <>
-      <AppBar component='nav' position='relative' sx={{ zIndex: 101 }}>
+      <AppBar
+        component='nav'
+        position='relative'
+        sx={{ zIndex: 101, backgroundColor: 'transparent !important' }}
+      >
         <Container maxWidth='md'>
           <Toolbar disableGutters>
             <Box sx={{ flexGrow: 1 }}>
@@ -296,6 +410,122 @@ const Navbar = () => {
               )}
             </Stack>
             <IconButton
+              id='account-menu-button'
+              aria-controls={open ? 'account-menu' : undefined}
+              aria-haspopup='true'
+              aria-expanded={open ? 'true' : undefined}
+              color='inherit'
+              aria-label='menu'
+              onClick={handleClick}
+              sx={{
+                ml: 1,
+                mr: {
+                  md: '-10px',
+                },
+                color: 'text.secondary',
+              }}
+            >
+              {/* not using avatar component due to SSR issues */}
+              {/* TODO: use avatar if solution is found */}
+              <MdAccountCircle />
+            </IconButton>
+            <Menu
+              id='account-menu'
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button',
+              }}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              slotProps={{
+                paper: {
+                  sx: {
+                    px: 1.5,
+                    py: 0.5,
+                    backgroundImage: 'none',
+                    '& .MuiMenuItem-root': {
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                    },
+                    '& .MuiListItemText-primary': {
+                      fontSize: '0.875rem',
+                      fontWeight: 'medium',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      minWidth: 32,
+                      color: 'text.secondary',
+                    },
+                  },
+                },
+              }}
+            >
+              {isSignedIn
+                ? [
+                    <ListItem
+                      key='account-info'
+                      className='default-bg'
+                      sx={{
+                        pl: 1.2, // icon have extra space on sides
+                        pr: 1.5,
+                        py: 0,
+                        mb: 1,
+                        backgroundColor: 'background.default',
+                        borderRadius: 1,
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: '46px !important',
+                        }}
+                      >
+                        <Avatar
+                          src={userAvatar}
+                          sx={{
+                            width: 36,
+                            height: 36,
+                            backgroundColor: 'text.secondary',
+                          }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={auth.currentUser?.displayName}
+                        secondary={userRole}
+                      />
+                    </ListItem>,
+                    ToggleThemeComponent,
+                    <Divider key='divider' light sx={{ mb: 1 }} />,
+                    <MenuItem key='sign-out' onClick={signOut}>
+                      <ListItemIcon>
+                        <SvgIcon fontSize='small' inheritViewBox>
+                          <MdLogout />
+                        </SvgIcon>
+                      </ListItemIcon>
+                      <ListItemText>Sign out</ListItemText>
+                    </MenuItem>,
+                  ]
+                : [
+                    ToggleThemeComponent,
+                    <Divider key='divider' light sx={{ mb: 1 }} />,
+                    <MenuItem key='sign-in' onClick={signIn}>
+                      <ListItemIcon>
+                        <SvgIcon fontSize='small' inheritViewBox>
+                          <MdLogin />
+                        </SvgIcon>
+                      </ListItemIcon>
+                      <ListItemText>Sign in</ListItemText>
+                    </MenuItem>,
+                  ]}
+            </Menu>
+            <IconButton
               // edge='end'
               color='inherit'
               aria-label='menu'
@@ -305,7 +535,6 @@ const Navbar = () => {
                   xs: 'inline-flex',
                   md: 'none',
                 },
-                ml: 1,
                 mr: '-10px',
                 color: 'text.secondary',
               }}
@@ -340,7 +569,8 @@ const Navbar = () => {
             height: 'calc(100% - 2rem)',
             maxWidth: drawerWidth,
             boxSizing: 'border-box',
-            backgroundColor: 'background.default',
+            backgroundColor: ({ palette }) =>
+              palette.background.default + '!important',
             backgroundImage: 'none',
           },
         }}

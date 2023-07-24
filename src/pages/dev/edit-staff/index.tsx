@@ -302,10 +302,12 @@ const EditStaff = () => {
           <AutocompleteElement
             name='id'
             label='Staff'
-            options={Object.entries(staffInfoCache).map(([id, label]) => ({
-              id,
-              label,
-            }))}
+            options={Object.entries(staffInfoCache).map(
+              ([id, { name: label }]) => ({
+                id,
+                label,
+              })
+            )}
             loading={isLoadingStaffInfoCache}
             autocompleteProps={{
               onChange: (_, v) => changeStaff(v.id),

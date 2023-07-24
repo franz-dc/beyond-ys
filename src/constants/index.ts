@@ -55,3 +55,8 @@ export const LANGUAGES = [
     label: c.language,
   })),
 ];
+
+export const USER_ROLES = {
+  admin: 'Admin',
+  moderator: 'Moderator',
+};

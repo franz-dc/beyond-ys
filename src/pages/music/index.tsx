@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Box, ButtonBase, Grid, Stack, Typography } from '@mui/material';
+import { Box, ButtonBase, Grid, Paper, Stack, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import type { GetServerSideProps } from 'next';
 import { MdAlbum } from 'react-icons/md';
@@ -42,6 +42,7 @@ const AlbumArt = ({
 
   return (
     <Box
+      className='default-bg'
       sx={{
         display: 'flex',
         width: {
@@ -58,10 +59,10 @@ const AlbumArt = ({
           xs3: 1,
         },
         borderRadius: 1,
-        backgroundColor: 'background.default',
+        // backgroundColor: 'background.default',
       }}
     >
-      {isError && !hasAlbumArt ? (
+      {isError || !hasAlbumArt ? (
         <Box
           component={MdAlbum}
           sx={{
@@ -132,7 +133,7 @@ const Music = ({ description, musicAlbumCache }: Props) => {
             )
         ).map(([id, album]) => (
           <Grid key={id} item xs={12} xs3={4} sm3={3}>
-            <Box
+            <Paper
               sx={{
                 display: 'flex',
                 flexDirection: {
@@ -145,8 +146,9 @@ const Music = ({ description, musicAlbumCache }: Props) => {
                   xs: 1.5,
                   xs3: 2,
                 },
-                backgroundColor: 'background.paper',
-                borderRadius: 2,
+                '&:hover, &:focus-within': {
+                  boxShadow: ({ shadows }) => shadows[6],
+                },
               }}
             >
               <Stack
@@ -208,7 +210,7 @@ const Music = ({ description, musicAlbumCache }: Props) => {
                   borderRadius: 2,
                 }}
               />
-            </Box>
+            </Paper>
           </Grid>
         ))}
       </Grid>

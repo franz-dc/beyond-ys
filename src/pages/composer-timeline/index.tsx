@@ -284,14 +284,14 @@ const ComposerTimeline = () => {
           scrollBehavior: 'smooth',
           '& thead': {
             '& tr': {
-              backgroundColor: 'background.default',
+              // backgroundColor: 'background.default',
               '& th': {
                 verticalAlign: 'bottom',
                 textAlign: 'left',
                 fontWeight: 'medium',
                 px: 0.65,
                 py: 1,
-                backgroundColor: 'headerBackground',
+                // backgroundColor: 'headerBackground',
                 '&:first-of-type': {
                   borderTopLeftRadius: '8px',
                   '&:not(.staff-member-header)': {
@@ -361,6 +361,7 @@ const ComposerTimeline = () => {
           <Box component='thead' ref={theadRef}>
             <Box
               component='tr'
+              className='default-bg'
               sx={{
                 position: 'sticky',
                 top: 0,
@@ -370,6 +371,7 @@ const ComposerTimeline = () => {
               {shownColumnIndexes.includes(0) && (
                 <Box
                   component='th'
+                  className='header-bg'
                   sx={{
                     position: 'sticky',
                     left: 0,
@@ -383,6 +385,7 @@ const ComposerTimeline = () => {
               {shownColumnIndexes.includes(1) && (
                 <Box
                   component='th'
+                  className='header-bg'
                   sx={{
                     position: 'sticky',
                     left: shownColumnIndexes.includes(0) ? 100 : 0,
@@ -399,7 +402,7 @@ const ComposerTimeline = () => {
                 ([key, { name, firstGame }], idx) =>
                   shownColumnIndexes.includes(idx + 2) ? (
                     <Box
-                      className='staff-member-header'
+                      className='staff-member-header header-bg'
                       component='th'
                       key={key}
                       sx={{

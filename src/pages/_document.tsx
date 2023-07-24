@@ -11,7 +11,7 @@ import Document, {
   NextScript,
 } from 'next/document';
 
-import { theme, urbanist } from '~/constants';
+import { urbanist } from '~/constants';
 import { createEmotionCache } from '~/utils';
 
 import { MyAppProps } from './_app';
@@ -42,12 +42,9 @@ export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
           href='/favicon-16x16.png'
         />
         <link rel='manifest' href='/manifest.json' />
-        <meta
-          name='msapplication-TileColor'
-          content={theme.palette.primary.main}
-        />
+        <meta name='msapplication-TileColor' content='#00b0ff' />
         {/* PWA primary color */}
-        <meta name='theme-color' content={theme.palette.primary.main} />
+        <meta name='theme-color' content='#00b0ff' />
         <link rel='shortcut icon' href='/favicon.ico' />
         <meta name='emotion-insertion-point' content='' />
         {emotionStyleTags}

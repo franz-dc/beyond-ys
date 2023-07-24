@@ -3,6 +3,7 @@ import {
   Container,
   Divider,
   Grid,
+  Paper,
   Stack,
   SvgIcon,
   Tooltip,
@@ -65,13 +66,13 @@ const Footer = () => {
   ];
 
   return (
-    <Box
+    <Paper
       sx={{
         mt: 3,
         py: 3,
-        backgroundColor: 'background.paper',
         gridRowStart: 3,
         gridRowEnd: 4,
+        borderRadius: 0,
       }}
     >
       <Container maxWidth='md'>
@@ -173,7 +174,7 @@ const Footer = () => {
           </Grid>
         </Grid>
       </Container>
-    </Box>
+    </Paper>
   );
 };
 

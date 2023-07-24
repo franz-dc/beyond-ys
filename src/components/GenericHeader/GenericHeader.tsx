@@ -18,6 +18,7 @@ const GenericHeader: FC<GenericHeaderProps> = ({
   return (
     <Box
       {...rest}
+      className='header-bg'
       sx={{
         display: 'flex',
         alignItems: 'flex-end',

@@ -124,6 +124,10 @@ const StaffList: FC<StaffListProps> = ({
                           sx={{
                             display: 'block',
                             borderRadius: 2,
+                            '&:hover > .MuiPaper-root, &:focus > .MuiPaper-root':
+                              {
+                                boxShadow: ({ shadows }) => shadows[6],
+                              },
                           }}
                         >
                           <Paper

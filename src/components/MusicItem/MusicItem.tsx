@@ -1,6 +1,13 @@
 import { FC, useState } from 'react';
 
-import { Box, ButtonBase, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  ButtonBase,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import Image from 'next/image';
 import { MdPlayArrow } from 'react-icons/md';
 
@@ -43,13 +50,14 @@ const MusicItem: FC<MusicItemProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <Box
+    <Paper
       sx={{
         position: 'relative',
-        backgroundColor: 'background.paper',
         px: 2,
         py: 1.5,
-        borderRadius: 2,
+        '&:hover, &:focus-within': {
+          boxShadow: ({ shadows }) => shadows[6],
+        },
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -109,13 +117,13 @@ const MusicItem: FC<MusicItemProps> = ({
           }}
         >
           <Box
+            className='default-bg'
             sx={{
               width: 42,
               height: 42,
               minWidth: 42,
               minHeight: 42,
               borderRadius: 1,
-              backgroundColor: 'background.default',
             }}
           >
             {albumUrl && (
@@ -238,7 +246,7 @@ const MusicItem: FC<MusicItemProps> = ({
           borderRadius: 2,
         }}
       />
-    </Box>
+    </Paper>
   );
 };
 

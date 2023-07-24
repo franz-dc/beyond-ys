@@ -10,7 +10,7 @@ const ExploreMenu = () => {
       direction='row'
       spacing={2}
       divider={<Divider orientation='vertical' flexItem light />}
-      sx={{ mt: -1 }}
+      sx={{ mt: -1.5, mx: -1 }}
     >
       {exploreMenuItems.map((subcategory) => (
         <Box key={subcategory.name} sx={{ width: 140 }}>

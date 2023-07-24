@@ -12,6 +12,7 @@ You can visit the demo site [here](https://beyond-ys.vercel.app).
 ## Features
 
 - **Music player**: Listen to your favorite Falcom music while browsing the site.
+- **Themes**: Choose between light and dark theme (defaults to dark).
 - **Responsive design**: Built with mobile devices in mind.
 
 ## Technologies Used

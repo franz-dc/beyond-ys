@@ -265,6 +265,7 @@ const GamePage = ({
               {hasCoverImage && (
                 <>
                   <Box
+                    className='default-bg'
                     sx={{
                       position: 'absolute',
                       display: 'block',
@@ -434,7 +435,11 @@ const GamePage = ({
                     id={characterId}
                     name={foundCharacterCache.name}
                     accentColor={foundCharacterCache.accentColor}
-                    image={`${CLOUD_STORAGE_URL}/character-avatars/${characterId}`}
+                    image={
+                      foundCharacterCache.hasAvatar
+                        ? `${CLOUD_STORAGE_URL}/character-avatars/${characterId}`
+                        : undefined
+                    }
                     isSpoiler={characterSpoilerIds.includes(characterId)}
                     isSpoilerShown={isCharacterSpoilersShown}
                     sx={{ mb: 3 }}

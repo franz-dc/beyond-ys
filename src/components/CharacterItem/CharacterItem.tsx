@@ -81,6 +81,7 @@ const CharacterItem: FC<CharacterItemProps> = ({
               textOverflow: 'ellipsis',
               WebkitBoxOrient: 'vertical',
               boxOrient: 'vertical',
+              color: 'white',
               // not directly overriding the name value for SEO purposes
               '&::before': {
                 content: '""',

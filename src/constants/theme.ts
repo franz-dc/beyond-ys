@@ -1,4 +1,5 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, css } from '@mui/material';
+import type { ThemeOptions } from '@mui/material';
 import { Urbanist } from 'next/font/google';
 
 declare module '@mui/material/styles' {
@@ -26,7 +27,7 @@ export const urbanist = Urbanist({
   fallback: ['Helvetica', 'Arial', 'sans-serif'],
 });
 
-export const theme = createTheme({
+export const theme: ThemeOptions = {
   breakpoints: {
     values: {
       xs: 0,
@@ -40,19 +41,6 @@ export const theme = createTheme({
       lg: 1200,
       xl: 1536,
     },
-  },
-  palette: {
-    mode: 'dark',
-    background: {
-      default: '#22252f',
-      paper: '#161a22',
-    },
-    primary: {
-      main: '#00b0ff',
-      dark: '#0277bd',
-    },
-    headerBackground: '#3c4151',
-    avatarBackground: '#acbbe9',
   },
   typography: {
     fontFamily: urbanist.style.fontFamily,
@@ -121,15 +109,6 @@ export const theme = createTheme({
         variant: 'contained',
         disableElevation: true,
       },
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          '&.MuiButton-containedPrimary': {
-            backgroundColor: '#0277bd',
-            color: 'inherit',
-          },
-        },
-      },
     },
     MuiLink: {
       styleOverrides: {
@@ -141,11 +120,13 @@ export const theme = createTheme({
     },
     MuiPaper: {
       defaultProps: {
-        elevation: 0,
+        elevation: 2,
       },
       styleOverrides: {
         root: {
           borderRadius: 8,
+          backgroundImage: 'none',
+          transition: 'box-shadow 0.1s ease-in-out',
         },
       },
     },
@@ -157,4 +138,147 @@ export const theme = createTheme({
       },
     },
   },
+};
+
+export const darkTheme = createTheme({
+  ...theme,
+  components: {
+    ...theme.components,
+    MuiButton: {
+      ...theme.components!.MuiButton,
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          '&.MuiButton-containedPrimary': {
+            backgroundColor: '#0277bd',
+            color: 'inherit',
+          },
+        },
+      },
+    },
+  },
+  palette: {
+    mode: 'dark',
+    background: {
+      default: '#22252f',
+      paper: '#161a22',
+    },
+    primary: {
+      main: '#00b0ff',
+      dark: '#0277bd',
+    },
+    headerBackground: '#3c4151',
+    avatarBackground: '#acbbe9',
+  },
+  shadows: [
+    'none',
+    '0px 1px 3px 0px rgba(0,0,0,0.2)',
+    '0px 1px 5px 0px rgba(0,0,0,0.2)',
+    '0px 1px 8px 0px rgba(0,0,0,0.2)',
+    '0px 1px 10px 0px rgba(0,0,0,0.2)',
+    '0px 1px 14px 0px rgba(0,0,0,0.2)',
+    '0px 1px 18px 0px rgba(0,0,0,0.2)',
+    '0px 2px 16px 1px rgba(0,0,0,0.2)',
+    '0px 3px 14px 2px rgba(0,0,0,0.2)',
+    '0px 3px 16px 2px rgba(0,0,0,0.2)',
+    '0px 4px 18px 3px rgba(0,0,0,0.2)',
+    '0px 4px 20px 3px rgba(0,0,0,0.2)',
+    '0px 5px 22px 4px rgba(0,0,0,0.2)',
+    '0px 5px 24px 4px rgba(0,0,0,0.2)',
+    '0px 5px 26px 4px rgba(0,0,0,0.2)',
+    '0px 6px 28px 5px rgba(0,0,0,0.2)',
+    '0px 6px 30px 5px rgba(0,0,0,0.2)',
+    '0px 6px 32px 5px rgba(0,0,0,0.2)',
+    '0px 7px 34px 6px rgba(0,0,0,0.2)',
+    '0px 7px 36px 6px rgba(0,0,0,0.2)',
+    '0px 8px 38px 7px rgba(0,0,0,0.2)',
+    '0px 8px 40px 7px rgba(0,0,0,0.2)',
+    '0px 8px 42px 7px rgba(0,0,0,0.2)',
+    '0px 9px 44px 8px rgba(0,0,0,0.2)',
+    '0px 9px 46px 8px rgba(0,0,0,0.2)',
+  ],
 });
+
+export const lightTheme = createTheme({
+  ...theme,
+  components: {
+    ...theme.components,
+    MuiButton: {
+      ...theme.components!.MuiButton,
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+  },
+  palette: {
+    mode: 'light',
+    background: {
+      default: '#f7f8fa',
+      paper: '#ffffff',
+    },
+    headerBackground: '#e9ecf5',
+    avatarBackground: '#757d9a',
+  },
+  shadows: [
+    'none',
+    '0px 1px 3px 0px rgba(42,103,202,0.12)',
+    '0px 1px 5px 0px rgba(42,103,202,0.12)',
+    '0px 1px 8px 0px rgba(42,103,202,0.12)',
+    '0px 1px 10px 0px rgba(42,103,202,0.12)',
+    '0px 1px 14px 0px rgba(42,103,202,0.12)',
+    '0px 1px 18px 0px rgba(42,103,202,0.12)',
+    '0px 2px 16px 1px rgba(42,103,202,0.12)',
+    '0px 3px 14px 2px rgba(42,103,202,0.12)',
+    '0px 3px 16px 2px rgba(42,103,202,0.12)',
+    '0px 4px 18px 3px rgba(42,103,202,0.12)',
+    '0px 4px 20px 3px rgba(42,103,202,0.12)',
+    '0px 5px 22px 4px rgba(42,103,202,0.12)',
+    '0px 5px 24px 4px rgba(42,103,202,0.12)',
+    '0px 5px 26px 4px rgba(42,103,202,0.12)',
+    '0px 6px 28px 5px rgba(42,103,202,0.12)',
+    '0px 6px 30px 5px rgba(42,103,202,0.12)',
+    '0px 6px 32px 5px rgba(42,103,202,0.12)',
+    '0px 7px 34px 6px rgba(42,103,202,0.12)',
+    '0px 7px 36px 6px rgba(42,103,202,0.12)',
+    '0px 8px 38px 7px rgba(42,103,202,0.12)',
+    '0px 8px 40px 7px rgba(42,103,202,0.12)',
+    '0px 8px 42px 7px rgba(42,103,202,0.12)',
+    '0px 9px 44px 8px rgba(42,103,202,0.12)',
+    '0px 9px 46px 8px rgba(42,103,202,0.12)',
+  ],
+});
+
+export const globalStyles = css`
+  :root {
+    body {
+      background-color: ${darkTheme.palette.background.default};
+      color: ${darkTheme.palette.text.primary};
+    }
+    .MuiPaper-root {
+      background-color: ${darkTheme.palette.background.paper};
+    }
+    .header-bg {
+      background-color: ${darkTheme.palette.headerBackground};
+    }
+    .default-bg {
+      background-color: ${darkTheme.palette.background.default};
+    }
+  }
+  [data-theme='light'] {
+    body {
+      background-color: ${lightTheme.palette.background.default};
+      color: ${lightTheme.palette.text.primary};
+    }
+    .MuiPaper-root {
+      background-color: ${lightTheme.palette.background.paper};
+    }
+    .header-bg {
+      background-color: ${lightTheme.palette.headerBackground};
+    }
+    .default-bg {
+      background-color: ${lightTheme.palette.background.default};
+    }
+  }
+`;

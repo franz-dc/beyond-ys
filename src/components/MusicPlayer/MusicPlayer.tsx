@@ -5,11 +5,13 @@ import {
   Box,
   Grid,
   IconButton,
+  Paper,
   Slider,
   Stack,
   Typography,
   alpha,
   styled,
+  useTheme,
 } from '@mui/material';
 import Image from 'next/image';
 import Marquee from 'react-fast-marquee';
@@ -66,7 +68,7 @@ const StyledSlider = styled(Slider)(({ theme }) => ({
     width: 0,
     height: 0,
     '&:before': {
-      boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+      // boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
     },
     '&:hover, &.Mui-focusVisible': {
       boxShadow: '0px 0px 0px 6px rgb(255 255 255 / 16%)',
@@ -93,6 +95,8 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   albumName,
   albumUrl,
 }) => {
+  const theme = useTheme();
+
   // used to get react-youtube-music-player's ready state
   const [isReady, setIsReady] = useState(false);
 
@@ -395,19 +399,19 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   );
 
   return (
-    <Box
+    <Paper
       sx={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: 'background.paper',
-        boxShadow: '0px 0px 16px 0px rgb(0 0 0 / 50%)',
+        boxShadow: ({ shadows }) => shadows[6],
         px: 2,
         py: 1.5,
         borderTopWidth: 1,
         borderTopStyle: 'solid',
         borderTopColor: (t) => alpha(t.palette.divider, 0.05),
+        borderRadius: 0,
         zIndex: 1,
         // animate the player on render
         animation: `${slideUp} 0.3s ease`,
@@ -481,6 +485,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
         <Grid item xs>
           <Stack direction='row' spacing={2}>
             <Box
+              className='default-bg'
               sx={{
                 width: 42,
                 height: 42,
@@ -560,7 +565,11 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                     pauseOnHover
                     gradient
                     gradientWidth={8}
-                    gradientColor={[22, 26, 34]}
+                    gradientColor={
+                      theme.palette.mode === 'dark'
+                        ? [22, 26, 34]
+                        : [255, 255, 255]
+                    }
                   >
                     <Typography
                       sx={{
@@ -763,7 +772,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           </Box>
         </Grid>
       </Grid>
-    </Box>
+    </Paper>
   );
 };
 

@@ -8,8 +8,10 @@ import {
   ButtonBase,
   Collapse,
   Grid,
+  Paper,
   Stack,
   Typography,
+  alpha,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import { GetServerSideProps } from 'next';
@@ -119,7 +121,11 @@ const CharacterInfo = ({
             sm: 24,
           },
           height: 150,
-          backgroundImage: `linear-gradient(${accentColor}99, rgba(0, 0, 0, 0))`,
+          backgroundImage: ({ palette }) =>
+            `linear-gradient(${alpha(
+              accentColor,
+              palette.mode === 'dark' ? 0.6 : 0.3
+            )}, rgba(0, 0, 0, 0))`,
           borderTopLeftRadius: {
             sm: 16,
           },
@@ -503,14 +509,15 @@ const CharacterInfo = ({
                         display: 'block',
                         width: '100%',
                         borderRadius: 2,
+                        '&:hover > .MuiPaper-root, &:focus > .MuiPaper-root': {
+                          boxShadow: ({ shadows }) => shadows[6],
+                        },
                       }}
                     >
-                      <Box
+                      <Paper
                         sx={{
-                          backgroundColor: 'background.paper',
                           px: 2,
                           py: 1.5,
-                          borderRadius: 2,
                         }}
                       >
                         <Stack direction='row' spacing={2}>
@@ -582,7 +589,7 @@ const CharacterInfo = ({
                             </Typography>
                           </Box>
                         </Stack>
-                      </Box>
+                      </Paper>
                     </ButtonBase>
                   ))}
                 </Stack>
