@@ -357,10 +357,7 @@ const AddStaff = () => {
             Involvements
           </Typography>
           {games.map((game, idx) => (
-            <Paper
-              key={game.id}
-              sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
-            >
+            <Box key={game.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
               <Stack direction='column' sx={{ mt: -1 }}>
                 <AutocompleteElement
                   name={`games.${idx}.gameId`}
@@ -439,7 +436,7 @@ const AddStaff = () => {
                   </Button>
                 </Stack>
               </Stack>
-            </Paper>
+            </Box>
           ))}
           <Button
             variant='outlined'
@@ -520,9 +517,9 @@ const AddStaff = () => {
                   </Typography>
                 )}
                 <Box
+                  className='default-bg'
                   sx={{
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >

@@ -863,10 +863,10 @@ const EditGame = () => {
               {/* display cover image if hasCoverImage is true */}
               {hasCoverImage ? (
                 <Box
+                  className='default-bg'
                   sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -948,9 +948,9 @@ const EditGame = () => {
                       </Typography>
                     )}
                     <Box
+                      className='default-bg'
                       sx={{
                         p: 1.5,
-                        backgroundColor: 'background.default',
                         borderRadius: 2,
                       }}
                     >
@@ -989,10 +989,10 @@ const EditGame = () => {
               {/* display banner image if hasBannerImage is true */}
               {hasBannerImage ? (
                 <Box
+                  className='default-bg'
                   sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -1077,9 +1077,9 @@ const EditGame = () => {
                       </Typography>
                     )}
                     <Box
+                      className='default-bg'
                       sx={{
                         p: 1.5,
-                        backgroundColor: 'background.default',
                         borderRadius: 2,
                       }}
                     >

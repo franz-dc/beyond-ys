@@ -284,14 +284,12 @@ const ComposerTimeline = () => {
           scrollBehavior: 'smooth',
           '& thead': {
             '& tr': {
-              // backgroundColor: 'background.default',
               '& th': {
                 verticalAlign: 'bottom',
                 textAlign: 'left',
                 fontWeight: 'medium',
                 px: 0.65,
                 py: 1,
-                // backgroundColor: 'headerBackground',
                 '&:first-of-type': {
                   borderTopLeftRadius: '8px',
                   '&:not(.staff-member-header)': {

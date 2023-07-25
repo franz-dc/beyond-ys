@@ -476,9 +476,10 @@ const AddCharacter = () => {
             )}
           </Box>
           {voiceActors.map((voiceActor, idx) => (
-            <Paper
+            <Box
               key={voiceActor.id}
-              sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
+              className='default-bg'
+              sx={{ mb: 2, p: 2, borderRadius: 2 }}
             >
               <Stack direction='column' sx={{ mt: -1 }}>
                 <AutocompleteElement
@@ -553,7 +554,7 @@ const AddCharacter = () => {
                   </Button>
                 </Stack>
               </Stack>
-            </Paper>
+            </Box>
           ))}
           <LoadingButton
             variant='outlined'
@@ -644,9 +645,9 @@ const AddCharacter = () => {
                   </Typography>
                 )}
                 <Box
+                  className='default-bg'
                   sx={{
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -755,9 +756,9 @@ const AddCharacter = () => {
                   </Typography>
                 )}
                 <Box
+                  className='default-bg'
                   sx={{
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -796,10 +797,7 @@ const AddCharacter = () => {
             </Typography>
           )}
           {extraImages.map((extraImage, idx) => (
-            <Paper
-              key={extraImage.id}
-              sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
-            >
+            <Box key={extraImage.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
               <Stack direction='row' sx={{ mb: 2 }}>
                 <Typography component='p' variant='h3' sx={{ mb: 0.5, mr: 1 }}>
                   Extra Image {idx + 1}
@@ -897,7 +895,7 @@ const AddCharacter = () => {
                   Down
                 </Button>
               </Stack>
-            </Paper>
+            </Box>
           ))}
           <Button
             variant='outlined'

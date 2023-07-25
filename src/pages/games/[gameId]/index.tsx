@@ -246,6 +246,7 @@ const GamePage = ({
         >
           <Grid item xs={12} sm='auto'>
             <Box
+              className='paper-bg'
               sx={{
                 mx: {
                   xs: 'auto',
@@ -257,7 +258,6 @@ const GamePage = ({
                   md: 175,
                 },
                 aspectRatio: '2 / 3',
-                backgroundColor: 'background.paper',
                 color: 'transparent',
                 borderRadius: 2,
               }}
@@ -273,7 +273,6 @@ const GamePage = ({
                       left: -8,
                       right: -8,
                       bottom: -8,
-                      backgroundColor: 'background.default',
                       borderRadius: 3,
                     }}
                   >

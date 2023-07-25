@@ -440,9 +440,9 @@ const AddMusicAlbum = () => {
                   </Typography>
                 )}
                 <Box
+                  className='default-bg'
                   sx={{
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >

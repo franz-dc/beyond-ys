@@ -764,9 +764,9 @@ const AddGame = () => {
                   </Typography>
                 )}
                 <Box
+                  className='default-bg'
                   sx={{
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -860,9 +860,9 @@ const AddGame = () => {
                   </Typography>
                 )}
                 <Box
+                  className='default-bg'
                   sx={{
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >

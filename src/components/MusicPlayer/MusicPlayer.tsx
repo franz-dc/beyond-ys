@@ -492,7 +492,6 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                 minWidth: 42,
                 minHeight: 42,
                 borderRadius: 1,
-                backgroundColor: 'background.default',
               }}
             >
               {albumUrl && (

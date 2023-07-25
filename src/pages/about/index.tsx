@@ -1,4 +1,4 @@
-import { Box, Grid, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import type { GetStaticProps } from 'next';
 import Image from 'next/image';
 import type { StaticImageData } from 'next/image';
@@ -107,14 +107,13 @@ const About = ({ description, contributors }: AboutProps) => (
     </Typography>
     <Box sx={{ mb: 4 }}>
       {contributors.map((contributor) => (
-        <Box
+        <Paper
           key={contributor.name}
           component='section'
           sx={{
             mb: 2,
             px: 3,
             py: 2,
-            backgroundColor: 'background.paper',
             borderRadius: 4,
           }}
         >
@@ -211,7 +210,7 @@ const About = ({ description, contributors }: AboutProps) => (
               <Typography>{contributor.description}</Typography>
             </Grid>
           </Grid>
-        </Box>
+        </Paper>
       ))}
     </Box>
     <Box component='section' sx={{ mb: 4 }}>

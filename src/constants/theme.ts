@@ -265,6 +265,9 @@ export const globalStyles = css`
     .default-bg {
       background-color: ${darkTheme.palette.background.default};
     }
+    .paper-bg {
+      background-color: ${darkTheme.palette.background.paper};
+    }
   }
   [data-theme='light'] {
     body {
@@ -279,6 +282,9 @@ export const globalStyles = css`
     }
     .default-bg {
       background-color: ${lightTheme.palette.background.default};
+    }
+    .paper-bg {
+      background-color: ${lightTheme.palette.background.paper};
     }
   }
 `;

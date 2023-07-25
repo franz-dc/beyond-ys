@@ -59,7 +59,6 @@ const AlbumArt = ({
           xs3: 1,
         },
         borderRadius: 1,
-        // backgroundColor: 'background.default',
       }}
     >
       {isError || !hasAlbumArt ? (

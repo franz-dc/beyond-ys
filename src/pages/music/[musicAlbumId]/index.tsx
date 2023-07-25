@@ -158,8 +158,9 @@ const AlbumInfo = ({
               }}
             >
               <Box
+                className='default-bg'
                 sx={{
-                  content: '"asd"',
+                  content: '""',
                   display: 'block',
                   position: 'absolute',
                   top: 0,
@@ -169,7 +170,6 @@ const AlbumInfo = ({
                   },
                   width: 128,
                   height: 128,
-                  backgroundColor: 'background.default',
                   borderRadius: 3,
                 }}
               />

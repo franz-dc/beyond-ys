@@ -685,10 +685,7 @@ const EditCharacter = () => {
                 )}
               </Box>
               {voiceActors.map((voiceActor, idx) => (
-                <Paper
-                  key={voiceActor.id}
-                  sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
-                >
+                <Box key={voiceActor.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
                   <Stack direction='column' sx={{ mt: -1 }}>
                     <AutocompleteElement
                       name={`voiceActors.${idx}.staffId`}
@@ -762,7 +759,7 @@ const EditCharacter = () => {
                       </Button>
                     </Stack>
                   </Stack>
-                </Paper>
+                </Box>
               ))}
               <LoadingButton
                 variant='outlined'
@@ -799,10 +796,10 @@ const EditCharacter = () => {
               {/* display current avatar if hasAvatar is true */}
               {hasAvatar ? (
                 <Box
+                  className='default-bg'
                   sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -887,9 +884,9 @@ const EditCharacter = () => {
                       </Typography>
                     )}
                     <Box
+                      className='default-bg'
                       sx={{
                         p: 1.5,
-                        backgroundColor: 'background.default',
                         borderRadius: 2,
                       }}
                     >
@@ -945,10 +942,10 @@ const EditCharacter = () => {
               {/* display main image if hasMainImage is true */}
               {hasMainImage ? (
                 <Box
+                  className='default-bg'
                   sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -1032,9 +1029,9 @@ const EditCharacter = () => {
                       </Typography>
                     )}
                     <Box
+                      className='default-bg'
                       sx={{
                         p: 1.5,
-                        backgroundColor: 'background.default',
                         borderRadius: 2,
                       }}
                     >
@@ -1073,10 +1070,7 @@ const EditCharacter = () => {
                 </Typography>
               )}
               {extraImages.map((extraImage, idx) => (
-                <Paper
-                  key={extraImage.id}
-                  sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
-                >
+                <Box key={extraImage.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
                   <Stack direction='row' sx={{ mb: 2 }}>
                     <Typography
                       component='p'
@@ -1198,7 +1192,7 @@ const EditCharacter = () => {
                       Down
                     </Button>
                   </Stack>
-                </Paper>
+                </Box>
               ))}
               <Button
                 variant='outlined'

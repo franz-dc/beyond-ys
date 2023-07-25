@@ -411,10 +411,7 @@ const EditStaff = () => {
                 Involvements
               </Typography>
               {games.map((game, idx) => (
-                <Paper
-                  key={game.id}
-                  sx={{ mb: 2, p: 2, backgroundColor: 'background.default' }}
-                >
+                <Box key={game.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
                   <Stack direction='column' sx={{ mt: -1 }}>
                     <AutocompleteElement
                       name={`games.${idx}.gameId`}
@@ -496,7 +493,7 @@ const EditStaff = () => {
                       </Button>
                     </Stack>
                   </Stack>
-                </Paper>
+                </Box>
               ))}
               <Button
                 variant='outlined'
@@ -523,10 +520,10 @@ const EditStaff = () => {
               {/* display current avatar if hasAvatar is true */}
               {hasAvatar ? (
                 <Box
+                  className='default-bg'
                   sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -609,9 +606,9 @@ const EditStaff = () => {
                       </Typography>
                     )}
                     <Box
+                      className='default-bg'
                       sx={{
                         p: 1.5,
-                        backgroundColor: 'background.default',
                         borderRadius: 2,
                       }}
                     >

@@ -520,10 +520,10 @@ const EditMusicAlbum = () => {
               {/* display album art if hasAlbumArt is true */}
               {hasAlbumArt ? (
                 <Box
+                  className='default-bg'
                   sx={{
                     mb: 2,
                     p: 1.5,
-                    backgroundColor: 'background.default',
                     borderRadius: 2,
                   }}
                 >
@@ -605,9 +605,9 @@ const EditMusicAlbum = () => {
                       </Typography>
                     )}
                     <Box
+                      className='default-bg'
                       sx={{
                         p: 1.5,
-                        backgroundColor: 'background.default',
                         borderRadius: 2,
                       }}
                     >
