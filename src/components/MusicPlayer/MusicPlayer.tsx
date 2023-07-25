@@ -28,8 +28,10 @@ import {
   MdVolumeOff,
   MdVolumeUp,
 } from 'react-icons/md';
-import { PlayerState, useYoutube } from 'react-youtube-music-player';
+import YouTube from 'react-youtube';
+import type { YouTubePlayer } from 'react-youtube';
 
+import { useMusicPlayer } from '~/hooks';
 import { formatSeconds } from '~/utils';
 
 import Link from '../Link';
@@ -85,6 +87,7 @@ const StyledSlider = styled(Slider)(({ theme }) => ({
   },
   '& .MuiSlider-track': {
     transition: 'all 0.1s',
+    // transition: 'color 0.1s',
   },
 }));
 
@@ -97,10 +100,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
 }) => {
   const theme = useTheme();
 
-  // used to get react-youtube-music-player's ready state
+  // used to get react-youtube's ready state
   const [isReady, setIsReady] = useState(false);
 
-  // currentTime from react-youtube-music-player does not update in real time
+  // currentTime from react-youtube does not update in real time
   // so we use this state to keep track of the current time (seconds)
   const [actualCurrentTime, setActualCurrentTime] = useState(0);
 
@@ -112,48 +115,18 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   const [isShuffleOn, setIsShuffleOn] = useState(false);
   const [repeatMode, setRepeatMode] = useState<'none' | 'one' | 'all'>('none');
 
-  const {
-    playerDetails: { currentTime, duration, volume, state },
-    actions: { playVideo, pauseVideo, seekTo, setVolume },
-  } = useYoutube({
-    id: youtubeId,
-    type: 'video',
-    options: {
-      origin: process.env.NEXT_PUBLIC_SITE_URL,
-      autoplay: true,
-    },
-    events: {
-      onReady: () => {
-        setIsReady(true);
-        setWasPlaying(true);
-      },
-      onStateChange: (e) => {
-        const currentTime = e.target.getCurrentTime();
-        setActualCurrentTime(currentTime);
-        setLastRecordedCurrentTime(currentTime);
-        setTimeLastUpdated(new Date().getTime());
+  // react-youtube
+  // note that some logic might be questionable since this was originally
+  // written for react-youtube-music-player
+  // TODO: refactor necessary logic
+  const [player, setPlayer] = useState<YouTubePlayer>();
 
-        if (!('mediaSession' in navigator)) return;
-        switch (e.data) {
-          case PlayerState.PLAYING:
-            navigator.mediaSession.playbackState = 'playing';
-            break;
-          case PlayerState.PAUSED:
-            navigator.mediaSession.playbackState = 'paused';
-            break;
-          case PlayerState.BUFFERING:
-            navigator.mediaSession.playbackState = 'paused';
-            break;
-          case PlayerState.UNSTARTED:
-            navigator.mediaSession.playbackState = 'none';
-            break;
-          case PlayerState.ENDED:
-            navigator.mediaSession.playbackState = 'none';
-            break;
-        }
-      },
-    },
-  });
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setYouTubeVolume] = useState(100);
+  const [playerState, setPlayerState] = useState<number>(
+    YouTube.PlayerState.UNSTARTED
+  );
 
   const [isVolumeInitialized, setIsVolumeInitialized] = useState(false);
 
@@ -168,25 +141,85 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   // the video was playing before buffering
   const [wasPlaying, setWasPlaying] = useState(false);
 
-  // remove old embeds when a new one is loaded
+  // use last youtube id to reset states when video changes
   const [lastYoutubeId, setLastYoutubeId] = useState(youtubeId);
 
   useEffect(() => {
     if (youtubeId === lastYoutubeId) return;
-    // remove iframe
-    document.getElementById(`youtube-player-${lastYoutubeId}`)?.remove();
-    // removed iframe becomes a div so we remove that too
-    document.getElementById(`youtube-player-${lastYoutubeId}`)?.remove();
+    player?.destroy();
+
+    navigator.mediaSession.metadata = null;
+    navigator.mediaSession.setActionHandler('play', null);
+    navigator.mediaSession.setActionHandler('pause', null);
+    navigator.mediaSession.setActionHandler('seekbackward', null);
+    navigator.mediaSession.setActionHandler('seekforward', null);
+    navigator.mediaSession.setActionHandler('previoustrack', null);
+    navigator.mediaSession.setActionHandler('nexttrack', null);
+
     setLastYoutubeId(youtubeId);
     setIsReady(false);
-  }, [lastYoutubeId, youtubeId]);
+    setPlayerState(YouTube.PlayerState.UNSTARTED);
+    setActualCurrentTime(0);
+    setLastRecordedCurrentTime(0);
+  }, [lastYoutubeId, youtubeId, player]);
 
-  // loop video if repeatMode is 'one'
+  const { queue, setNowPlaying } = useMusicPlayer();
+
+  const currentIndex = queue.findIndex((item) => item.youtubeId === youtubeId);
+
+  // repeat logic
   useEffect(() => {
-    if (repeatMode !== 'one') return;
-    if (state !== PlayerState.ENDED) return;
-    playVideo();
-  }, [playVideo, repeatMode, state]);
+    switch (repeatMode) {
+      case 'one': {
+        if (playerState !== YouTube.PlayerState.ENDED) return;
+        player?.playVideo();
+        break;
+      }
+      case 'all': {
+        if (playerState !== YouTube.PlayerState.ENDED) return;
+        if (currentIndex === -1) return;
+        if (currentIndex + 2 >= queue.length) {
+          setNowPlaying(queue[0]);
+          break;
+        } else {
+          setNowPlaying(queue[currentIndex + 1]);
+          break;
+        }
+      }
+      case 'none': {
+        if (playerState !== YouTube.PlayerState.ENDED) return;
+        if (currentIndex === -1 || currentIndex + 2 >= queue.length) return;
+        setNowPlaying(queue[currentIndex + 1]);
+        break;
+      }
+    }
+  }, [
+    player,
+    repeatMode,
+    playerState,
+    queue,
+    youtubeId,
+    setNowPlaying,
+    currentIndex,
+  ]);
+
+  const handlePrev = () => {
+    if (currentIndex === -1) return;
+    if (currentIndex === 0) {
+      setNowPlaying(queue[queue.length - 1]);
+    } else {
+      setNowPlaying(queue[currentIndex - 1]);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentIndex === -1) return;
+    if (currentIndex + 2 >= queue.length) {
+      setNowPlaying(queue[0]);
+    } else {
+      setNowPlaying(queue[currentIndex + 1]);
+    }
+  };
 
   // update actualCurrentTime when currentTime changes
   // currentTime does not update in real time so we use this to keep track of
@@ -198,26 +231,26 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   }, [currentTime, lastRecordedCurrentTime]);
 
   // add the time elapsed since the last time currentTime was updated and
-  // update this value every 1 second
+  // update this value every 50ms
   useEffect(() => {
     const interval = setInterval(() => {
-      if (state === PlayerState.PLAYING) {
+      if (isReady && playerState === YouTube.PlayerState.PLAYING) {
         const newActualCurrentTime =
           lastRecordedCurrentTime +
           (new Date().getTime() - timeLastUpdated) / 1000;
 
         setActualCurrentTime(newActualCurrentTime);
       }
-    }, 1000);
+    }, 50);
 
     return () => clearInterval(interval);
-  }, [lastRecordedCurrentTime, state, timeLastUpdated]);
+  }, [isReady, lastRecordedCurrentTime, playerState, timeLastUpdated]);
 
   // change volume when client volume changes
   useEffect(() => {
     if (!isVolumeInitialized || !isReady || volume === clientVolume) return;
-    setVolume(clientVolume);
-  }, [isVolumeInitialized, isReady, clientVolume, setVolume, volume]);
+    player?.setVolume(clientVolume);
+  }, [isVolumeInitialized, isReady, clientVolume, player, volume]);
 
   // set volume on mount
   useEffect(() => {
@@ -250,88 +283,13 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     setIsVolumeInitialized(true);
   }, [isVolumeInitialized, isReady]);
 
-  // media session api
-  useEffect(() => {
-    if (!('mediaSession' in navigator)) return;
-
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title,
-      artist: artists.map((artist) => artist.name).join(', '),
-      album: albumName,
-      // TODO: add album art
-      // artwork: [],
-    });
-
-    navigator.mediaSession.setActionHandler('play', () => {
-      setWasPlaying(true);
-      playVideo();
-    });
-
-    navigator.mediaSession.setActionHandler('pause', () => {
-      alert('pause');
-      setWasPlaying(false);
-      pauseVideo();
-    });
-
-    navigator.mediaSession.setActionHandler('seekbackward', () => {
-      let newTime = currentTime - 10;
-      if (newTime < 0) newTime = 0;
-
-      seekTo(newTime, true);
-      setActualCurrentTime(newTime);
-      setLastRecordedCurrentTime(newTime);
-      setTimeLastUpdated(new Date().getTime());
-    });
-
-    navigator.mediaSession.setActionHandler('seekforward', () => {
-      let newTime = currentTime + 10;
-      if (newTime > duration) newTime = duration;
-
-      seekTo(newTime, true);
-      setActualCurrentTime(newTime);
-      setLastRecordedCurrentTime(newTime);
-      setTimeLastUpdated(new Date().getTime());
-    });
-
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-      // TODO: Implement this
-      // eslint-disable-next-line no-console
-      console.log('Previous track');
-    });
-
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-      // TODO: Implement this
-      // eslint-disable-next-line no-console
-      console.log('Next track');
-    });
-
-    return () => {
-      navigator.mediaSession.metadata = null;
-      navigator.mediaSession.setActionHandler('play', null);
-      navigator.mediaSession.setActionHandler('pause', null);
-      navigator.mediaSession.setActionHandler('seekbackward', null);
-      navigator.mediaSession.setActionHandler('seekforward', null);
-      navigator.mediaSession.setActionHandler('previoustrack', null);
-      navigator.mediaSession.setActionHandler('nexttrack', null);
-    };
-  }, [
-    title,
-    artists,
-    albumName,
-    playVideo,
-    pauseVideo,
-    seekTo,
-    currentTime,
-    duration,
-  ]);
-
   // TODO: add ended state (with logic for last item in queue)
   const isPaused =
-    (!wasPlaying && state === PlayerState.UNSTARTED) ||
-    state === PlayerState.PAUSED ||
-    state === PlayerState.ENDED ||
-    (!wasPlaying && state === PlayerState.BUFFERING) ||
-    state === PlayerState.CUED;
+    (!wasPlaying && playerState === YouTube.PlayerState.UNSTARTED) ||
+    playerState === YouTube.PlayerState.PAUSED ||
+    playerState === YouTube.PlayerState.ENDED ||
+    (!wasPlaying && playerState === YouTube.PlayerState.BUFFERING) ||
+    playerState === YouTube.PlayerState.CUED;
 
   const slideUp = keyframes`
     from {
@@ -399,379 +357,514 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
   );
 
   return (
-    <Paper
+    <Box
       sx={{
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
         boxShadow: ({ shadows }) => shadows[6],
-        px: 2,
-        py: 1.5,
-        borderTopWidth: 1,
-        borderTopStyle: 'solid',
-        borderTopColor: (t) => alpha(t.palette.divider, 0.05),
-        borderRadius: 0,
         zIndex: 1,
-        // animate the player on render
-        animation: `${slideUp} 0.3s ease`,
       }}
     >
-      <Stack
-        direction='row'
-        spacing={1}
+      <Box
         sx={{
-          mt: -1,
-          mb: {
-            xs: 0,
-            md: 0.5,
-          },
+          position: 'absolute',
+          top: -216,
+          // left: 16,
+          left:
+            playerState === YouTube.PlayerState.ENDED && repeatMode === 'none'
+              ? -372
+              : {
+                  xs: -372,
+                  xl: 16,
+                },
+          width: 356,
+          height: 200,
+          borderRadius: 2,
+          overflow: 'hidden',
+          transition: 'left 0.2s',
         }}
       >
-        <Box
-          sx={{
-            display: {
-              xs: 'none',
-              md: 'flex',
-            },
-            alignItems: 'center',
-            width: 40,
-            fontSize: '0.875rem',
-            color: 'text.secondary',
+        <YouTube
+          // key={youtubeId}
+          videoId={youtubeId}
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
           }}
-        >
-          {formatSeconds(actualCurrentTime)}
-        </Box>
-        <StyledSlider
-          aria-label='time-indicator'
-          size='small'
-          value={actualCurrentTime}
-          min={0}
-          step={1}
-          max={duration}
-          onChange={(_, value) => {
-            seekTo(value as number, true);
-            setActualCurrentTime(value as number);
-            setLastRecordedCurrentTime(value as number);
+          opts={{
+            width: 356,
+            height: 200,
+            playerVars: {
+              origin: process.env.NEXT_PUBLIC_SITE_URL,
+              autoplay: 1,
+              controls: 0,
+              fs: 0,
+            },
+          }}
+          onReady={async (e) => {
+            setIsReady(true);
+            setWasPlaying(true);
+
+            const newDuration = await e.target.getDuration();
+            setDuration(newDuration);
+            const newVolume = await e.target.getVolume();
+            setYouTubeVolume(newVolume);
+
+            const player = e.target;
+            setPlayer(player);
+
+            // media session
+            navigator.mediaSession.metadata = new MediaMetadata({
+              title,
+              artist: artists.map((artist) => artist.name).join(', '),
+              album: albumName,
+              artwork: albumUrl ? [{ src: albumUrl, type: 'image/webp' }] : [],
+            });
+
+            navigator.mediaSession.setActionHandler('play', () => {
+              setWasPlaying(true);
+              player?.playVideo();
+            });
+
+            navigator.mediaSession.setActionHandler('pause', () => {
+              setWasPlaying(false);
+              player?.pauseVideo();
+            });
+
+            // navigator.mediaSession.setActionHandler('seekbackward', () => {
+            //   let newTime = currentTime - 10;
+            //   if (newTime < 0) newTime = 0;
+
+            //   player?.seekTo(newTime, true);
+            //   setActualCurrentTime(newTime);
+            //   setLastRecordedCurrentTime(newTime);
+            //   setTimeLastUpdated(new Date().getTime());
+            // });
+
+            // navigator.mediaSession.setActionHandler('seekforward', () => {
+            //   let newTime = currentTime + 10;
+            //   if (newTime > duration) newTime = duration;
+
+            //   player?.seekTo(newTime, true);
+            //   setActualCurrentTime(newTime);
+            //   setLastRecordedCurrentTime(newTime);
+            //   setTimeLastUpdated(new Date().getTime());
+            // });
+
+            navigator.mediaSession.setActionHandler(
+              'previoustrack',
+              handlePrev
+            );
+
+            navigator.mediaSession.setActionHandler('nexttrack', handleNext);
+          }}
+          onStateChange={async (e) => {
+            const currentTime = await e.target.getCurrentTime();
+
+            setCurrentTime(currentTime);
+            setPlayerState(e.data);
+
+            setActualCurrentTime(currentTime);
+            setLastRecordedCurrentTime(currentTime);
             setTimeLastUpdated(new Date().getTime());
-          }}
-          sx={{
-            ml: {
-              xs: '0!important',
-              md: '8px!important',
-            },
+
+            if (!('mediaSession' in navigator)) return;
+            switch (e.data) {
+              case YouTube.PlayerState.PLAYING:
+                navigator.mediaSession.playbackState = 'playing';
+                break;
+              case YouTube.PlayerState.PAUSED:
+              case YouTube.PlayerState.BUFFERING:
+                navigator.mediaSession.playbackState = 'paused';
+                break;
+              case YouTube.PlayerState.UNSTARTED:
+                navigator.mediaSession.playbackState = 'none';
+                break;
+              case YouTube.PlayerState.ENDED:
+                navigator.mediaSession.playbackState = 'none';
+                break;
+            }
           }}
         />
-        <Box
+      </Box>
+      <Paper
+        sx={{
+          px: 2,
+          py: 1.5,
+          borderTopWidth: 1,
+          borderTopStyle: 'solid',
+          borderTopColor: (t) => alpha(t.palette.divider, 0.05),
+          borderRadius: 0,
+          // animate the player on render
+          animation: `${slideUp} 0.3s ease`,
+        }}
+      >
+        <Stack
+          direction='row'
+          spacing={1}
           sx={{
-            display: {
-              xs: 'none',
-              md: 'flex',
+            mt: -1,
+            mb: {
+              xs: 0,
+              md: 0.5,
             },
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            width: 40,
-            fontSize: '0.875rem',
-            color: 'text.secondary',
-            textAlign: 'right',
           }}
         >
-          {formatSeconds(
-            duration - actualCurrentTime > 0 ? duration - actualCurrentTime : 0
-          )}
-        </Box>
-      </Stack>
-      <Grid container spacing={2}>
-        <Grid item xs>
-          <Stack direction='row' spacing={2}>
-            <Box
-              className='default-bg'
-              sx={{
-                width: 42,
-                height: 42,
-                minWidth: 42,
-                minHeight: 42,
-                borderRadius: 1,
-              }}
-            >
-              {albumUrl && (
-                <Image
-                  src={albumUrl}
-                  alt='Album art'
-                  width={42}
-                  height={42}
-                  style={{
-                    borderRadius: 4,
-                    width: 42,
-                    height: 42,
-                    objectFit: 'cover',
-                    userSelect: 'none',
-                    // hide alt text on firefox
-                    color: 'transparent',
-                  }}
-                  unoptimized
-                />
-              )}
-            </Box>
-            <Box sx={{ width: '100%', position: 'relative' }}>
-              <Typography
+          <Box
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex',
+              },
+              alignItems: 'center',
+              width: 40,
+              fontSize: '0.875rem',
+              color: 'text.secondary',
+            }}
+          >
+            {formatSeconds(actualCurrentTime)}
+          </Box>
+          <StyledSlider
+            aria-label='time-indicator'
+            size='small'
+            value={actualCurrentTime}
+            min={0}
+            step={0.25}
+            max={duration}
+            onChange={(_, value) => {
+              player?.seekTo(value as number, true);
+              setActualCurrentTime(value as number);
+              setLastRecordedCurrentTime(value as number);
+              setTimeLastUpdated(new Date().getTime());
+            }}
+            sx={{
+              ml: {
+                xs: '0!important',
+                md: '8px!important',
+              },
+            }}
+          />
+          <Box
+            sx={{
+              display: {
+                xs: 'none',
+                md: 'flex',
+              },
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              width: 40,
+              fontSize: '0.875rem',
+              color: 'text.secondary',
+              textAlign: 'right',
+            }}
+          >
+            {formatSeconds(
+              duration - actualCurrentTime > 0
+                ? duration - actualCurrentTime
+                : 0
+            )}
+          </Box>
+        </Stack>
+        <Grid container spacing={2}>
+          <Grid item xs>
+            <Stack direction='row' spacing={2}>
+              <Box
+                className='default-bg'
                 sx={{
-                  fontWeight: 'medium',
-                  userSelect: 'none',
-                  color: !!youtubeId ? 'text.primary' : 'text.secondary',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
+                  width: 42,
+                  height: 42,
+                  minWidth: 42,
+                  minHeight: 42,
+                  borderRadius: 1,
                 }}
               >
-                {title}
-              </Typography>
-              <Typography
-                sx={{
-                  position: 'absolute',
-                  fontSize: 14,
-                  color: 'text.secondary',
-                  userSelect: 'none',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  visibility: overflowActive ? 'hidden' : 'visible',
-                  opacity: overflowActive ? 0 : 1,
-                  width: {
-                    // half screen width - player padding - controls - album art - spacing
-                    xs: 'calc(100vw - 32px - 140px - 42px - 16px)',
-                    // full screen width - player padding - half controls - album art - spacing - extra
-                    md: 'calc(50vw - 32px - 114px - 42px - 16px)',
-                    // minus extra on large screens
-                    lg: 'calc(50vw - 32px - 114px - 42px - 16px - 50px)',
-                    xl: 'calc(50vw - 32px - 114px - 42px - 16px - 100px)',
-                  },
-                }}
-                ref={overflowingText}
-              >
-                {artistsComponent}
-              </Typography>
-              {overflowActive && (
-                <Box
+                {albumUrl && (
+                  <Image
+                    src={albumUrl}
+                    alt='Album art'
+                    width={42}
+                    height={42}
+                    style={{
+                      borderRadius: 4,
+                      width: 42,
+                      height: 42,
+                      objectFit: 'cover',
+                      userSelect: 'none',
+                      // hide alt text on firefox
+                      color: 'transparent',
+                    }}
+                    unoptimized
+                  />
+                )}
+              </Box>
+              <Box sx={{ width: '100%', position: 'relative' }}>
+                <Typography
                   sx={{
-                    maxWidth: {
+                    fontWeight: 'medium',
+                    userSelect: 'none',
+                    color: !!youtubeId ? 'text.primary' : 'text.secondary',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {title}
+                </Typography>
+                <Typography
+                  sx={{
+                    position: 'absolute',
+                    fontSize: 14,
+                    color: 'text.secondary',
+                    userSelect: 'none',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    visibility: overflowActive ? 'hidden' : 'visible',
+                    opacity: overflowActive ? 0 : 1,
+                    width: {
+                      // half screen width - player padding - controls - album art - spacing
+                      xs: 'calc(100vw - 32px - 140px - 42px - 16px)',
+                      // full screen width - player padding - half controls - album art - spacing - extra
+                      md: 'calc(50vw - 32px - 114px - 42px - 16px)',
+                      // minus extra on large screens
                       lg: 'calc(50vw - 32px - 114px - 42px - 16px - 50px)',
                       xl: 'calc(50vw - 32px - 114px - 42px - 16px - 100px)',
                     },
                   }}
+                  ref={overflowingText}
                 >
-                  <Marquee
-                    speed={10}
-                    delay={2}
-                    pauseOnHover
-                    gradient
-                    gradientWidth={8}
-                    gradientColor={
-                      theme.palette.mode === 'dark'
-                        ? [22, 26, 34]
-                        : [255, 255, 255]
-                    }
+                  {artistsComponent}
+                </Typography>
+                {overflowActive && (
+                  <Box
+                    sx={{
+                      maxWidth: {
+                        lg: 'calc(50vw - 32px - 114px - 42px - 16px - 50px)',
+                        xl: 'calc(50vw - 32px - 114px - 42px - 16px - 100px)',
+                      },
+                    }}
                   >
-                    <Typography
-                      sx={{
-                        fontSize: 14,
-                        color: 'text.secondary',
-                        userSelect: 'none',
-                        pr: 8,
-                      }}
+                    <Marquee
+                      speed={10}
+                      delay={2}
+                      pauseOnHover
+                      gradient
+                      gradientWidth={8}
+                      gradientColor={
+                        theme.palette.mode === 'dark'
+                          ? [22, 26, 34]
+                          : [255, 255, 255]
+                      }
                     >
-                      {artistsComponent}
-                    </Typography>
-                  </Marquee>
-                </Box>
-              )}
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid item xs='auto'>
-          <Stack
-            direction='row'
-            spacing={1}
+                      <Typography
+                        sx={{
+                          fontSize: 14,
+                          color: 'text.secondary',
+                          userSelect: 'none',
+                          pr: 8,
+                        }}
+                      >
+                        {artistsComponent}
+                      </Typography>
+                    </Marquee>
+                  </Box>
+                )}
+              </Box>
+            </Stack>
+          </Grid>
+          <Grid item xs='auto'>
+            <Stack
+              direction='row'
+              spacing={1}
+              sx={{
+                mr: {
+                  xs: -2.5,
+                  md: 0,
+                },
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <IconButton
+                  size='small'
+                  onClick={() => setIsShuffleOn((prev) => !prev)}
+                  aria-label='shuffle'
+                  sx={{
+                    display: {
+                      xs: 'none',
+                      md: 'flex',
+                    },
+                    fontSize: 24,
+                    color: isShuffleOn ? 'primary.main' : 'text.secondary',
+                  }}
+                >
+                  <MdShuffle />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <IconButton
+                  size='small'
+                  aria-label='previous'
+                  sx={{ fontSize: 28 }}
+                  onClick={handlePrev}
+                >
+                  <MdSkipPrevious />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <IconButton
+                  size='small'
+                  onClick={() => {
+                    if (isPaused) {
+                      setWasPlaying(true);
+                      player?.playVideo();
+                    } else {
+                      setWasPlaying(false);
+                      player?.pauseVideo();
+                    }
+                  }}
+                  aria-label={isPaused ? 'play' : 'pause'}
+                  sx={{ m: '-8px !important', fontSize: 42 }}
+                >
+                  {isPaused ? <MdPlayArrow /> : <MdPause />}
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <IconButton
+                  size='small'
+                  aria-label='next'
+                  sx={{ fontSize: 28 }}
+                  onClick={handleNext}
+                >
+                  <MdSkipNext />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <IconButton
+                  size='small'
+                  onClick={() =>
+                    setRepeatMode((prev) =>
+                      prev === 'none' ? 'all' : prev === 'all' ? 'one' : 'none'
+                    )
+                  }
+                  aria-label={
+                    repeatMode === 'none'
+                      ? 'repeat all'
+                      : repeatMode === 'all'
+                      ? 'repeat one'
+                      : 'disable repeat'
+                  }
+                  sx={{
+                    display: {
+                      xs: 'none',
+                      md: 'flex',
+                    },
+                    fontSize: 24,
+                    color:
+                      repeatMode !== 'none' ? 'primary.main' : 'text.secondary',
+                  }}
+                >
+                  {repeatMode === 'one' ? <MdRepeatOne /> : <MdRepeat />}
+                </IconButton>
+              </Box>
+            </Stack>
+          </Grid>
+          <Grid
+            item
+            xs
             sx={{
-              mr: {
-                xs: -2.5,
-                md: 0,
+              display: {
+                xs: 'none',
+                md: 'flex',
               },
             }}
           >
             <Box
               sx={{
                 display: 'flex',
+                width: '100%',
+                height: '100%',
                 alignItems: 'center',
-              }}
-            >
-              <IconButton
-                size='small'
-                onClick={() => setIsShuffleOn((prev) => !prev)}
-                aria-label='shuffle'
-                sx={{
-                  display: {
-                    xs: 'none',
-                    md: 'flex',
-                  },
-                  fontSize: 24,
-                  color: isShuffleOn ? 'primary.main' : 'text.secondary',
-                }}
-              >
-                <MdShuffle />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <IconButton
-                size='small'
-                aria-label='previous'
-                sx={{ fontSize: 28 }}
-              >
-                <MdSkipPrevious />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
+                justifyContent: 'flex-end',
               }}
             >
               <IconButton
                 size='small'
                 onClick={() => {
-                  if (isPaused) {
-                    setWasPlaying(true);
-                    playVideo();
+                  const newMuted = !isMuted;
+                  if (newMuted) {
+                    setClientVolume(0);
                   } else {
-                    setWasPlaying(false);
-                    pauseVideo();
+                    setClientVolume(unmutedVolume);
                   }
+                  setIsMuted(newMuted);
+                  localStorage.setItem('isMuted', (!isMuted).toString());
                 }}
-                aria-label={isPaused ? 'play' : 'pause'}
-                sx={{ m: '-8px !important', fontSize: 42 }}
+                aria-label={isMuted ? 'unmute' : 'mute'}
+                sx={{ mr: 0.5, color: 'text.secondary', fontSize: 24 }}
+                disableRipple
               >
-                {isPaused ? <MdPlayArrow /> : <MdPause />}
+                {isMuted ? (
+                  <MdVolumeOff />
+                ) : volume === 0 ? (
+                  <MdVolumeMute />
+                ) : volume < 50 ? (
+                  <MdVolumeDown />
+                ) : (
+                  <MdVolumeUp />
+                )}
               </IconButton>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <IconButton size='small' aria-label='next' sx={{ fontSize: 28 }}>
-                <MdSkipNext />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <IconButton
+              <StyledSlider
+                aria-label='volume'
                 size='small'
-                onClick={() =>
-                  setRepeatMode((prev) =>
-                    prev === 'none' ? 'all' : prev === 'all' ? 'one' : 'none'
-                  )
-                }
-                aria-label={
-                  repeatMode === 'none'
-                    ? 'repeat all'
-                    : repeatMode === 'all'
-                    ? 'repeat one'
-                    : 'disable repeat'
-                }
-                sx={{
-                  display: {
-                    xs: 'none',
-                    md: 'flex',
-                  },
-                  fontSize: 24,
-                  color:
-                    repeatMode !== 'none' ? 'primary.main' : 'text.secondary',
+                value={clientVolume}
+                min={0}
+                max={100}
+                step={0.1}
+                onChange={(_, value) => {
+                  setIsMuted(false);
+                  setClientVolume(value as number);
+                  setUnmutedVolume(value as number);
+                  localStorage.setItem('volume', value.toString());
                 }}
-              >
-                {repeatMode === 'one' ? <MdRepeatOne /> : <MdRepeat />}
-              </IconButton>
-            </Box>
-          </Stack>
-        </Grid>
-        <Grid
-          item
-          xs
-          sx={{
-            display: {
-              xs: 'none',
-              md: 'flex',
-            },
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              width: '100%',
-              height: '100%',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-            }}
-          >
-            <IconButton
-              size='small'
-              onClick={() => {
-                const newMuted = !isMuted;
-                if (newMuted) {
-                  setClientVolume(0);
-                } else {
-                  setClientVolume(unmutedVolume);
-                }
-                setIsMuted(newMuted);
-                localStorage.setItem('isMuted', (!isMuted).toString());
-              }}
-              aria-label={isMuted ? 'unmute' : 'mute'}
-              sx={{ mr: 0.5, color: 'text.secondary', fontSize: 24 }}
-              disableRipple
-            >
-              {isMuted ? (
-                <MdVolumeOff />
-              ) : volume === 0 ? (
-                <MdVolumeMute />
-              ) : volume < 50 ? (
-                <MdVolumeDown />
-              ) : (
-                <MdVolumeUp />
-              )}
-            </IconButton>
-            <StyledSlider
-              aria-label='volume'
-              size='small'
-              value={clientVolume}
-              min={0}
-              max={100}
-              step={0.1}
-              onChange={(_, value) => {
-                setIsMuted(false);
-                setClientVolume(value as number);
-                setUnmutedVolume(value as number);
-                localStorage.setItem('volume', value.toString());
-              }}
-              sx={{
-                maxWidth: 120,
-                '& .MuiSlider-thumb': {
-                  '&::after': {
-                    display: 'none',
+                sx={{
+                  maxWidth: 120,
+                  '& .MuiSlider-thumb': {
+                    '&::after': {
+                      display: 'none',
+                    },
                   },
-                },
-              }}
-            />
-          </Box>
+                }}
+              />
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-    </Paper>
+      </Paper>
+    </Box>
   );
 };
 
