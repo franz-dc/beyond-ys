@@ -165,59 +165,101 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
 
   const { queue, setNowPlaying } = useMusicPlayer();
 
-  const currentIndex = queue.findIndex((item) => item.youtubeId === youtubeId);
-
   // repeat logic
   useEffect(() => {
+    if (playerState !== YouTube.PlayerState.ENDED) return;
+    if (!isReady) return;
     switch (repeatMode) {
       case 'one': {
-        if (playerState !== YouTube.PlayerState.ENDED) return;
         player?.playVideo();
         break;
       }
       case 'all': {
-        if (playerState !== YouTube.PlayerState.ENDED) return;
-        if (currentIndex === -1) return;
-        if (currentIndex + 2 >= queue.length) {
-          setNowPlaying(queue[0]);
+        setNowPlaying(null);
+        setIsReady(false);
+        if (isShuffleOn) {
+          const randomIndex = Math.floor(Math.random() * queue.length);
+          setNowPlaying(queue[randomIndex]);
           break;
         } else {
+          const currentIndex = queue.findIndex(
+            (item) => item.youtubeId === youtubeId
+          );
+          if (currentIndex === -1) return;
+          if (currentIndex >= queue.length - 1) {
+            setNowPlaying(queue[0]);
+            break;
+          } else {
+            setNowPlaying(queue[currentIndex + 1]);
+            break;
+          }
+        }
+      }
+      case 'none': {
+        setNowPlaying(null);
+        setIsReady(false);
+        if (isShuffleOn) {
+          // if shuffle is on and loop is off, it is the same as repeat all,
+          // but just shuffled
+          const randomIndex = Math.floor(Math.random() * queue.length);
+          setNowPlaying(queue[randomIndex]);
+          break;
+        } else {
+          const currentIndex = queue.findIndex(
+            (item) => item.youtubeId === youtubeId
+          );
+          if (currentIndex === -1 || currentIndex >= queue.length - 1) return;
           setNowPlaying(queue[currentIndex + 1]);
           break;
         }
       }
-      case 'none': {
-        if (playerState !== YouTube.PlayerState.ENDED) return;
-        if (currentIndex === -1 || currentIndex + 2 >= queue.length) return;
-        setNowPlaying(queue[currentIndex + 1]);
-        break;
-      }
     }
   }, [
+    isReady,
     player,
     repeatMode,
     playerState,
     queue,
     youtubeId,
     setNowPlaying,
-    currentIndex,
+    isShuffleOn,
   ]);
 
   const handlePrev = () => {
+    const currentIndex = queue.findIndex(
+      (item) => item.youtubeId === youtubeId
+    );
     if (currentIndex === -1) return;
-    if (currentIndex === 0) {
-      setNowPlaying(queue[queue.length - 1]);
+    setNowPlaying(null);
+    setIsReady(false);
+    if (isShuffleOn) {
+      const randomIndex = Math.floor(Math.random() * queue.length);
+      setNowPlaying(queue[randomIndex]);
     } else {
-      setNowPlaying(queue[currentIndex - 1]);
+      if (currentIndex === 0) {
+        setNowPlaying(queue[queue.length - 1]);
+      } else {
+        setNowPlaying(queue[currentIndex - 1]);
+      }
     }
   };
 
   const handleNext = () => {
+    const currentIndex = queue.findIndex(
+      (item) => item.youtubeId === youtubeId
+    );
     if (currentIndex === -1) return;
-    if (currentIndex + 2 >= queue.length) {
-      setNowPlaying(queue[0]);
+    setNowPlaying(null);
+    setIsReady(false);
+    if (isShuffleOn) {
+      const randomIndex = Math.floor(Math.random() * queue.length);
+      setNowPlaying(queue[randomIndex]);
     } else {
-      setNowPlaying(queue[currentIndex + 1]);
+      if (currentIndex >= queue.length - 1) {
+        setNowPlaying(queue[0]);
+      } else {
+        setNowPlaying(queue[currentIndex + 1]);
+      }
     }
   };
 
@@ -356,6 +398,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
     </>
   );
 
+  const currentQueueIndex = queue.findIndex(
+    (item) => item.youtubeId === youtubeId
+  );
+
   return (
     <Box
       sx={{
@@ -373,7 +419,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           top: -216,
           // left: 16,
           left:
-            playerState === YouTube.PlayerState.ENDED && repeatMode === 'none'
+            playerState === YouTube.PlayerState.ENDED &&
+            repeatMode === 'none' &&
+            !isShuffleOn &&
+            currentQueueIndex === queue.length - 1
               ? -372
               : {
                   xs: -372,
@@ -387,11 +436,11 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
         }}
       >
         <YouTube
-          // key={youtubeId}
           videoId={youtubeId}
           style={{
             maxWidth: '100%',
             maxHeight: '100%',
+            backgroundColor: 'black',
           }}
           opts={{
             width: 356,
