@@ -72,18 +72,20 @@ export const getServerSideProps: GetServerSideProps<
     ),
   };
 
-  // doing it this way to parallelize the requests and save time
-  const [staffInfoCache, cachedMusicAlbumsRes] = await Promise.allSettled([
-    getDoc(doc(cacheCollection, 'staffInfo')),
-    getDoc(doc(cacheCollection, 'musicAlbums')),
-  ]);
+  if (data.soundtrackIds.length > 0) {
+    // doing it this way to parallelize the requests and save time
+    const [staffInfoCache, cachedMusicAlbumsRes] = await Promise.allSettled([
+      getDoc(doc(cacheCollection, 'staffInfo')),
+      getDoc(doc(cacheCollection, 'musicAlbums')),
+    ]);
 
-  if (staffInfoCache.status === 'fulfilled') {
-    data.staffInfoCache = staffInfoCache.value.data() || {};
-  }
+    if (staffInfoCache.status === 'fulfilled') {
+      data.staffInfoCache = staffInfoCache.value.data() || {};
+    }
 
-  if (cachedMusicAlbumsRes.status === 'fulfilled') {
-    data.cachedMusicAlbums = cachedMusicAlbumsRes.value.data() || {};
+    if (cachedMusicAlbumsRes.status === 'fulfilled') {
+      data.cachedMusicAlbums = cachedMusicAlbumsRes.value.data() || {};
+    }
   }
 
   return { props: data };
