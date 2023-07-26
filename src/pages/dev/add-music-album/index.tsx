@@ -149,6 +149,7 @@ const AddMusicAlbum = () => {
       releaseDate: null,
       releaseDatePrecision: '',
       albumArt: null,
+      musicIds: [],
     },
     resolver: zodResolver(schema),
   });
