@@ -312,6 +312,7 @@ const EditStaff = () => {
             autocompleteProps={{
               onChange: (_, v) => changeStaff(v.id),
               fullWidth: true,
+              disableClearable: true,
             }}
             textFieldProps={{
               margin: 'normal',
@@ -411,7 +412,11 @@ const EditStaff = () => {
                 Involvements
               </Typography>
               {games.map((game, idx) => (
-                <Box key={game.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
+                <Box
+                  key={game.id}
+                  className='default-bg'
+                  sx={{ mb: 2, p: 2, borderRadius: 2 }}
+                >
                   <Stack direction='column' sx={{ mt: -1 }}>
                     <AutocompleteElement
                       name={`games.${idx}.gameId`}
@@ -510,12 +515,8 @@ const EditStaff = () => {
                 Accepted file type: .webp
               </Typography>
               <Typography color='text.secondary'>Max size: 5MB.</Typography>
-              <Typography color='text.secondary'>
-                Max dimensions: 200x200.
-              </Typography>
               <Typography color='text.secondary' sx={{ mb: 2 }}>
-                Character must be facing left or center. Face should be around
-                50% image height. Transparent background is recommended.
+                Max dimensions: 500x500.
               </Typography>
               {/* display current avatar if hasAvatar is true */}
               {hasAvatar ? (
@@ -527,7 +528,7 @@ const EditStaff = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography color='text.secondary'>
+                  <Typography color='text.secondary' gutterBottom>
                     Current avatar usage:
                   </Typography>
                   <Box
@@ -539,6 +540,7 @@ const EditStaff = () => {
                       maxWidth: 150,
                       aspectRatio: '1 / 1',
                       objectFit: 'cover',
+                      borderRadius: '50%',
                     }}
                   />
                 </Box>
@@ -612,7 +614,7 @@ const EditStaff = () => {
                         borderRadius: 2,
                       }}
                     >
-                      <Typography color='text.secondary'>
+                      <Typography color='text.secondary' gutterBottom>
                         Selected avatar usage:
                       </Typography>
                       <Box
@@ -624,6 +626,7 @@ const EditStaff = () => {
                           maxWidth: 150,
                           aspectRatio: '1 / 1',
                           objectFit: 'cover',
+                          borderRadius: '50%',
                         }}
                       />
                     </Box>

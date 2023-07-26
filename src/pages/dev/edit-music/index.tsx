@@ -394,6 +394,7 @@ const EditMusic = () => {
             autocompleteProps={{
               onChange: (_, v) => changeMusic(v.id),
               fullWidth: true,
+              disableClearable: true,
             }}
             textFieldProps={{
               margin: 'normal',

@@ -561,6 +561,7 @@ const EditCharacter = () => {
             autocompleteProps={{
               onChange: (_, v) => changeCharacter(v.id),
               fullWidth: true,
+              disableClearable: true,
             }}
             textFieldProps={{
               margin: 'normal',

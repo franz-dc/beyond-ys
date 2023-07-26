@@ -619,6 +619,7 @@ const EditGame = () => {
             autocompleteProps={{
               onChange: (_, v) => changeGame(v.id),
               fullWidth: true,
+              disableClearable: true,
             }}
             textFieldProps={{
               margin: 'normal',
