@@ -128,6 +128,7 @@ const MusicItem: FC<MusicItemProps> = ({
           >
             {albumUrl && (
               <Image
+                key={albumUrl}
                 src={albumUrl}
                 alt={albumName}
                 title={albumName}
