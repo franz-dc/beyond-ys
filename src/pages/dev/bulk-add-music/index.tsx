@@ -41,9 +41,14 @@ const BulkAddMusic = () => {
       .refine(
         (value) => {
           const status = musicSchema
+            .omit({
+              updatedAt: true,
+              dependentGameIds: true,
+            })
             .array()
             .safeParse(JSON.parse(value || '[]'));
           if (!status.success) {
+            console.error(status.error);
             enqueueSnackbar('Invalid JSON data. Check console for details.', {
               variant: 'error',
             });
@@ -71,7 +76,8 @@ const BulkAddMusic = () => {
 
   const handleSave = async ({ json }: Schema) => {
     try {
-      const musics: MusicSchema[] = JSON.parse(json);
+      const musics: Omit<MusicSchema, 'dependentGameIds' | 'updatedAt'>[] =
+        JSON.parse(json);
       const batch = writeBatch(db);
 
       musics.forEach(
@@ -149,7 +155,7 @@ const BulkAddMusic = () => {
       <GenericHeader title='Bulk Add Music' gutterBottom />
       <FormContainer
         formContext={formContext}
-        handleSubmit={handleSubmit(handleSave, (err) => console.error(err))}
+        handleSubmit={handleSubmit(handleSave)}
       >
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>JSON Data</Typography>
