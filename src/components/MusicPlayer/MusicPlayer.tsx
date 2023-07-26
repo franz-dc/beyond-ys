@@ -410,7 +410,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
         left: 0,
         right: 0,
         boxShadow: ({ shadows }) => shadows[6],
-        zIndex: 1,
+        zIndex: 100,
       }}
     >
       <Box
@@ -426,7 +426,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
               ? -372
               : {
                   xs: -372,
-                  xl: 16,
+                  xl2: 16,
                 },
           width: 356,
           height: 200,
@@ -617,7 +617,13 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           </Box>
         </Stack>
         <Grid container spacing={2}>
-          <Grid item xs>
+          <Grid
+            item
+            xs
+            sx={{
+              minWidth: 0,
+            }}
+          >
             <Stack direction='row' spacing={2}>
               <Box
                 className='default-bg'
@@ -651,11 +657,16 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
               <Box sx={{ width: '100%', position: 'relative' }}>
                 <Typography
                   sx={{
+                    maxWidth: {
+                      xs: 'calc(100vw - 32px - 140px - 42px - 16px)',
+                      sm: 'none',
+                    },
                     fontWeight: 'medium',
                     userSelect: 'none',
                     color: !!youtubeId ? 'text.primary' : 'text.secondary',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
                 >
                   {title}
@@ -688,6 +699,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                   <Box
                     sx={{
                       maxWidth: {
+                        xs: 'calc(100vw - 32px - 140px - 42px - 16px)',
                         lg: 'calc(50vw - 32px - 114px - 42px - 16px - 50px)',
                         xl: 'calc(50vw - 32px - 114px - 42px - 16px - 100px)',
                       },

@@ -17,6 +17,7 @@ declare module '@mui/material/styles' {
     sm2: true;
     sm3: true;
     sm4: true;
+    xl2: true;
   }
 }
 
@@ -40,6 +41,7 @@ export const theme: ThemeOptions = {
       md: 900,
       lg: 1200,
       xl: 1536,
+      xl2: 1644, // youtube embed
     },
   },
   typography: {
