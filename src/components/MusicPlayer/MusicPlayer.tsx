@@ -16,6 +16,7 @@ import {
 import Image from 'next/image';
 import Marquee from 'react-fast-marquee';
 import {
+  MdMusicNote,
   MdPause,
   MdPlayArrow,
   MdRepeat,
@@ -628,8 +629,10 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           >
             <Stack direction='row' spacing={2}>
               <Box
+                title={albumName || 'No album'}
                 className='default-bg'
                 sx={{
+                  position: 'relative',
                   width: 42,
                   height: 42,
                   minWidth: 42,
@@ -637,6 +640,17 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                   borderRadius: 1,
                 }}
               >
+                <Box
+                  component={MdMusicNote}
+                  sx={{
+                    position: 'absolute',
+                    display: 'flex',
+                    width: 42,
+                    height: 42,
+                    p: 0.5,
+                    color: 'divider',
+                  }}
+                />
                 {albumUrl && (
                   <Image
                     src={albumUrl}

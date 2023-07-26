@@ -80,6 +80,9 @@ const BulkAddMusic = () => {
         JSON.parse(json);
       const batch = writeBatch(db);
 
+      // useful for updating game soundtracks in bulk
+      const musicIds: string[] = [];
+
       musics.forEach(
         ({
           title,
@@ -104,6 +107,7 @@ const BulkAddMusic = () => {
           };
           const musicDoc = doc(musicCollection);
           const id = musicDoc.id;
+          musicIds.push(id);
 
           batch.set(musicDoc, newData);
 
@@ -144,6 +148,8 @@ const BulkAddMusic = () => {
       await batch.commit();
       reset();
       enqueueSnackbar('Music added successfully.', { variant: 'success' });
+      // eslint-disable-next-line no-console
+      console.log('Music IDs', musicIds);
     } catch (err) {
       enqueueSnackbar('Failed to add music.', { variant: 'error' });
       console.error(err);

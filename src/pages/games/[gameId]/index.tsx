@@ -471,7 +471,11 @@ const GamePage = ({
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
                 albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
-                albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
+                albumUrl={
+                  soundtrack.albumId
+                    ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                    : undefined
+                }
                 onPlay={
                   !!soundtrack.youtubeId
                     ? () => {
@@ -482,7 +486,9 @@ const GamePage = ({
                           artists: soundtrack.artists,
                           albumName:
                             cachedMusicAlbums[soundtrack.albumId]?.name,
-                          albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
+                          albumUrl: soundtrack.albumId
+                            ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                            : undefined,
                         });
                         setQueue(
                           formattedSoundtracks.map((s) => ({
@@ -492,7 +498,9 @@ const GamePage = ({
                             artists: s.artists,
                             albumName:
                               cachedMusicAlbums[soundtrack.albumId]?.name,
-                            albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
+                            albumUrl: soundtrack.albumId
+                              ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                              : undefined,
                           }))
                         );
                       }
@@ -513,7 +521,11 @@ const GamePage = ({
                       duration={soundtrack.duration}
                       trackNumber={idx + 11}
                       albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
-                      albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`}
+                      albumUrl={
+                        soundtrack.albumId
+                          ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                          : undefined
+                      }
                       onPlay={
                         !!soundtrack.youtubeId
                           ? () => {
@@ -524,7 +536,9 @@ const GamePage = ({
                                 artists: soundtrack.artists,
                                 albumName:
                                   cachedMusicAlbums[soundtrack.albumId]?.name,
-                                albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
+                                albumUrl: soundtrack.albumId
+                                  ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                                  : undefined,
                               });
                               setQueue(
                                 formattedSoundtracks.map((s) => ({
@@ -534,7 +548,9 @@ const GamePage = ({
                                   artists: s.artists,
                                   albumName:
                                     cachedMusicAlbums[soundtrack.albumId]?.name,
-                                  albumUrl: `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`,
+                                  albumUrl: soundtrack.albumId
+                                    ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                                    : undefined,
                                 }))
                               );
                             }

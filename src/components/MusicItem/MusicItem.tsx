@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import Image from 'next/image';
-import { MdPlayArrow } from 'react-icons/md';
+import { MdMusicNote, MdPlayArrow } from 'react-icons/md';
 
 import { useMusicPlayer } from '~/hooks';
 import { formatSeconds } from '~/utils';
@@ -117,8 +117,10 @@ const MusicItem: FC<MusicItemProps> = ({
           }}
         >
           <Box
+            title={albumUrl ? albumName : 'No album'}
             className='default-bg'
             sx={{
+              position: 'relative',
               width: 42,
               height: 42,
               minWidth: 42,
@@ -126,12 +128,22 @@ const MusicItem: FC<MusicItemProps> = ({
               borderRadius: 1,
             }}
           >
+            <Box
+              component={MdMusicNote}
+              sx={{
+                position: 'absolute',
+                display: 'flex',
+                width: 42,
+                height: 42,
+                p: 0.5,
+                color: 'divider',
+              }}
+            />
             {albumUrl && (
               <Image
                 key={albumUrl}
                 src={albumUrl}
                 alt={albumName}
-                title={albumName}
                 width={42}
                 height={42}
                 style={{
