@@ -153,13 +153,27 @@ const StaffList: FC<StaffListProps> = ({
                                 }}
                               />
                               <Box>
-                                <Typography sx={{ fontWeight: 'medium' }}>
+                                <Typography
+                                  sx={{
+                                    fontWeight: 'medium',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 1,
+                                    WebkitBoxOrient: 'vertical',
+                                  }}
+                                >
                                   {name}
                                 </Typography>
                                 <Typography
                                   sx={{
                                     fontSize: 14,
                                     color: 'text.secondary',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 1,
+                                    WebkitBoxOrient: 'vertical',
                                   }}
                                   aria-label='artist'
                                 >

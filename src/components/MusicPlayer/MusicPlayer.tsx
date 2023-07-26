@@ -627,7 +627,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
               minWidth: 0,
             }}
           >
-            <Stack direction='row' spacing={2}>
+            <Stack direction='row' spacing={2} sx={{ overflow: 'hidden' }}>
               <Box
                 title={albumName || 'No album'}
                 className='default-bg'
@@ -675,6 +675,8 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
                   sx={{
                     maxWidth: {
                       xs: 'calc(100vw - 32px - 140px - 42px - 16px)',
+                      // TODO: some weird bug where the text overflows a bit
+                      // before ellipsis is applied
                       sm: 'none',
                     },
                     fontWeight: 'medium',
