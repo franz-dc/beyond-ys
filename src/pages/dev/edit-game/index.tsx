@@ -380,16 +380,33 @@ const EditGame = () => {
           });
         });
 
-        // add the soundtrack to the game's cachedSoundtracks
-        const newMusicQuery = query(
-          musicCollection,
-          where(documentId(), 'in', addedSoundtrackIds)
+        // split the addedSoundtrackIds into chunks of 30
+        // due to 'in' query limit
+        const addedSoundtrackIdsChunks = addedSoundtrackIds.reduce(
+          (acc, curr) => {
+            const last = acc[acc.length - 1];
+            if (last.length < 30) {
+              last.push(curr);
+            } else {
+              acc.push([curr]);
+            }
+            return acc;
+          },
+          [[]] as string[][]
         );
-        const newMusicQuerySnap = await getDocs(newMusicQuery);
 
-        newMusicQuerySnap.forEach((doc) => {
-          if (!doc.exists()) return;
-          newData.cachedSoundtracks[doc.id] = doc.data();
+        // add the soundtrack to the game's cachedSoundtracks
+        const newMusicQuerySnap = await Promise.all(
+          addedSoundtrackIdsChunks.map((chunk) =>
+            getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
+          )
+        );
+
+        newMusicQuerySnap.forEach((snap) => {
+          snap.forEach((doc) => {
+            if (!doc.exists()) return;
+            newData.cachedSoundtracks[doc.id] = doc.data();
+          });
         });
       }
 
