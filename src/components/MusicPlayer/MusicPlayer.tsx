@@ -196,9 +196,9 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
         }
       }
       case 'none': {
-        setNowPlaying(null);
-        setIsReady(false);
         if (isShuffleOn) {
+          setNowPlaying(null);
+          setIsReady(false);
           // if shuffle is on and loop is off, it is the same as repeat all,
           // but just shuffled
           const randomIndex = Math.floor(Math.random() * queue.length);
@@ -209,6 +209,8 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
             (item) => item.youtubeId === youtubeId
           );
           if (currentIndex === -1 || currentIndex >= queue.length - 1) return;
+          setNowPlaying(null);
+          setIsReady(false);
           setNowPlaying(queue[currentIndex + 1]);
           break;
         }
