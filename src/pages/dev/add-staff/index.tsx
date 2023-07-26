@@ -2,7 +2,14 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Paper, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import {
   doc,
   onSnapshot,
@@ -19,6 +26,7 @@ import {
   useForm,
 } from 'react-hook-form-mui';
 import slugify from 'slugify';
+import { useDebouncedCallback } from 'use-debounce';
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
@@ -220,6 +228,21 @@ const AddStaff = () => {
   const customSlug = watch('customSlug');
   const avatar = watch('avatar');
 
+  const debounceName = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue('name', e.target.value);
+      if (customSlug) return;
+      const name = e.target.value;
+      const id = slugify(name, {
+        lower: true,
+        remove: /[*+~.,()'"!:@/]/g,
+      });
+
+      setValue('id', id, { shouldValidate: true });
+    },
+    500
+  );
+
   return (
     <MainLayout title='Add Staff'>
       <GenericHeader title='Add Staff' gutterBottom />
@@ -261,22 +284,13 @@ const AddStaff = () => {
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>General Info</Typography>
-          <TextFieldElement
-            name='name'
+          <TextField
             label='Name'
             required
             fullWidth
             margin='normal'
-            onChange={(e) => {
-              if (customSlug) return;
-              const name = e.target.value;
-              const id = slugify(name, {
-                lower: true,
-                remove: /[*+~.,()'"!:@/]/g,
-              });
-
-              setValue('id', id, { shouldValidate: true });
-            }}
+            {...register('name')}
+            onChange={debounceName}
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
@@ -357,7 +371,11 @@ const AddStaff = () => {
             Involvements
           </Typography>
           {games.map((game, idx) => (
-            <Box key={game.id} sx={{ mb: 2, p: 2, borderRadius: 2 }}>
+            <Box
+              key={game.id}
+              className='default-bg'
+              sx={{ mb: 2, p: 2, borderRadius: 2 }}
+            >
               <Stack direction='column' sx={{ mt: -1 }}>
                 <AutocompleteElement
                   name={`games.${idx}.gameId`}
@@ -453,12 +471,8 @@ const AddStaff = () => {
             Accepted file type: .webp
           </Typography>
           <Typography color='text.secondary'>Max size: 5MB.</Typography>
-          <Typography color='text.secondary'>
-            Max dimensions: 200x200.
-          </Typography>
           <Typography color='text.secondary' sx={{ mb: 2 }}>
-            Character must be facing left or center. Face should be around 50%
-            image height. Transparent background is recommended.
+            Max dimensions: 500x500.
           </Typography>
           <Box>
             <Box>
@@ -523,7 +537,7 @@ const AddStaff = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography color='text.secondary'>
+                  <Typography color='text.secondary' gutterBottom>
                     Selected avatar usage:
                   </Typography>
                   <Box
@@ -535,6 +549,7 @@ const AddStaff = () => {
                       maxWidth: 150,
                       aspectRatio: '1 / 1',
                       objectFit: 'cover',
+                      borderRadius: '50%',
                     }}
                   />
                 </Box>
