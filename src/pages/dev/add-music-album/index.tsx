@@ -257,6 +257,7 @@ const AddMusicAlbum = () => {
         [id]: {
           name,
           releaseDate: formattedReleaseDate,
+          hasAlbumArt,
         },
       });
 
