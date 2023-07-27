@@ -55,4 +55,14 @@ export const trailsStoryTimeline = [
     name: 'Trails into Reverie',
     stepLabel: 'Rev',
   },
+  {
+    ids: ['the-legend-of-heroes-kuro-no-kiseki'],
+    name: 'Kuro no Kiseki',
+    stepLabel: 'K1',
+  },
+  {
+    ids: ['the-legend-of-heroes-kuro-no-kiseki-ii-crimson-sin'],
+    name: 'Kuro no Kiseki II: Crimson Sin',
+    stepLabel: 'K2',
+  },
 ];

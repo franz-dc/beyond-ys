@@ -67,8 +67,8 @@ export const trailsSubcategories = [
         href: '/games/the-legend-of-heroes-kuro-no-kiseki',
       },
       {
-        name: 'Kuro no Kiseki II',
-        href: '/games/the-legend-of-heroes-kuro-no-kiseki-ii',
+        name: 'Kuro no Kiseki II: Crimson Sin',
+        href: '/games/the-legend-of-heroes-kuro-no-kiseki-ii-crimson-sin',
       },
     ],
   },
