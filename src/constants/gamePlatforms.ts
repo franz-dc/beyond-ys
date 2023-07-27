@@ -211,4 +211,10 @@ export const GAME_PLATFORMS: Record<
     name: 'Xbox One',
     width: 24,
   },
+  web: {
+    icon: MdCircle,
+    iconType: 'component',
+    name: 'Web',
+    width: 16,
+  },
 };
