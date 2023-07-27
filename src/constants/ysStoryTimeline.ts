@@ -1,6 +1,11 @@
 // cspell:disable
 export const ysStoryTimeline = [
   {
+    ids: ['ys-origin'],
+    name: 'Origin',
+    stepLabel: 'O',
+  },
+  {
     ids: ['ys-i-ancient-ys-vanished-omen'],
     name: 'Ancient Ys Vanished ~ Omen',
     stepLabel: 'I',
@@ -30,8 +35,8 @@ export const ysStoryTimeline = [
     stepLabel: 'III',
   },
   {
-    ids: ['ys-v-kefin-lost-city-of-sand'],
-    name: 'Kefin, Lost City of Sand',
+    ids: ['ys-v-kefin-lost-kingdom-of-sand'],
+    name: 'Kefin, Lost Kingdom of Sand',
     stepLabel: 'V',
   },
   {
