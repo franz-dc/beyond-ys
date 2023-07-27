@@ -85,10 +85,6 @@ export const trailsSubcategories = [
         href: '/games/the-legend-of-nayuta-boundless-trails',
       },
       {
-        name: 'Nayuta no Kiseki',
-        href: '/games/the-legend-of-heroes-nayuta-no-kiseki',
-      },
-      {
         name: 'Akatsuki no Kiseki',
         href: '/games/the-legend-of-heroes-akatsuki-no-kiseki',
       },
