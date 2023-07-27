@@ -93,8 +93,8 @@ export const ysSubcategories = [
         href: '/games/ys-online-the-call-of-solum',
       },
       {
-        name: 'Ys vs. Sora no Kiseki: Alternative Saga',
-        href: '/games/ys-vs-sora-no-kiseki-alternative-saga',
+        name: 'Ys vs. Trails in the Sky: Alternative Saga',
+        href: '/games/ys-vs-trails-in-the-sky-alternative-saga',
       },
       {
         name: 'Ys Nexus',

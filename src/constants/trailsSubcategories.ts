@@ -77,8 +77,8 @@ export const trailsSubcategories = [
     name: 'Spin-offs',
     items: [
       {
-        name: 'Ys vs. Sora no Kiseki: Alternative Saga',
-        href: '/games/ys-vs-sora-no-kiseki-alternative-saga',
+        name: 'Ys vs. Trails in the Sky: Alternative Saga',
+        href: '/games/ys-vs-trails-in-the-sky-alternative-saga',
       },
       {
         name: 'The Legend of Nayuta: Boundless Trails',
