@@ -2,6 +2,7 @@
 export * from './contributorPlatforms';
 export * from './exploreMenuItems';
 export * from './otherGamesSubcategories';
+export * from './gagharvStoryTimeline';
 export * from './gamePlatforms';
 export * from './theme';
 export * from './trailsStoryTimeline';

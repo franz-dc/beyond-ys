@@ -12,7 +12,11 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { trailsStoryTimeline, ysStoryTimeline } from '~/constants';
+import {
+  gagharvStoryTimeline,
+  trailsStoryTimeline,
+  ysStoryTimeline,
+} from '~/constants';
 
 import Link from '../Link';
 
@@ -231,6 +235,14 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
       timeline: trailsStoryTimeline,
       timelineUrl: '/trails-timeline',
       resizeStepLabel: true,
+    });
+  }
+
+  if (category === 'Gagharv Trilogy') {
+    return createTimelineComponent({
+      id,
+      timeline: gagharvStoryTimeline,
+      timelineUrl: '/gagharv-timeline',
     });
   }
 
