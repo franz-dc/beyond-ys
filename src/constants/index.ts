@@ -4,7 +4,9 @@ export * from './exploreMenuItems';
 export * from './otherGamesSubcategories';
 export * from './gamePlatforms';
 export * from './theme';
+export * from './trailsStoryTimeline';
 export * from './trailsSubcategories';
+export * from './ysStoryTimeline';
 export * from './ysSubcategories';
 
 // env

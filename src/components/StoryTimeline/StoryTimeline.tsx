@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material';
 
-import { ysStoryTimeline } from '~/constants/ysStoryTimeline';
+import { trailsStoryTimeline, ysStoryTimeline } from '~/constants';
 
 import Link from '../Link';
 
@@ -43,14 +43,26 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
   const theme = useTheme();
   const mdUp = useMediaQuery(theme.breakpoints.up('md'));
 
-  if (category === 'Ys Series') {
-    const gameIndex = ysStoryTimeline.findIndex((game) =>
-      game.ids.includes(id)
-    );
+  const createTimelineComponent = ({
+    id,
+    timeline,
+    timelineUrl,
+    resizeStepLabel,
+  }: {
+    id: string;
+    timeline: {
+      ids: string[];
+      name: string;
+      stepLabel: string;
+    }[];
+    timelineUrl: string;
+    resizeStepLabel?: boolean;
+  }) => {
+    const gameIndex = timeline.findIndex((game) => game.ids.includes(id));
 
     if (gameIndex === -1) return null;
 
-    const timelineLength = ysStoryTimeline.length;
+    const timelineLength = timeline.length;
     const preTimelineLength = gameIndex - 1;
     const postTimelineLength = timelineLength - gameIndex - 2;
     const hasPrevGame = gameIndex > 0;
@@ -59,7 +71,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
     const nextGameHasNextGame = gameIndex < timelineLength - 2;
 
     // only show 3 games on the timeline at a time, including the current game
-    const shortenedTimeline = ysStoryTimeline.slice(
+    const shortenedTimeline = timeline.slice(
       hasPrevGame ? gameIndex - (prevGameHasPrevGame ? 2 : 1) : gameIndex,
       hasNextGame ? gameIndex + (nextGameHasNextGame ? 3 : 2) : gameIndex + 1
     );
@@ -76,7 +88,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
             <Step>
               <StepButton
                 component={Link}
-                href='/ys-timeline'
+                href={timelineUrl}
                 aria-label='previous games'
                 sx={{
                   color: 'text.primary',
@@ -116,6 +128,10 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
                   sx={{
                     '& text': {
                       fontWeight: 'medium',
+                      fontSize:
+                        resizeStepLabel && game.stepLabel.length > 2
+                          ? '0.65rem'
+                          : '0.75rem',
                     },
                   }}
                 >
@@ -143,6 +159,10 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
                     sx={{
                       '& text': {
                         fontWeight: 'medium',
+                        fontSize:
+                          resizeStepLabel && game.stepLabel.length > 2
+                            ? '0.65rem'
+                            : '0.75rem',
                       },
                     }}
                   >
@@ -162,7 +182,7 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
             <Step>
               <StepButton
                 component={Link}
-                href='/ys-timeline'
+                href={timelineUrl}
                 aria-label='future games'
                 sx={{
                   color: 'text.primary',
@@ -195,10 +215,23 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
         </Stepper>
       </StoryTimelineWrapper>
     );
+  };
+
+  if (category === 'Ys Series') {
+    return createTimelineComponent({
+      id,
+      timeline: ysStoryTimeline,
+      timelineUrl: '/ys-timeline',
+    });
   }
 
   if (category === 'Trails Series') {
-    return <StoryTimelineWrapper>UNDER CONSTRUCTION</StoryTimelineWrapper>;
+    return createTimelineComponent({
+      id,
+      timeline: trailsStoryTimeline,
+      timelineUrl: '/trails-timeline',
+      resizeStepLabel: true,
+    });
   }
 
   return null;
