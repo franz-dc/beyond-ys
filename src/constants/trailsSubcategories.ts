@@ -81,6 +81,10 @@ export const trailsSubcategories = [
         href: '/games/ys-vs-trails-in-the-sky-alternative-saga',
       },
       {
+        name: 'The Legend of Heroes: Yume no Kiseki',
+        href: '/games/the-legend-of-heroes-yume-no-kiseki',
+      },
+      {
         name: 'The Legend of Nayuta: Boundless Trails',
         href: '/games/the-legend-of-nayuta-boundless-trails',
       },
