@@ -17,7 +17,11 @@ export const CLOUD_STORAGE_URL =
     : `https://storage.googleapis.com/${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}`;
 
 export const SITE_NAME = 'Beyond Ys';
-export const CATEGORIES_WITH_TIMELINE = ['Ys Series', 'Trails Series'] as const;
+export const CATEGORIES_WITH_TIMELINE = [
+  'Ys Series',
+  'Trails Series',
+  'Gagharv Trilogy',
+] as const;
 
 // alphabetized by language
 export const COUNTRIES = [

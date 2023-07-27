@@ -67,8 +67,8 @@ const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
     if (gameIndex === -1) return null;
 
     const timelineLength = timeline.length;
-    const preTimelineLength = gameIndex - 1;
-    const postTimelineLength = timelineLength - gameIndex - 2;
+    const preTimelineLength = gameIndex - 2;
+    const postTimelineLength = timelineLength - gameIndex - 3;
     const hasPrevGame = gameIndex > 0;
     const prevGameHasPrevGame = gameIndex > 1;
     const hasNextGame = gameIndex < timelineLength - 1;
