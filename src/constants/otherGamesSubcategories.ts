@@ -63,16 +63,16 @@ export const otherGamesSubcategories = [
     name: 'Gagharv Trilogy',
     items: [
       {
-        name: 'Prophecy of the Moonlight Witch',
-        href: '/games/the-legend-of-heroes-iii-prophecy-of-the-moonlight-witch',
+        name: 'White Witch',
+        href: '/games/the-legend-of-heroes-iii-white-witch',
       },
       {
         name: 'A Tear of Vermillion',
         href: '/games/the-legend-of-heroes-iv-a-tear-of-vermillion',
       },
       {
-        name: 'Song of the Ocean',
-        href: '/games/the-legend-of-heroes-v-song-of-the-ocean',
+        name: 'Cagesong of the Ocean',
+        href: '/games/the-legend-of-heroes-v-cagesong-of-the-ocean',
       },
     ],
   },
