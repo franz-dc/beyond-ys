@@ -23,4 +23,5 @@ export const musicSchema = z.object({
 
 export type MusicSchema = z.infer<typeof musicSchema>;
 
+// only used for listing music in edit music page
 export type MusicCacheSchema = Pick<MusicSchema, 'title' | 'albumId'>;

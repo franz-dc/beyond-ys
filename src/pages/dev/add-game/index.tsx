@@ -394,9 +394,11 @@ const AddGame = () => {
         [id]: gameCacheData,
       });
 
+      // update music docs
       formattedSoundtrackIds.forEach((soundtrackId) => {
         batch.update(doc(musicCollection, soundtrackId), {
           dependentGameIds: arrayUnion(id),
+          updatedAt: serverTimestamp(),
         });
       });
 
@@ -405,6 +407,7 @@ const AddGame = () => {
         batch.update(doc(charactersCollection, characterId), {
           gameIds: arrayUnion(id),
           [`cachedGames.${id}`]: gameCacheData,
+          updatedAt: serverTimestamp(),
         });
       });
 

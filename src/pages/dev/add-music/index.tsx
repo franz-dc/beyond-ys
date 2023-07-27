@@ -192,6 +192,7 @@ const AddMusic = () => {
         batch.update(doc(musicAlbumsCollection, albumId), {
           musicIds: arrayUnion(id),
           [`cachedMusic.${id}`]: newData,
+          updatedAt: serverTimestamp(),
         });
       }
 
@@ -209,6 +210,7 @@ const AddMusic = () => {
         batch.update(doc(staffInfosCollection, staffId), {
           musicIds: arrayUnion(id),
           [`cachedMusic.${id}`]: newData,
+          updatedAt: serverTimestamp(),
         });
       });
 

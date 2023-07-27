@@ -342,6 +342,7 @@ const EditGame = () => {
         currentGameData?.characterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             [`cachedGames.${id}`]: newCacheData,
+            updatedAt: serverTimestamp(),
           });
         });
 
@@ -361,6 +362,7 @@ const EditGame = () => {
         removedSoundtrackIds.forEach((soundtrackId) => {
           batch.update(doc(musicCollection, soundtrackId), {
             dependentGameIds: arrayRemove(id),
+            updatedAt: serverTimestamp(),
           });
 
           // remove the soundtrack from the game's cachedSoundtracks
@@ -377,6 +379,7 @@ const EditGame = () => {
         addedSoundtrackIds.forEach((soundtrackId) => {
           batch.update(doc(musicCollection, soundtrackId), {
             dependentGameIds: arrayUnion(id),
+            updatedAt: serverTimestamp(),
           });
         });
 
@@ -421,6 +424,7 @@ const EditGame = () => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayRemove(id),
             [`cachedGames.${id}`]: deleteField(),
+            updatedAt: serverTimestamp(),
           });
 
           // remove the character from the game's cachedCharacters
@@ -445,6 +449,7 @@ const EditGame = () => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayUnion(id),
             [`cachedGames.${id}`]: newGameCacheData,
+            updatedAt: serverTimestamp(),
           });
 
           // add the character to the game's cachedCharacters
@@ -470,6 +475,7 @@ const EditGame = () => {
         retainedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             [`cachedGames.${id}`]: newGameCacheData,
+            updatedAt: serverTimestamp(),
           });
         });
 

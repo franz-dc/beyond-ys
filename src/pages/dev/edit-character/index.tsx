@@ -386,6 +386,7 @@ const EditCharacter = () => {
         currentCharacterData?.gameIds.forEach((gameId) => {
           batch.update(doc(gamesCollection, gameId), {
             [`cachedCharacters.${id}`]: newCharacterCacheData,
+            updatedAt: serverTimestamp(),
           });
         });
       }

@@ -218,6 +218,7 @@ const EditMusic = () => {
         // @ts-ignore firestore types cannot handle nested objects
         batch.update(doc(gamesCollection, gameId), {
           [`cachedSoundtracks.${id}`]: newData,
+          updatedAt: serverTimestamp(),
         });
       });
 
@@ -241,6 +242,7 @@ const EditMusic = () => {
           batch.update(doc(musicAlbumsCollection, currentMusicData.albumId), {
             musicIds: arrayRemove(id),
             [`cachedMusic.${id}`]: deleteField(),
+            updatedAt: serverTimestamp(),
           });
         }
 
@@ -249,6 +251,7 @@ const EditMusic = () => {
           batch.update(doc(musicAlbumsCollection, albumId), {
             musicIds: arrayUnion(id),
             [`cachedMusic.${id}`]: newData,
+            updatedAt: serverTimestamp(),
           });
         }
       } else {
@@ -256,6 +259,7 @@ const EditMusic = () => {
         if (albumId) {
           batch.update(doc(musicAlbumsCollection, albumId), {
             [`cachedMusic.${id}`]: newData,
+            updatedAt: serverTimestamp(),
           });
         }
       }
@@ -273,6 +277,7 @@ const EditMusic = () => {
       staffIds.forEach((staffId) => {
         batch.update(doc(staffInfosCollection, staffId), {
           [`cachedMusic.${id}`]: newData,
+          updatedAt: serverTimestamp(),
         });
       });
 
