@@ -81,12 +81,12 @@ export const otherGamesSubcategories = [
     name: 'Zwei Series',
     items: [
       {
-        name: 'Zwei: The Ilvard Insurrection',
-        href: '/games/zwei-the-ilvard-insurrection',
-      },
-      {
         name: 'Zwei: The Arges Adventure',
         href: '/games/zwei-the-arges-adventure',
+      },
+      {
+        name: 'Zwei: The Ilvard Insurrection',
+        href: '/games/zwei-the-ilvard-insurrection',
       },
     ],
   },
