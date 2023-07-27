@@ -228,6 +228,7 @@ const AlbumInfo = ({
             youtubeId={soundtrack.youtubeId}
             duration={soundtrack.duration}
             trackNumber={idx + 1}
+            albumId={soundtrack.albumId}
             albumName={name}
             albumUrl={`${CLOUD_STORAGE_URL}/album-arts/${id}`}
             onPlay={

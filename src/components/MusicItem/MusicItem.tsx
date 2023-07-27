@@ -11,6 +11,7 @@ import {
 import Image from 'next/image';
 import { MdMusicNote, MdPlayArrow } from 'react-icons/md';
 
+import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { formatSeconds } from '~/utils';
 
@@ -27,6 +28,7 @@ export interface MusicItemProps {
   trackNumber: number;
   youtubeId?: string;
   albumName?: string;
+  albumId?: string;
   albumUrl?: string;
   // we are not manipulating nowPlaying state in this component
   // because we don't know the playlist surrounding this item
@@ -41,6 +43,7 @@ const MusicItem: FC<MusicItemProps> = ({
   duration,
   trackNumber,
   albumName: initialAlbumName,
+  albumId,
   albumUrl,
   youtubeId,
   onPlay,
@@ -130,6 +133,7 @@ const MusicItem: FC<MusicItemProps> = ({
               minWidth: 42,
               minHeight: 42,
               borderRadius: 1,
+              overflow: 'hidden',
             }}
           >
             <Box
@@ -151,7 +155,6 @@ const MusicItem: FC<MusicItemProps> = ({
                 width={42}
                 height={42}
                 style={{
-                  borderRadius: 4,
                   width: 42,
                   height: 42,
                   objectFit: 'cover',
@@ -160,6 +163,23 @@ const MusicItem: FC<MusicItemProps> = ({
                   color: 'transparent',
                 }}
                 unoptimized
+              />
+            )}
+            {albumId && (
+              <ButtonBase
+                component={Link}
+                href={`/music/${albumId.replace(
+                  `${CLOUD_STORAGE_URL}/album-arts`,
+                  ''
+                )}`}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                }}
+                aria-label={albumName}
               />
             )}
           </Box>

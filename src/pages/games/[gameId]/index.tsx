@@ -519,6 +519,7 @@ const GamePage = ({
                 youtubeId={soundtrack.youtubeId}
                 duration={soundtrack.duration}
                 trackNumber={idx + 1}
+                albumId={soundtrack.albumId}
                 albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                 albumUrl={
                   soundtrack.albumId &&
@@ -574,6 +575,7 @@ const GamePage = ({
                       youtubeId={soundtrack.youtubeId}
                       duration={soundtrack.duration}
                       trackNumber={idx + 11}
+                      albumId={soundtrack.albumId}
                       albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                       albumUrl={
                         soundtrack.albumId &&
