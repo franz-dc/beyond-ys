@@ -129,6 +129,7 @@ const EditStaff = () => {
       descriptionSourceUrl: '',
       roles: [],
       games: [],
+      hasAvatar: false,
     },
     resolver: zodResolver(schema),
   });
@@ -175,7 +176,7 @@ const EditStaff = () => {
       const staffInfo = staffInfoSnap.data();
 
       if (staffInfo) {
-        const { cachedMusic, updatedAt, roles, ...rest } = staffInfo;
+        const { musicIds, cachedMusic, updatedAt, roles, ...rest } = staffInfo;
 
         setCurrentStaffData(staffInfo);
         reset({
@@ -206,6 +207,7 @@ const EditStaff = () => {
           descriptionSourceUrl: '',
           roles: [],
           games: [],
+          hasAvatar: false,
         });
         setLastStaffId(id);
       }
