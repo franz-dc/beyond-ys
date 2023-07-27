@@ -40,11 +40,15 @@ const MusicItem: FC<MusicItemProps> = ({
   artists,
   duration,
   trackNumber,
-  albumName = 'Unknown album',
+  albumName: initialAlbumName,
   albumUrl,
   youtubeId,
   onPlay,
 }) => {
+  const albumName = albumUrl
+    ? initialAlbumName || 'Unknown album'
+    : initialAlbumName || 'No album';
+
   const { nowPlaying } = useMusicPlayer();
 
   const [isHovered, setIsHovered] = useState(false);
@@ -117,7 +121,7 @@ const MusicItem: FC<MusicItemProps> = ({
           }}
         >
           <Box
-            title={albumUrl ? albumName : 'No album'}
+            title={albumName}
             className='default-bg'
             sx={{
               position: 'relative',
