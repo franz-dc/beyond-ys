@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import { GetServerSideProps } from 'next';
+import { MdCircle } from 'react-icons/md';
 
 import {
   CharacterItem,
@@ -95,6 +96,7 @@ const GamePage = ({
   id,
   name,
   category,
+  subcategory,
   // platforms,
   // releaseDate: releaseDateRaw,
   description = 'No description available.',
@@ -323,6 +325,21 @@ const GamePage = ({
               </Typography>
               <Typography fontSize={18} color='text.secondary' mb={2}>
                 {category}
+                {subcategory && (
+                  <>
+                    <MdCircle
+                      style={{
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        marginBottom: 2,
+                        marginLeft: '0.5rem',
+                        marginRight: '0.5rem',
+                        fontSize: '0.35rem',
+                      }}
+                    />
+                    {subcategory}
+                  </>
+                )}
               </Typography>
               {/* <Stack
                 direction='row'
