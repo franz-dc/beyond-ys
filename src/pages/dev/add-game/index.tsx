@@ -317,18 +317,35 @@ const AddGame = () => {
       const cachedSoundtracks: Record<string, MusicSchema> = {};
 
       if (formattedSoundtrackIds.length > 0) {
-        const newSoundtracksQuery = query(
-          musicCollection,
-          where(documentId(), 'in', formattedSoundtrackIds)
+        // split the formattedSoundtrackIds into chunks of 30
+        // due to 'in' query limit
+        const formattedSoundtrackIdsChunks = formattedSoundtrackIds.reduce(
+          (acc, curr) => {
+            const last = acc[acc.length - 1];
+            if (last.length < 30) {
+              last.push(curr);
+            } else {
+              acc.push([curr]);
+            }
+            return acc;
+          },
+          [[]] as string[][]
         );
-        const newSoundtracksQuerySnap = await getDocs(newSoundtracksQuery);
 
-        newSoundtracksQuerySnap.forEach((docSnap) => {
-          if (!docSnap.exists()) return;
-          cachedSoundtracks[docSnap.id] = {
-            ...docSnap.data(),
-            dependentGameIds: [...docSnap.data().dependentGameIds, id],
-          };
+        const newSoundtracksQuerySnap = await Promise.all(
+          formattedSoundtrackIdsChunks.map((chunk) =>
+            getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
+          )
+        );
+
+        newSoundtracksQuerySnap.forEach((querySnap) => {
+          querySnap.forEach((docSnap) => {
+            if (!docSnap.exists()) return;
+            cachedSoundtracks[docSnap.id] = {
+              ...docSnap.data(),
+              dependentGameIds: [...docSnap.data().dependentGameIds, id],
+            };
+          });
         });
       }
 
