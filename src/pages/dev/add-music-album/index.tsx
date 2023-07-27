@@ -2,7 +2,14 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
-import { Box, Button, Paper, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { format } from 'date-fns';
 import {
   doc,
@@ -26,6 +33,7 @@ import {
   useForm,
 } from 'react-hook-form-mui';
 import slugify from 'slugify';
+import { useDebouncedCallback } from 'use-debounce';
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout, SwitchElement } from '~/components';
@@ -213,15 +221,47 @@ const AddMusicAlbum = () => {
       const cachedMusic: Record<string, MusicSchema> = {};
 
       if (formattedMusicIds.length > 0) {
-        const newMusicQuery = query(
-          musicCollection,
-          where(documentId(), 'in', formattedMusicIds)
+        // split the addedSoundtrackIds into chunks of 30
+        // due to 'in' query limit
+        const formattedMusicIdsChunks = formattedMusicIds.reduce(
+          (acc, curr) => {
+            const last = acc[acc.length - 1];
+            if (last.length < 30) {
+              last.push(curr);
+            } else {
+              acc.push([curr]);
+            }
+            return acc;
+          },
+          [[]] as string[][]
         );
-        const newMusicQuerySnap = await getDocs(newMusicQuery);
 
-        newMusicQuerySnap.forEach((doc) => {
-          if (!doc.exists()) return;
-          cachedMusic[doc.id] = doc.data();
+        const newMusicQuerySnap = await Promise.all(
+          formattedMusicIdsChunks.map((chunk) =>
+            getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
+          )
+        );
+
+        newMusicQuerySnap.forEach((snap) => {
+          snap.forEach((doc) => {
+            if (!doc.exists()) return;
+            cachedMusic[doc.id] = doc.data();
+          });
+        });
+
+        // update the music docs
+        formattedMusicIds.forEach((musicId) => {
+          batch.update(doc(musicCollection, musicId), {
+            albumId: id,
+            updatedAt: serverTimestamp(),
+          });
+        });
+
+        // update the music cache
+        batch.update(doc(cacheCollection, 'music'), {
+          ...Object.fromEntries(
+            formattedMusicIds.map((musicId) => [`${musicId}.albumId`, id])
+          ),
         });
       }
 
@@ -288,6 +328,21 @@ const AddMusicAlbum = () => {
   const customSlug = watch('customSlug');
   const albumArt = watch('albumArt');
 
+  const debounceName = useDebouncedCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue('name', e.target.value);
+      if (customSlug) return;
+      const name = e.target.value;
+      const id = slugify(name, {
+        lower: true,
+        remove: /[*+~.,()'"!:@/]/g,
+      });
+
+      setValue('id', id, { shouldValidate: true });
+    },
+    500
+  );
+
   return (
     <MainLayout title='Add Music Album'>
       <GenericHeader title='Add Music Album' gutterBottom />
@@ -329,22 +384,13 @@ const AddMusicAlbum = () => {
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>
           <Typography variant='h2'>General Info</Typography>
-          <TextFieldElement
-            name='name'
+          <TextField
             label='Name'
             required
             fullWidth
             margin='normal'
-            onChange={(e) => {
-              if (customSlug) return;
-              const name = e.target.value;
-              const id = slugify(name, {
-                lower: true,
-                remove: /[*+~.,()'"!:@/]/g,
-              });
-
-              setValue('id', id, { shouldValidate: true });
-            }}
+            {...register('name')}
+            onChange={debounceName}
           />
         </Paper>
         <Paper sx={{ px: 3, py: 2, mb: 2 }}>

@@ -371,19 +371,36 @@ const EditMusicAlbum = () => {
           });
         });
 
-        // add new music to music album doc's cachedMusic
-        const newMusicQuery = query(
-          musicCollection,
-          where(documentId(), 'in', addedMusicIds)
+        // split the addedSoundtrackIds into chunks of 30
+        // due to 'in' query limit
+        const addedMusicIdsChunks = addedMusicIds.reduce(
+          (acc, curr) => {
+            const last = acc[acc.length - 1];
+            if (last.length < 30) {
+              last.push(curr);
+            } else {
+              acc.push([curr]);
+            }
+            return acc;
+          },
+          [[]] as string[][]
         );
-        const newMusicQuerySnap = await getDocs(newMusicQuery);
 
-        newMusicQuerySnap.forEach((doc) => {
-          if (!doc.exists()) return;
-          cachedMusic[doc.id] = {
-            ...doc.data(),
-            albumId,
-          };
+        // add new music to music album doc's cachedMusic
+        const newMusicQuerySnap = await Promise.all(
+          addedMusicIdsChunks.map((chunk) =>
+            getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
+          )
+        );
+
+        newMusicQuerySnap.forEach((snap) => {
+          snap.forEach((doc) => {
+            if (!doc.exists()) return;
+            cachedMusic[doc.id] = {
+              ...doc.data(),
+              albumId,
+            };
+          });
         });
       }
 
