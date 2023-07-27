@@ -16,6 +16,7 @@ import { MdCircle } from 'react-icons/md';
 
 import {
   CharacterItem,
+  Link,
   MainLayout,
   MusicItem,
   StoryTimeline,
@@ -100,6 +101,8 @@ const GamePage = ({
   // platforms,
   // releaseDate: releaseDateRaw,
   description = 'No description available.',
+  descriptionSourceName,
+  descriptionSourceUrl,
   characterIds,
   characterSpoilerIds,
   cachedCharacters,
@@ -399,6 +402,28 @@ const GamePage = ({
               >
                 {description}
               </Typography>
+              {descriptionSourceName && (
+                <Typography color='text.secondary' sx={{ mt: 2 }}>
+                  Source:{' '}
+                  {descriptionSourceUrl ? (
+                    <Link
+                      href={descriptionSourceUrl}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      sx={{
+                        color: 'text.secondary',
+                        '&:hover, &:focus': {
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {descriptionSourceName}
+                    </Link>
+                  ) : (
+                    descriptionSourceName
+                  )}
+                </Typography>
+              )}
             </Box>
           </Grid>
         </Grid>
