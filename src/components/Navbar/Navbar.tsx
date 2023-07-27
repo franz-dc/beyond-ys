@@ -276,8 +276,6 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    // triggering isSignedIn state on click due to SSR
-    setIsSignedIn(typeof window !== 'undefined' && !!auth.currentUser);
     setAnchorEl(e.currentTarget);
   };
   const handleClose = () => setAnchorEl(null);
@@ -343,6 +341,7 @@ const Navbar = () => {
   useEffect(() => {
     return auth.onAuthStateChanged(async (user) => {
       if (user) {
+        setIsSignedIn(true);
         setPhotoURL(user.photoURL || undefined);
         setDisplayName(user.displayName || 'Unknown User');
         const tokenRes = await user.getIdTokenResult();
@@ -352,6 +351,7 @@ const Navbar = () => {
           setUserRole(USER_ROLES[role] || role);
         }
       } else {
+        setIsSignedIn(false);
         setPhotoURL(undefined);
         setDisplayName('Unknown User');
         setUserRole('Contributor');
