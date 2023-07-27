@@ -253,7 +253,6 @@ const GamePage = ({
         >
           <Grid item xs={12} sm='auto'>
             <Box
-              className='paper-bg'
               sx={{
                 mx: {
                   xs: 'auto',
@@ -269,38 +268,46 @@ const GamePage = ({
                 borderRadius: 2,
               }}
             >
-              {hasCoverImage && (
-                <>
+              <Box
+                className='default-bg'
+                sx={{
+                  position: 'absolute',
+                  display: 'block',
+                  top: -8,
+                  left: -8,
+                  right: -8,
+                  bottom: -8,
+                  borderRadius: 3,
+                }}
+              >
+                {hasCoverImage ? (
                   <Box
-                    className='default-bg'
+                    component='img'
+                    src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
+                    alt='game cover'
                     sx={{
-                      position: 'absolute',
                       display: 'block',
-                      top: -8,
-                      left: -8,
-                      right: -8,
-                      bottom: -8,
-                      borderRadius: 3,
+                      width: 'calc(100% - 16px)',
+                      height: 'calc(100% - 16px)',
+                      m: 1,
+                      objectFit: 'cover',
+                      borderRadius: 2,
+                      zIndex: 1,
                     }}
-                  >
-                    <Box
-                      component='img'
-                      src={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
-                      alt='game cover'
-                      sx={{
-                        display: 'block',
-                        width: 'calc(100% - 16px)',
-                        height: 'calc(100% - 16px)',
-                        m: 1,
-                        objectFit: 'cover',
-                        borderRadius: 2,
-                        zIndex: 1,
-                      }}
-                      key={id}
-                    />
-                  </Box>
-                </>
-              )}
+                    key={id}
+                  />
+                ) : (
+                  <Box
+                    className='paper-bg'
+                    sx={{
+                      width: 'calc(100% - 16px)',
+                      height: 'calc(100% - 16px)',
+                      m: 1,
+                      borderRadius: 2,
+                    }}
+                  />
+                )}
+              </Box>
             </Box>
           </Grid>
           <Grid item xs={12} sm>
