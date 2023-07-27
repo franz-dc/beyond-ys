@@ -348,7 +348,8 @@ const StaffInfo = ({
                 trackNumber={idx + 1}
                 albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                 albumUrl={
-                  soundtrack.albumId
+                  soundtrack.albumId &&
+                  cachedMusicAlbums[soundtrack.albumId]?.hasAlbumArt
                     ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
                     : undefined
                 }
@@ -362,9 +363,11 @@ const StaffInfo = ({
                           artists: soundtrack.artists,
                           albumName:
                             cachedMusicAlbums[soundtrack.albumId]?.name,
-                          albumUrl: soundtrack.albumId
-                            ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
-                            : undefined,
+                          albumUrl:
+                            soundtrack.albumId &&
+                            cachedMusicAlbums[soundtrack.albumId]?.hasAlbumArt
+                              ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                              : undefined,
                         });
                         setQueue(
                           formattedSoundtracks.map((s) => ({
@@ -374,9 +377,11 @@ const StaffInfo = ({
                             artists: s.artists,
                             albumName:
                               cachedMusicAlbums[soundtrack.albumId]?.name,
-                            albumUrl: soundtrack.albumId
-                              ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
-                              : undefined,
+                            albumUrl:
+                              soundtrack.albumId &&
+                              cachedMusicAlbums[soundtrack.albumId]?.hasAlbumArt
+                                ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                                : undefined,
                           }))
                         );
                       }
@@ -398,7 +403,8 @@ const StaffInfo = ({
                       trackNumber={idx + 11}
                       albumName={cachedMusicAlbums[soundtrack.albumId]?.name}
                       albumUrl={
-                        soundtrack.albumId
+                        soundtrack.albumId &&
+                        cachedMusicAlbums[soundtrack.albumId]?.hasAlbumArt
                           ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
                           : undefined
                       }
@@ -412,9 +418,12 @@ const StaffInfo = ({
                                 artists: soundtrack.artists,
                                 albumName:
                                   cachedMusicAlbums[soundtrack.albumId]?.name,
-                                albumUrl: soundtrack.albumId
-                                  ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
-                                  : undefined,
+                                albumUrl:
+                                  soundtrack.albumId &&
+                                  cachedMusicAlbums[soundtrack.albumId]
+                                    ?.hasAlbumArt
+                                    ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                                    : undefined,
                               });
                               setQueue(
                                 formattedSoundtracks.map((s) => ({
@@ -424,9 +433,12 @@ const StaffInfo = ({
                                   artists: s.artists,
                                   albumName:
                                     cachedMusicAlbums[soundtrack.albumId]?.name,
-                                  albumUrl: soundtrack.albumId
-                                    ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
-                                    : undefined,
+                                  albumUrl:
+                                    soundtrack.albumId &&
+                                    cachedMusicAlbums[soundtrack.albumId]
+                                      ?.hasAlbumArt
+                                      ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                                      : undefined,
                                 }))
                               );
                             }
