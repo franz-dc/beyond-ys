@@ -479,6 +479,7 @@ const EditGame = () => {
             name,
             category,
             releaseDate: formattedReleaseDate,
+            hasCoverImage: newHasCoverImage,
           },
         });
       }
