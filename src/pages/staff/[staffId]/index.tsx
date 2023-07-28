@@ -289,7 +289,7 @@ const StaffInfo = ({
       {games.length > 0 && (
         <Box component='section' sx={{ mb: 4 }}>
           <Typography component='h2' variant='h2' gutterBottom>
-            Involvements
+            Game Involvements
           </Typography>
           <Stack spacing={1}>
             {games.map((game, idx) => (

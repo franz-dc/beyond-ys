@@ -411,7 +411,7 @@ const EditStaff = () => {
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2' sx={{ mb: 2 }}>
-                Involvements
+                Game Involvements
               </Typography>
               {games.map((game, idx) => (
                 <Box
