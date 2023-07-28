@@ -83,7 +83,7 @@ const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
             backdropFilter: 'blur(4px)',
             opacity: {
               xs: 1,
-              md: 0,
+              md: hasCoverImage ? 0 : 1,
             },
             transition: 'opacity 0.1s ease-in-out',
           }}
