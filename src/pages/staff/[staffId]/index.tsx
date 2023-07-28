@@ -149,6 +149,8 @@ const StaffInfo = ({
     })
     .filter((s): s is Exclude<typeof s, null> => !!s);
 
+  const [isGameInvolvementsExpanded, setIsGameInvolvementsExpanded] =
+    useState(false);
   const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
 
   // NextJS keeps the states on page change, so we need to reset it
@@ -292,7 +294,7 @@ const StaffInfo = ({
             Game Involvements
           </Typography>
           <Stack spacing={1}>
-            {games.map((game, idx) => (
+            {games.slice(0, 10).map((game, idx) => (
               <Paper
                 key={game.gameId}
                 sx={{
@@ -329,6 +331,63 @@ const StaffInfo = ({
               </Paper>
             ))}
           </Stack>
+          {games.length > 10 && (
+            <>
+              <Collapse in={isGameInvolvementsExpanded}>
+                <Stack spacing={1} sx={{ mt: 1 }}>
+                  {games.slice(10).map((game, idx) => (
+                    <Paper
+                      key={game.gameId}
+                      sx={{
+                        px: 2,
+                        py: 1.5,
+                      }}
+                    >
+                      <Stack direction='row' spacing={2}>
+                        <Box
+                          sx={{
+                            width: 32,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'text.secondary',
+                          }}
+                        >
+                          {idx + 1}
+                        </Box>
+                        <Box sx={{ width: '100%' }}>
+                          <Typography sx={{ fontWeight: 'medium' }}>
+                            {cachedGames[game.gameId]?.name || 'Unknown game'}
+                          </Typography>
+                          <Typography
+                            sx={{
+                              fontSize: 14,
+                              color: 'text.secondary',
+                            }}
+                          >
+                            {game.roles.join(', ') || 'Unknown role'}
+                          </Typography>
+                        </Box>
+                      </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              </Collapse>
+              <ButtonBase
+                onClick={() => {
+                  setIsGameInvolvementsExpanded((prev) => !prev);
+                }}
+                focusRipple
+                sx={{ mt: 1 }}
+              >
+                <Typography color='text.secondary' fontSize={14}>
+                  {isGameInvolvementsExpanded
+                    ? 'Show less'
+                    : `Show all (+${games.length - 10})`}
+                </Typography>
+              </ButtonBase>
+            </>
+          )}
         </Box>
       )}
       {formattedSoundtracks.length > 0 && (
