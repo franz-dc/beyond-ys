@@ -11,7 +11,6 @@ import {
 import Image from 'next/image';
 import { MdMusicNote, MdPlayArrow } from 'react-icons/md';
 
-import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { formatSeconds } from '~/utils';
 
@@ -168,10 +167,7 @@ const MusicItem: FC<MusicItemProps> = ({
             {albumId && (
               <ButtonBase
                 component={Link}
-                href={`/music/${albumId.replace(
-                  `${CLOUD_STORAGE_URL}/album-arts`,
-                  ''
-                )}`}
+                href={`/music/${albumId}`}
                 sx={{
                   position: 'absolute',
                   top: 0,
