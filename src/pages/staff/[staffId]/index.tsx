@@ -100,6 +100,15 @@ const StaffInfo = ({
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
+  const albumReleaseDateHash = Object.entries(cachedMusicAlbums).reduce<
+    Record<string, string>
+  >((acc, [albumId, album]) => {
+    if (album.releaseDate) {
+      acc[albumId] = album.releaseDate as string;
+    }
+    return acc;
+  }, {});
+
   const formattedSoundtracks = musicIds
     .map((soundtrackId) => {
       const soundtrack = cachedMusic[soundtrackId];
@@ -147,7 +156,22 @@ const StaffInfo = ({
         ].filter((a): a is Exclude<typeof a, null> => !!a),
       };
     })
-    .filter((s): s is Exclude<typeof s, null> => !!s);
+    .filter((s): s is Exclude<typeof s, null> => !!s)
+    // sort by release date (descending), no release date at the end
+    .sort((a, b) => {
+      const aReleaseDate = albumReleaseDateHash[a.albumId];
+      const bReleaseDate = albumReleaseDateHash[b.albumId];
+
+      if (aReleaseDate && bReleaseDate) {
+        return bReleaseDate.localeCompare(aReleaseDate);
+      } else if (aReleaseDate) {
+        return -1;
+      } else if (bReleaseDate) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
   const [isGameInvolvementsExpanded, setIsGameInvolvementsExpanded] =
     useState(false);
