@@ -52,12 +52,12 @@ const convertTimestamps = (data: Record<string, any>) => {
 };
 
 /**
- * Seed Firestore database with data from `./dbData.ts` as source.
+ * Seed Firestore and Storage with a portion of actual data.
  *
  * Run with `npm run seed` or `yarn seed`.
  */
 const seed = async () => {
-  // Firestore
+  // Firestore (_firestoreData)
   const collections = [
     'cache',
     'characters',
@@ -99,7 +99,7 @@ const seed = async () => {
     `Firestore seeding done (${currentBatchIndex * 500 + currentOpCount} docs).`
   );
 
-  // Storage
+  // Storage (_storageDataFiles + _storageData)
   console.log('Seeding storage...');
   const storageDataEntries = Object.entries(storageDataFiles);
 
