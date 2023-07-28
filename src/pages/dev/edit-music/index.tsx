@@ -323,21 +323,16 @@ const EditMusic = () => {
           ({ value }, index) => value === originalComposers[index]
         );
 
-      composers.forEach(({ value }) => {
-        const originalComposer = currentMusicData?.composerIds.find(
-          (id) => id === value
-        );
+      if (composersOrderChanged) {
+        composers.forEach(({ value }) => {
+          if (!originalComposers.includes(value)) return;
 
-        if (!originalComposer) return;
-
-        // update if the order has changed
-        if (composersOrderChanged) {
           batch.update(doc(staffInfosCollection, value), {
             [`cachedMusic.${id}`]: newData,
             updatedAt: serverTimestamp(),
           });
-        }
-      });
+        });
+      }
 
       // 4. updated staff (retained arrangers)
       const originalArrangers = currentMusicData?.arrangerIds || [];
@@ -348,47 +343,43 @@ const EditMusic = () => {
           ({ value }, index) => value === originalArrangers[index]
         );
 
-      arrangers.forEach(({ value }) => {
-        const originalArranger = currentMusicData?.arrangerIds.find(
-          (id) => id === value
-        );
+      if (arrangersOrderChanged) {
+        arrangers.forEach(({ value }) => {
+          if (!originalArrangers.includes(value)) return;
 
-        if (!originalArranger) return;
-
-        // update if the order has changed
-        if (arrangersOrderChanged) {
           batch.update(doc(staffInfosCollection, value), {
             [`cachedMusic.${id}`]: newData,
             updatedAt: serverTimestamp(),
           });
-        }
-      });
+        });
+      }
 
-      // 5. updated staff (other artists)
+      // 5. updated staff (retained other artists)
       const originalOtherArtists = currentMusicData?.otherArtists || [];
 
-      const otherArtistsOrderChanged =
+      const otherArtistsChanged =
         otherArtists.length !== originalOtherArtists.length ||
         !otherArtists.every(
-          ({ staffId }, index) =>
-            staffId === originalOtherArtists[index].staffId
+          ({ staffId, role }, index) =>
+            staffId === originalOtherArtists[index].staffId &&
+            role === originalOtherArtists[index].role
         );
 
-      otherArtists.forEach(({ staffId, role }) => {
-        const originalOtherArtist = currentMusicData?.otherArtists.find(
-          ({ staffId: originalStaffId }) => originalStaffId === staffId
-        );
+      if (otherArtistsChanged) {
+        otherArtists.forEach(({ staffId }) => {
+          if (
+            !currentMusicData?.otherArtists.some(
+              ({ staffId: originalStaffId }) => originalStaffId === staffId
+            )
+          )
+            return;
 
-        if (!originalOtherArtist) return;
-
-        // update if the role has changed or order has changed
-        if (otherArtistsOrderChanged || originalOtherArtist.role !== role) {
           batch.update(doc(staffInfosCollection, staffId), {
             [`cachedMusic.${id}`]: newData,
             updatedAt: serverTimestamp(),
           });
-        }
-      });
+        });
+      }
 
       await batch.commit();
 
