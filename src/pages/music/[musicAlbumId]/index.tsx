@@ -125,8 +125,8 @@ const AlbumInfo = ({
       <Box
         sx={{
           mt: {
-            xs: '-100px',
-            sm: '-60px',
+            xs: '-120px',
+            sm: '-80px',
           },
           mx: {
             xs: 2,
@@ -152,7 +152,7 @@ const AlbumInfo = ({
                   sm: 'flex-start',
                 },
                 mt: {
-                  xs: '20px',
+                  xs: '40px',
                   sm: 0,
                 },
               }}
@@ -163,11 +163,11 @@ const AlbumInfo = ({
                   position: 'absolute',
                   top: 0,
                   left: {
-                    xs: 'calc(50% - 64px)',
+                    xs: 'calc(50% - 80px)',
                     sm: 0,
                   },
-                  width: 128,
-                  height: 128,
+                  width: 160,
+                  height: 160,
                   borderRadius: 3,
                 }}
               />
@@ -177,8 +177,8 @@ const AlbumInfo = ({
                   src={`${CLOUD_STORAGE_URL}/album-arts/${id}`}
                   sx={{
                     position: 'relative',
-                    width: 112, // 128 - 16
-                    height: 112,
+                    width: 144, // 160 - 16
+                    height: 144,
                     m: 1,
                     borderRadius: 2,
                     objectFit: 'cover',
@@ -190,8 +190,8 @@ const AlbumInfo = ({
                   sx={{
                     position: 'relative',
                     display: 'flex',
-                    width: 112, // 128 - 16
-                    height: 112,
+                    width: 144, // 160 - 16
+                    height: 144,
                     m: 1,
                     borderRadius: 2,
                   }}
@@ -213,8 +213,8 @@ const AlbumInfo = ({
             <Box
               sx={{
                 mt: {
-                  xs: '0px',
-                  sm: '56px',
+                  xs: '8px',
+                  sm: '76px',
                 },
                 textAlign: {
                   xs: 'center',
