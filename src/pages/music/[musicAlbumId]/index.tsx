@@ -1,6 +1,7 @@
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import { GetServerSideProps } from 'next';
+import { MdAlbum } from 'react-icons/md';
 
 import { MainLayout, MusicItem } from '~/components';
 import { cacheCollection, musicAlbumsCollection } from '~/configs';
@@ -8,7 +9,6 @@ import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { MusicAlbumSchema, StaffInfoCacheSchema } from '~/schemas';
 import { formatReleaseDate } from '~/utils';
-
 interface Props {
   id: string;
   musicAlbum: MusicAlbumSchema;
@@ -53,7 +53,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 
 const AlbumInfo = ({
   id,
-  musicAlbum: { name, releaseDate, musicIds, cachedMusic },
+  musicAlbum: { name, releaseDate, musicIds, cachedMusic, hasAlbumArt },
   staffInfo,
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
@@ -160,8 +160,6 @@ const AlbumInfo = ({
               <Box
                 className='default-bg'
                 sx={{
-                  content: '""',
-                  display: 'block',
                   position: 'absolute',
                   top: 0,
                   left: {
@@ -173,18 +171,42 @@ const AlbumInfo = ({
                   borderRadius: 3,
                 }}
               />
-              <Box
-                component='img'
-                src={`${CLOUD_STORAGE_URL}/album-arts/${id}`}
-                sx={{
-                  position: 'relative',
-                  width: 112, // 128 - 16
-                  height: 112,
-                  m: 1,
-                  borderRadius: 2,
-                  objectFit: 'cover',
-                }}
-              />
+              {hasAlbumArt ? (
+                <Box
+                  component='img'
+                  src={`${CLOUD_STORAGE_URL}/album-arts/${id}`}
+                  sx={{
+                    position: 'relative',
+                    width: 112, // 128 - 16
+                    height: 112,
+                    m: 1,
+                    borderRadius: 2,
+                    objectFit: 'cover',
+                  }}
+                />
+              ) : (
+                <Box
+                  className='paper-bg'
+                  sx={{
+                    position: 'relative',
+                    display: 'flex',
+                    width: 112, // 128 - 16
+                    height: 112,
+                    m: 1,
+                    borderRadius: 2,
+                  }}
+                >
+                  <Box
+                    component={MdAlbum}
+                    sx={{
+                      width: 'calc(100% - 1.5rem)',
+                      height: 'calc(100% - 1.5rem)',
+                      m: 'auto',
+                      color: 'divider',
+                    }}
+                  />
+                </Box>
+              )}
             </Box>
           </Grid>
           <Grid item xs={12} sm>
