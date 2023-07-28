@@ -381,9 +381,9 @@ const AddStaff = () => {
                   name={`games.${idx}.gameId`}
                   label={`Game ${idx + 1}`}
                   options={Object.entries(cachedGames)
-                    .map(([id, { name: label }]) => ({
+                    .map(([id, { name, releaseDate }]) => ({
                       id,
-                      label,
+                      label: releaseDate ? `${name} (${releaseDate})` : name,
                     }))
                     .filter(
                       ({ id }) =>
