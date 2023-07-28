@@ -704,6 +704,8 @@ export const COMPOSER_TIMELINE: TComposerTimeline = {
     'dragon-slayer-vi-the-legend-of-heroes': 'composer',
     'ys-iii-wanderers-from-ys-x68000-ver': 'composer',
     dinosaur: 'composer',
+    'dragon-slayer-viii-lord-monarch': 'composer',
+    brandish: 'composer',
     'advanced-lord-monarch': 'composer',
     'popful-mail-pc-88-ver': 'composer',
     'dragon-slayer-the-legend-of-heroes-ii': 'composer',
