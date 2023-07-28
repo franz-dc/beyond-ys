@@ -629,6 +629,7 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           >
             <Stack direction='row' spacing={2} sx={{ overflow: 'hidden' }}>
               <Box
+                key={albumUrl || 'no-album'}
                 title={albumName || 'No album'}
                 className='default-bg'
                 sx={{
