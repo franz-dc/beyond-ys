@@ -100,6 +100,12 @@ const EditMusic = () => {
     return () => unsubscribe();
   }, []);
 
+  const [lastMusicId, setLastMusicId] = useState<string | null>(null);
+  const [isLoadingMusic, setIsLoadingMusic] = useState(false);
+  const [currentMusicData, setCurrentMusicData] = useState<MusicSchema | null>(
+    null
+  );
+
   const schema = musicSchema
     .omit({
       updatedAt: true,
@@ -308,6 +314,33 @@ const EditMusic = () => {
         });
       });
 
+      // 3. updated staff (other artists)
+      const originalOtherArtists = currentMusicData?.otherArtists || [];
+
+      const otherArtistsOrderChanged =
+        otherArtists.length !== originalOtherArtists.length ||
+        !otherArtists.every(
+          ({ staffId }, index) =>
+            staffId === originalOtherArtists[index].staffId
+        );
+
+      otherArtists.forEach(({ staffId, role }) => {
+        const originalOtherArtist = currentMusicData?.otherArtists.find(
+          ({ staffId: originalStaffId }) => originalStaffId === staffId
+        );
+
+        if (!originalOtherArtist) return;
+
+        // update if the role has changed or order has changed
+        // TODO
+        if (otherArtistsOrderChanged || originalOtherArtist.role !== role) {
+          batch.update(doc(staffInfosCollection, staffId), {
+            [`cachedMusic.${id}`]: newData,
+            updatedAt: serverTimestamp(),
+          });
+        }
+      });
+
       await batch.commit();
 
       setCurrentMusicData((prev) => {
@@ -324,12 +357,6 @@ const EditMusic = () => {
       console.error(err);
     }
   };
-
-  const [lastMusicId, setLastMusicId] = useState<string | null>(null);
-  const [isLoadingMusic, setIsLoadingMusic] = useState(false);
-  const [currentMusicData, setCurrentMusicData] = useState<MusicSchema | null>(
-    null
-  );
 
   const changeMusic = async (id: string) => {
     try {
