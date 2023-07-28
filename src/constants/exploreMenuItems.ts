@@ -4,6 +4,10 @@ export const exploreMenuItems = [
     name: 'Explore',
     items: [
       {
+        name: 'Games',
+        href: '/games',
+      },
+      {
         name: 'Characters',
         href: '/characters',
       },
