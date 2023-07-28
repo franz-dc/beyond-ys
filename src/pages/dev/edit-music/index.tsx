@@ -314,7 +314,57 @@ const EditMusic = () => {
         });
       });
 
-      // 3. updated staff (other artists)
+      // 3. updated staff (retained composers)
+      const originalComposers = currentMusicData?.composerIds || [];
+
+      const composersOrderChanged =
+        composers.length !== originalComposers.length ||
+        !composers.every(
+          ({ value }, index) => value === originalComposers[index]
+        );
+
+      composers.forEach(({ value }) => {
+        const originalComposer = currentMusicData?.composerIds.find(
+          (id) => id === value
+        );
+
+        if (!originalComposer) return;
+
+        // update if the order has changed
+        if (composersOrderChanged) {
+          batch.update(doc(staffInfosCollection, value), {
+            [`cachedMusic.${id}`]: newData,
+            updatedAt: serverTimestamp(),
+          });
+        }
+      });
+
+      // 4. updated staff (retained arrangers)
+      const originalArrangers = currentMusicData?.arrangerIds || [];
+
+      const arrangersOrderChanged =
+        arrangers.length !== originalArrangers.length ||
+        !arrangers.every(
+          ({ value }, index) => value === originalArrangers[index]
+        );
+
+      arrangers.forEach(({ value }) => {
+        const originalArranger = currentMusicData?.arrangerIds.find(
+          (id) => id === value
+        );
+
+        if (!originalArranger) return;
+
+        // update if the order has changed
+        if (arrangersOrderChanged) {
+          batch.update(doc(staffInfosCollection, value), {
+            [`cachedMusic.${id}`]: newData,
+            updatedAt: serverTimestamp(),
+          });
+        }
+      });
+
+      // 5. updated staff (other artists)
       const originalOtherArtists = currentMusicData?.otherArtists || [];
 
       const otherArtistsOrderChanged =
@@ -332,7 +382,6 @@ const EditMusic = () => {
         if (!originalOtherArtist) return;
 
         // update if the role has changed or order has changed
-        // TODO
         if (otherArtistsOrderChanged || originalOtherArtist.role !== role) {
           batch.update(doc(staffInfosCollection, staffId), {
             [`cachedMusic.${id}`]: newData,
