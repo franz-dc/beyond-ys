@@ -66,8 +66,14 @@ const AlbumArt = ({
           component={MdAlbum}
           sx={{
             m: 'auto',
-            width: 'calc(100% - 2rem)',
-            height: 'calc(100% - 2rem)',
+            width: {
+              xs: 'calc(100% - 0.5rem)',
+              xs3: 'calc(100% - 2rem)',
+            },
+            height: {
+              xs: 'calc(100% - 0.5rem)',
+              xs3: 'calc(100% - 2rem)',
+            },
             color: 'divider',
           }}
         />
