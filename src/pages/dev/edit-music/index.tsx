@@ -265,7 +265,16 @@ const EditMusic = () => {
       }
 
       // update all staff data related to this music
-      const staffIds = [
+      const originalStaffIds = [
+        ...new Set([
+          ...(currentMusicData?.composerIds || []),
+          ...(currentMusicData?.arrangerIds || []),
+          ...(currentMusicData?.otherArtists.map(({ staffId }) => staffId) ||
+            []),
+        ]),
+      ];
+
+      const newStaffIds = [
         // in case there are duplicate staff ids
         ...new Set([
           ...formattedComposerIds,
@@ -274,8 +283,26 @@ const EditMusic = () => {
         ]),
       ];
 
-      staffIds.forEach((staffId) => {
+      // 1. removed staff
+      const removedStaffIds = originalStaffIds.filter(
+        (id) => !newStaffIds.includes(id)
+      );
+
+      removedStaffIds.forEach((staffId) => {
         batch.update(doc(staffInfosCollection, staffId), {
+          [`cachedMusic.${id}`]: deleteField(),
+          updatedAt: serverTimestamp(),
+        });
+      });
+
+      // 2. added staff
+      const addedStaffIds = newStaffIds.filter(
+        (id) => !originalStaffIds.includes(id)
+      );
+
+      addedStaffIds.forEach((staffId) => {
+        batch.update(doc(staffInfosCollection, staffId), {
+          musicIds: arrayUnion(id),
           [`cachedMusic.${id}`]: newData,
           updatedAt: serverTimestamp(),
         });
