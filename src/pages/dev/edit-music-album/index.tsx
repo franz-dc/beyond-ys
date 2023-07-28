@@ -457,7 +457,7 @@ const EditMusicAlbum = () => {
 
             const musicData = doc.data();
             cachedMusic[doc.id] = {
-              ...doc.data(),
+              ...musicData,
               albumId,
             };
 

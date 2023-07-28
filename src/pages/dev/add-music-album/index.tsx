@@ -213,6 +213,12 @@ const AddMusicAlbum = () => {
 
       const albumInfoDocRef = doc(musicAlbumsCollection, id);
 
+      // doing this to reduce the number of writes per staffInfo doc
+      const staffInfoChanges: Record<
+        string, // staffId
+        Record<string, unknown> // doc changes
+      > = {};
+
       const batch = writeBatch(db);
 
       // populate cachedMusic from musicIds
@@ -236,16 +242,43 @@ const AddMusicAlbum = () => {
           [[]] as string[][]
         );
 
-        const newMusicQuerySnap = await Promise.all(
+        const newMusicQuerySnaps = await Promise.all(
           formattedMusicIdsChunks.map((chunk) =>
             getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
           )
         );
 
-        newMusicQuerySnap.forEach((snap) => {
+        newMusicQuerySnaps.forEach((snap) => {
           snap.forEach((doc) => {
             if (!doc.exists()) return;
-            cachedMusic[doc.id] = doc.data();
+
+            const musicData = doc.data();
+
+            cachedMusic[doc.id] = {
+              ...musicData,
+              albumId: id,
+            };
+
+            // update staffInfo doc's cachedMusic
+            [
+              ...new Set([
+                ...musicData.composerIds,
+                ...musicData.arrangerIds,
+                ...musicData.otherArtists.map(({ staffId }) => staffId),
+              ]),
+            ].forEach((staffId) => {
+              if (!staffInfoChanges[staffId]) {
+                staffInfoChanges[staffId] = {};
+              }
+
+              staffInfoChanges[staffId] = {
+                ...staffInfoChanges[staffId],
+                // We don't care about updating the cache updatedAt (useless).
+                // staffInfo doc's updatedAt will be updated below to avoid
+                // redundancy.
+                [`cachedMusic.${doc.id}.albumId`]: id,
+              };
+            });
           });
         });
 
