@@ -41,6 +41,7 @@ import {
   db,
   musicAlbumsCollection,
   musicCollection,
+  staffInfosCollection,
   storage,
 } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
@@ -281,6 +282,12 @@ const EditMusicAlbum = () => {
         ...currentMusicAlbumData?.cachedMusic,
       };
 
+      // doing this to reduce the number of writes per staffInfo doc
+      const staffInfoChanges: Record<
+        string, // staffId
+        Record<string, unknown> // doc changes
+      > = {};
+
       const musicAlbumDocRef = doc(musicAlbumsCollection, id);
 
       let formattedReleaseDate = '';
@@ -348,6 +355,57 @@ const EditMusicAlbum = () => {
             updatedAt: serverTimestamp(),
           });
         });
+
+        // split the removedSoundtrackIds into chunks of 30
+        // due to 'in' query limit
+        const removedMusicIdsChunks = removedMusicIds.reduce<string[][]>(
+          (acc, curr) => {
+            const last = acc[acc.length - 1];
+            if (last.length < 30) {
+              last.push(curr);
+            } else {
+              acc.push([curr]);
+            }
+            return acc;
+          },
+          [[]]
+        );
+
+        // update staffInfo doc's cachedMusic
+        const removedMusicQuerySnaps = await Promise.all(
+          removedMusicIdsChunks.map((chunk) =>
+            getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
+          )
+        );
+
+        removedMusicQuerySnaps.forEach((snap) => {
+          snap.forEach((doc) => {
+            if (!doc.exists()) return;
+
+            const musicData = doc.data();
+
+            // update staffInfo doc's cachedMusic
+            [
+              ...new Set([
+                ...musicData.composerIds,
+                ...musicData.arrangerIds,
+                ...musicData.otherArtists.map(({ staffId }) => staffId),
+              ]),
+            ].forEach((staffId) => {
+              if (!staffInfoChanges[staffId]) {
+                staffInfoChanges[staffId] = {};
+              }
+
+              staffInfoChanges[staffId] = {
+                ...staffInfoChanges[staffId],
+                // We don't care about updating the cache updatedAt (useless).
+                // staffInfo doc's updatedAt will be updated below to avoid
+                // redundancy.
+                [`cachedMusic.${doc.id}.albumId`]: '',
+              };
+            });
+          });
+        });
       }
 
       // check if a music is added to the musicIds array
@@ -373,7 +431,7 @@ const EditMusicAlbum = () => {
 
         // split the addedSoundtrackIds into chunks of 30
         // due to 'in' query limit
-        const addedMusicIdsChunks = addedMusicIds.reduce(
+        const addedMusicIdsChunks = addedMusicIds.reduce<string[][]>(
           (acc, curr) => {
             const last = acc[acc.length - 1];
             if (last.length < 30) {
@@ -383,23 +441,46 @@ const EditMusicAlbum = () => {
             }
             return acc;
           },
-          [[]] as string[][]
+          [[]]
         );
 
         // add new music to music album doc's cachedMusic
-        const newMusicQuerySnap = await Promise.all(
+        const newMusicQuerySnaps = await Promise.all(
           addedMusicIdsChunks.map((chunk) =>
             getDocs(query(musicCollection, where(documentId(), 'in', chunk)))
           )
         );
 
-        newMusicQuerySnap.forEach((snap) => {
+        newMusicQuerySnaps.forEach((snap) => {
           snap.forEach((doc) => {
             if (!doc.exists()) return;
+
+            const musicData = doc.data();
             cachedMusic[doc.id] = {
               ...doc.data(),
               albumId,
             };
+
+            // update staffInfo doc's cachedMusic
+            [
+              ...new Set([
+                ...musicData.composerIds,
+                ...musicData.arrangerIds,
+                ...musicData.otherArtists.map(({ staffId }) => staffId),
+              ]),
+            ].forEach((staffId) => {
+              if (!staffInfoChanges[staffId]) {
+                staffInfoChanges[staffId] = {};
+              }
+
+              staffInfoChanges[staffId] = {
+                ...staffInfoChanges[staffId],
+                // We don't care about updating the cache updatedAt (useless).
+                // staffInfo doc's updatedAt will be updated below to avoid
+                // redundancy.
+                [`cachedMusic.${doc.id}.albumId`]: albumId,
+              };
+            });
           });
         });
       }
@@ -419,6 +500,14 @@ const EditMusicAlbum = () => {
       if (Object.keys(changedMusicCacheItems).length) {
         batch.update(musicCacheDocRef, changedMusicCacheItems);
       }
+
+      // update staffInfo docs
+      Object.entries(staffInfoChanges).forEach(([staffId, changes]) => {
+        batch.update(doc(staffInfosCollection, staffId), {
+          ...changes,
+          updatedAt: serverTimestamp(),
+        });
+      });
 
       await batch.commit();
 
