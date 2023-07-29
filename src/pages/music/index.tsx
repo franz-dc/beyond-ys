@@ -12,7 +12,6 @@ import { CLOUD_STORAGE_URL } from '~/constants';
 import { MusicAlbumCacheSchema } from '~/schemas';
 
 interface Props {
-  description: string;
   musicAlbumCache: Record<string, MusicAlbumCacheSchema>;
 }
 
@@ -25,7 +24,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 
   return {
     props: {
-      description: 'Soundtracks and arrangements made by Falcom',
       musicAlbumCache: musicAlbumCacheDoc.data(),
     },
   };
@@ -95,7 +93,9 @@ const AlbumArt = ({
   );
 };
 
-const Music = ({ description, musicAlbumCache }: Props) => {
+const Music = ({ musicAlbumCache }: Props) => {
+  const description = 'Soundtracks and arrangements made or by Falcom';
+
   // sort albums by release date - latest first
   const sortedAlbums = Object.entries(musicAlbumCache).sort(
     ([, { releaseDate: a }], [, { releaseDate: b }]) => {

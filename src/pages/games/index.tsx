@@ -16,7 +16,6 @@ type CategorizedGameSchema = Record<
 >;
 
 interface Props {
-  description: string;
   categorizedGames: [string, (GameCacheSchema & { id: string })[]][];
 }
 
@@ -69,13 +68,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 
   return {
     props: {
-      description: 'List of all games made or published by Falcom.',
       categorizedGames,
     },
   };
 };
 
-const GameList = ({ description, categorizedGames }: Props) => {
+const GameList = ({ categorizedGames }: Props) => {
+  const description = 'List of all games made or published by Falcom.';
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const debounce = useDebouncedCallback((searchQuery) => {

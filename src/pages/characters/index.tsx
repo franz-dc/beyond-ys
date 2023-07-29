@@ -23,7 +23,6 @@ type CategorizedCharacters = Record<
 interface CharacterListProps {
   // category -> first letter -> characters
   categorizedCharacters: CategorizedCharacters;
-  description: string;
 }
 
 export const getServerSideProps: GetServerSideProps<
@@ -61,15 +60,13 @@ export const getServerSideProps: GetServerSideProps<
   return {
     props: {
       categorizedCharacters,
-      description: "List of all characters from Falcom's games.",
     },
   };
 };
 
-const CharacterList: FC<CharacterListProps> = ({
-  categorizedCharacters,
-  description,
-}) => {
+const CharacterList: FC<CharacterListProps> = ({ categorizedCharacters }) => {
+  const description = "List of all characters from Falcom's games.";
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const debounce = useDebouncedCallback((searchQuery) => {
