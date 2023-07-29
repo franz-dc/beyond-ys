@@ -459,6 +459,7 @@ const ComposerTimeline = () => {
                             fontSize: 14,
                             fontWeight: 'medium',
                             transform: 'rotate(180deg)',
+                            transition: 'color 0.1s ease-in-out',
                           }}
                         >
                           {name}
