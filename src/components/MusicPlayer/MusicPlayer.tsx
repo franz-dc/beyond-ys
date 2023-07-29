@@ -209,9 +209,9 @@ const MusicPlayer: FC<MusicPlayerProps> = ({
           const currentIndex = queue.findIndex(
             (item) => item.youtubeId === youtubeId
           );
+          setIsReady(false);
           if (currentIndex === -1 || currentIndex >= queue.length - 1) return;
           setNowPlaying(null);
-          setIsReady(false);
           setNowPlaying(queue[currentIndex + 1]);
           break;
         }
