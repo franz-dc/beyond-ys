@@ -39,6 +39,7 @@ import { GenericHeader, MainLayout } from '~/components';
 import {
   cacheCollection,
   db,
+  gamesCollection,
   musicAlbumsCollection,
   musicCollection,
   staffInfosCollection,
@@ -288,6 +289,9 @@ const EditMusicAlbum = () => {
         Record<string, unknown> // doc changes
       > = {};
 
+      // doing this to reduce the number of writes per music doc
+      const changedGames: Record<string, Record<string, unknown>> = {};
+
       const musicAlbumDocRef = doc(musicAlbumsCollection, id);
 
       let formattedReleaseDate = '';
@@ -384,7 +388,7 @@ const EditMusicAlbum = () => {
 
             const musicData = doc.data();
 
-            // update staffInfo doc's cachedMusic
+            // update staffInfo and game music cache
             [
               ...new Set([
                 ...musicData.composerIds,
@@ -403,6 +407,17 @@ const EditMusicAlbum = () => {
                 // redundancy.
                 [`cachedMusic.${doc.id}.albumId`]: '',
               };
+
+              musicData.dependentGameIds.forEach((gameId) => {
+                if (!changedGames[gameId]) {
+                  changedGames[gameId] = {};
+                }
+
+                changedGames[gameId] = {
+                  ...changedGames[gameId],
+                  [`cachedSoundtracks.${doc.id}.albumId`]: '',
+                };
+              });
             });
           });
         });
@@ -480,6 +495,17 @@ const EditMusicAlbum = () => {
                 // redundancy.
                 [`cachedMusic.${doc.id}.albumId`]: albumId,
               };
+
+              musicData.dependentGameIds.forEach((gameId) => {
+                if (!changedGames[gameId]) {
+                  changedGames[gameId] = {};
+                }
+
+                changedGames[gameId] = {
+                  ...changedGames[gameId],
+                  [`cachedSoundtracks.${doc.id}.albumId`]: albumId,
+                };
+              });
             });
           });
         });
@@ -504,6 +530,14 @@ const EditMusicAlbum = () => {
       // update staffInfo docs
       Object.entries(staffInfoChanges).forEach(([staffId, changes]) => {
         batch.update(doc(staffInfosCollection, staffId), {
+          ...changes,
+          updatedAt: serverTimestamp(),
+        });
+      });
+
+      // update game docs
+      Object.entries(changedGames).forEach(([gameId, changes]) => {
+        batch.update(doc(gamesCollection, gameId), {
           ...changes,
           updatedAt: serverTimestamp(),
         });

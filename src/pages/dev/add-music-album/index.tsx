@@ -40,6 +40,7 @@ import { GenericHeader, MainLayout, SwitchElement } from '~/components';
 import {
   cacheCollection,
   db,
+  gamesCollection,
   musicAlbumsCollection,
   musicCollection,
   storage,
@@ -219,6 +220,9 @@ const AddMusicAlbum = () => {
         Record<string, unknown> // doc changes
       > = {};
 
+      // doing this to reduce the number of writes per music doc
+      const changedGames: Record<string, Record<string, unknown>> = {};
+
       const batch = writeBatch(db);
 
       // populate cachedMusic from musicIds
@@ -259,7 +263,7 @@ const AddMusicAlbum = () => {
               albumId: id,
             };
 
-            // update staffInfo doc's cachedMusic
+            // update staffInfo and game music cache
             [
               ...new Set([
                 ...musicData.composerIds,
@@ -278,6 +282,17 @@ const AddMusicAlbum = () => {
                 // redundancy.
                 [`cachedMusic.${doc.id}.albumId`]: id,
               };
+
+              musicData.dependentGameIds.forEach((gameId) => {
+                if (!changedGames[gameId]) {
+                  changedGames[gameId] = {};
+                }
+
+                changedGames[gameId] = {
+                  ...changedGames[gameId],
+                  [`cachedSoundtracks.${doc.id}.albumId`]: '',
+                };
+              });
             });
           });
         });
@@ -333,6 +348,14 @@ const AddMusicAlbum = () => {
           releaseDate: formattedReleaseDate,
           hasAlbumArt,
         },
+      });
+
+      // update game docs
+      Object.entries(changedGames).forEach(([gameId, changes]) => {
+        batch.update(doc(gamesCollection, gameId), {
+          ...changes,
+          updatedAt: serverTimestamp(),
+        });
       });
 
       await batch.commit();
