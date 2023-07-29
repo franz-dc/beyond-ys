@@ -410,19 +410,14 @@ const ComposerTimeline = () => {
                     >
                       <ButtonBase
                         focusRipple
-                        onClick={() => {
+                        onClick={async () => {
                           if (!firstGame) return;
 
                           document
                             .querySelector(`#${key}-first-appearance`)
                             ?.scrollIntoView();
 
-                          // FIXME: chrome has delay so this doesn't work
-                          // run below if firefox only
-                          if (!navigator.userAgent.includes('Firefox')) return;
-
-                          if (isFullPageHeight) {
-                            // TODO: scroll to '#composer-timeline-table'
+                          const scrollToTable = () => {
                             const coords = document
                               .querySelector('#composer-timeline-table')
                               ?.getBoundingClientRect();
@@ -433,8 +428,19 @@ const ComposerTimeline = () => {
                             const y = window.scrollY + coords.top;
 
                             window.scrollTo(x, y);
+                          };
+
+                          if (navigator.userAgent.includes('Firefox')) {
+                            // chrome has delay so this doesn't work
+                            // run below if firefox only
+                            if (isFullPageHeight) {
+                              scrollToTable();
+                            } else {
+                              window.scrollTo(0, 0);
+                            }
                           } else {
-                            window.scrollTo(0, 0);
+                            // for chrome (due to scroll delay)
+                            setTimeout(scrollToTable, 1200); // arbitrary delay
                           }
                         }}
                         sx={{
@@ -442,6 +448,9 @@ const ComposerTimeline = () => {
                           textDecoration: 'none',
                           writingMode: 'vertical-rl',
                           textOrientation: 'mixed',
+                          '&:focus .MuiTypography-root': {
+                            color: 'primary.main',
+                          },
                         }}
                       >
                         <Typography
