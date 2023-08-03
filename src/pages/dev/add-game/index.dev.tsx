@@ -12,7 +12,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { formatISO } from 'date-fns';
 import {
   arrayUnion,
   doc,
@@ -28,7 +27,6 @@ import { ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
-  DatePickerElement,
   FormContainer,
   TextFieldElement,
   useFieldArray,
@@ -38,7 +36,12 @@ import slugify from 'slugify';
 import { useDebouncedCallback } from 'use-debounce';
 import { z } from 'zod';
 
-import { GenericHeader, MainLayout, SwitchElement } from '~/components';
+import {
+  DatePickerElement,
+  GenericHeader,
+  MainLayout,
+  SwitchElement,
+} from '~/components';
 import {
   cacheCollection,
   charactersCollection,
@@ -56,6 +59,7 @@ import {
   gameSchema,
   imageSchema,
 } from '~/schemas';
+import { formatISO } from '~/utils';
 
 const AddGame = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -310,7 +314,7 @@ const AddGame = () => {
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
       const formattedCharacterIds = characterIds.map(({ value }) => value);
       const formattedReleaseDate = releaseDate
-        ? formatISO(releaseDate as Date, { representation: 'date' })
+        ? formatISO(releaseDate as Date, 'day')
         : '';
 
       // get all the soundtrack docs

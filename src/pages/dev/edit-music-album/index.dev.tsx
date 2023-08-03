@@ -10,7 +10,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { format } from 'date-fns';
 import {
   doc,
   documentId,
@@ -26,7 +25,6 @@ import { ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
-  DatePickerElement,
   FormContainer,
   RadioButtonGroup,
   TextFieldElement,
@@ -35,7 +33,7 @@ import {
 } from 'react-hook-form-mui';
 import { z } from 'zod';
 
-import { GenericHeader, MainLayout } from '~/components';
+import { DatePickerElement, GenericHeader, MainLayout } from '~/components';
 import {
   cacheCollection,
   db,
@@ -53,6 +51,7 @@ import {
   imageSchema,
   musicAlbumSchema,
 } from '~/schemas';
+import { formatISO } from '~/utils';
 
 const EditMusicAlbum = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -296,18 +295,14 @@ const EditMusicAlbum = () => {
 
       let formattedReleaseDate = '';
 
-      if (releaseDate) {
-        switch (releaseDatePrecision) {
-          case 'day':
-            formattedReleaseDate = format(new Date(releaseDate), 'yyyy-MM-dd');
-            break;
-          case 'month':
-            formattedReleaseDate = format(new Date(releaseDate), 'yyyy-MM');
-            break;
-          case 'year':
-            formattedReleaseDate = format(new Date(releaseDate), 'yyyy');
-            break;
-        }
+      if (
+        releaseDate &&
+        ['day', 'month', 'year'].includes(releaseDatePrecision)
+      ) {
+        formattedReleaseDate = formatISO(
+          new Date(releaseDate),
+          releaseDatePrecision as 'day' | 'month' | 'year'
+        );
       }
 
       const batch = writeBatch(db);

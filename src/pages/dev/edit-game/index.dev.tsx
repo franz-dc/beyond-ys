@@ -12,7 +12,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { formatISO } from 'date-fns';
 import {
   arrayRemove,
   arrayUnion,
@@ -31,7 +30,6 @@ import { ref, uploadBytes } from 'firebase/storage';
 import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
-  DatePickerElement,
   FormContainer,
   TextFieldElement,
   useFieldArray,
@@ -39,7 +37,7 @@ import {
 } from 'react-hook-form-mui';
 import { z } from 'zod';
 
-import { GenericHeader, MainLayout } from '~/components';
+import { DatePickerElement, GenericHeader, MainLayout } from '~/components';
 import {
   cacheCollection,
   charactersCollection,
@@ -58,6 +56,7 @@ import {
   gameSchema,
   imageSchema,
 } from '~/schemas';
+import { formatISO } from '~/utils';
 
 const EditGame = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -302,7 +301,7 @@ const EditGame = () => {
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
       const formattedCharacterIds = characterIds.map(({ value }) => value);
       const formattedReleaseDate = releaseDate
-        ? formatISO(releaseDate as Date, { representation: 'date' })
+        ? formatISO(releaseDate as Date, 'day')
         : '';
 
       const newData: GameSchema = {

@@ -1,6 +1,8 @@
 export { default as CharacterItem } from './CharacterItem';
 export * from './CharacterItem';
 
+export { default as DatePickerElement } from './DatePickerElement';
+
 export { default as Footer } from './Footer';
 
 export { default as FaqContainer } from './FaqContainer';
