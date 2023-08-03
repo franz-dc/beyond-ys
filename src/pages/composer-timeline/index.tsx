@@ -10,20 +10,41 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { format } from 'date-fns';
 import { BsSlashCircleFill } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
 import { MdArrowDropDown, MdLayers, MdMusicNote } from 'react-icons/md';
 import { PiTriangleFill } from 'react-icons/pi';
 
 import { GenericHeader, Link, MainLayout } from '~/components';
-import {
-  COMPOSER_TIMELINE,
-  COMPOSER_TIMELINE_GAMES,
-  COMPOSER_TIMELINE_STAFF_MEMBERS,
-} from '~/constants/composerTimeline';
+import { TComposerTimeline } from '~/types';
 
-const ComposerTimeline = () => {
+export const getServerSideProps = async () => {
+  const data: TComposerTimeline = await fetch(
+    `${process.env.NEXT_PUBLIC_SITE_URL}/api/composer-timeline`
+  ).then((res) => res.json());
+
+  return {
+    props: data,
+  };
+};
+
+// input is in format of 2019-01
+// output is in format of 2019 Jan
+const formatReleaseDate = (date: string) => {
+  const [year, month] = date.split('-');
+  const monthName = new Date(Number(year), Number(month) - 1).toLocaleString(
+    'default',
+    { month: 'short' }
+  );
+
+  return `${year} ${monthName}`;
+};
+
+const ComposerTimeline = ({
+  games,
+  staffMembers,
+  composerTimeline,
+}: TComposerTimeline) => {
   // arbitrary max width to not make it too wide
   // add 30px every time a new staff member is added
   const maxFullWidth = 1680;
@@ -31,9 +52,7 @@ const ComposerTimeline = () => {
   const columns = [
     'Release Date',
     'Game',
-    ...Object.values(COMPOSER_TIMELINE_STAFF_MEMBERS).map(
-      (staffMember) => staffMember.name
-    ),
+    ...Object.values(staffMembers).map((staffMember) => staffMember.name),
   ];
 
   const [shownColumnIndexes, setShownColumnIndexes] = useState(
@@ -396,7 +415,7 @@ const ComposerTimeline = () => {
                   Game
                 </Box>
               )}
-              {Object.entries(COMPOSER_TIMELINE_STAFF_MEMBERS).map(
+              {Object.entries(staffMembers).map(
                 ([key, { name, firstGame }], idx) =>
                   shownColumnIndexes.includes(idx + 2) ? (
                     <Box
@@ -471,66 +490,64 @@ const ComposerTimeline = () => {
             </Box>
           </Box>
           <Box component='tbody'>
-            {Object.entries(COMPOSER_TIMELINE_GAMES).map(
-              ([gameId, { name, releaseDate }]) => (
-                <Box component='tr' key={gameId}>
-                  {shownColumnIndexes.includes(0) && (
-                    <Box
-                      component='th'
-                      sx={{
-                        position: 'sticky',
-                        left: 0,
-                        minWidth: 100,
-                        pl: 2,
-                        zIndex: 10,
-                      }}
-                    >
-                      {format(new Date(releaseDate), 'yyyy MMM')}
-                    </Box>
-                  )}
-                  {shownColumnIndexes.includes(1) && (
-                    <Box
-                      component='th'
-                      id={gameId}
-                      sx={{
-                        position: 'sticky',
-                        left: shownColumnIndexes.includes(0) ? 100 : 0,
-                        minWidth: {
-                          xs: 150,
-                          md: 250,
-                        },
-                      }}
-                    >
-                      {name}
-                    </Box>
-                  )}
-                  {Object.entries(COMPOSER_TIMELINE_STAFF_MEMBERS).map(
-                    ([staffId, { firstGame }], idx) =>
-                      shownColumnIndexes.includes(idx + 2) ? (
-                        <Box
-                          component='td'
-                          key={staffId}
-                          id={
-                            firstGame === gameId
-                              ? `${staffId}-first-appearance`
-                              : undefined
-                          }
-                          sx={{
-                            width: 30,
-                            maxWidth: 30,
-                          }}
-                        >
-                          {/* @ts-ignore */}
-                          {involvementIcons?.[
-                            // @ts-ignore
-                            COMPOSER_TIMELINE[staffId]?.[gameId]
-                          ] || null}
-                        </Box>
-                      ) : null
-                  )}
-                </Box>
-              )
-            )}
+            {Object.entries(games).map(([gameId, { name, releaseDate }]) => (
+              <Box component='tr' key={gameId}>
+                {shownColumnIndexes.includes(0) && (
+                  <Box
+                    component='th'
+                    sx={{
+                      position: 'sticky',
+                      left: 0,
+                      minWidth: 100,
+                      pl: 2,
+                      zIndex: 10,
+                    }}
+                  >
+                    {formatReleaseDate(releaseDate)}
+                  </Box>
+                )}
+                {shownColumnIndexes.includes(1) && (
+                  <Box
+                    component='th'
+                    id={gameId}
+                    sx={{
+                      position: 'sticky',
+                      left: shownColumnIndexes.includes(0) ? 100 : 0,
+                      minWidth: {
+                        xs: 150,
+                        md: 250,
+                      },
+                    }}
+                  >
+                    {name}
+                  </Box>
+                )}
+                {Object.entries(staffMembers).map(
+                  ([staffId, { firstGame }], idx) =>
+                    shownColumnIndexes.includes(idx + 2) ? (
+                      <Box
+                        component='td'
+                        key={staffId}
+                        id={
+                          firstGame === gameId
+                            ? `${staffId}-first-appearance`
+                            : undefined
+                        }
+                        sx={{
+                          width: 30,
+                          maxWidth: 30,
+                        }}
+                      >
+                        {/* @ts-ignore */}
+                        {involvementIcons?.[
+                          // @ts-ignore
+                          composerTimeline[staffId]?.[gameId]
+                        ] || null}
+                      </Box>
+                    ) : null
+                )}
+              </Box>
+            ))}
           </Box>
         </Box>
       </Box>

@@ -8,471 +8,394 @@
  * prevent typos.
  * ------------------------------------------------------------------------- */
 
-// cspell: disable
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-// - keys generated using slugify
-// - gameId is the id of the game in the database
-// - releaseDate is in ISO 8601 format (YYYY-MM-DD or YYYY-MM or YYYY)
-export const COMPOSER_TIMELINE_GAMES = {
-  'dragon-slayer-ii-xanadu': {
-    name: 'Dragon Slayer II: Xanadu',
-    gameId: '',
-    releaseDate: '1985-10',
-  },
-  'xanadu-scenario-ii': {
-    name: 'Xanadu Scenario II',
-    gameId: '',
-    releaseDate: '1986-10',
-  },
-  'dragon-slayer-jr-romancia': {
-    name: 'Dragon Slayer Jr.: Romancia',
-    gameId: '',
-    releaseDate: '1986-10',
-  },
-  'asteka-ii-templo-del-sol': {
-    name: 'Asteka II: Templo del Sol',
-    gameId: '',
-    releaseDate: '1986-10',
-  },
-  ys: {
-    name: 'Ys',
-    gameId: '',
-    releaseDate: '1987-06',
-  },
-  'dragon-slayer-iv-drasle-family-msx-ver': {
-    name: 'Dragon Slayer IV: Drasle Family (MSX)',
-    gameId: '',
-    releaseDate: '1987-07',
-  },
-  'dragon-slayer-iv-drasle-family-famicom-ver': {
-    name: 'Dragon Slayer IV: Drasle Family (Famicom)',
-    gameId: '',
-    releaseDate: '1987-07',
-  },
-  'dragon-slayer-ii-xanadu-msx-rom-ver': {
-    name: 'Dragon Slayer II: Xanadu (MSX ROM)',
-    gameId: '',
-    releaseDate: '1987-10',
-  },
-  'dragon-slayer-v-sorcerian': {
-    name: 'Dragon Slayer V: Sorcerian',
-    gameId: '',
-    releaseDate: '1987-12',
-  },
-  'ys-ii': {
-    name: 'Ys II',
-    gameId: '',
-    releaseDate: '1988-04',
-  },
-  'dragon-slayer-v-sorcerian-x1turbo-ver': {
-    name: 'Dragon Slayer V: Sorcerian (X1turbo)',
-    gameId: '',
-    releaseDate: '1988-05',
-  },
-  'sorcerian-utility-vol-1': {
-    name: 'Sorcerian Utility Vol. 1',
-    gameId: '',
-    releaseDate: '1988-07',
-  },
-  'sorcerian-additional-scenario-vol1': {
-    name: 'Sorcerian Additional Scenario Vol.1',
-    gameId: '',
-    releaseDate: '1988-07',
-  },
-  'sorcerian-additional-scenario-vol2-sengoku-sorcerian': {
-    name: 'Sorcerian Additional Scenario Vol.2: Sengoku Sorcerian',
-    gameId: '',
-    releaseDate: '1988-10',
-  },
-  'sorcerian-additional-scenario-vol3-pyramid-sorcerian': {
-    name: 'Sorcerian Additional Scenario Vol.3: Pyramid Sorcerian',
-    gameId: '',
-    releaseDate: '1988-12',
-  },
-  'star-trader': {
-    name: 'Star Trader',
-    gameId: '',
-    releaseDate: '1989-03',
-  },
-  'ys-iii-wanderers-from-ys': {
-    name: 'Ys III: Wanderers from Ys',
-    gameId: '',
-    releaseDate: '1989-07',
-  },
-  'dragon-slayer-vi-the-legend-of-heroes': {
-    name: 'Dragon Slayer VI: The Legend of Heroes',
-    gameId: '',
-    releaseDate: '1989-12',
-  },
-  'ys-iii-wanderers-from-ys-x68000-ver': {
-    name: 'Ys III: Wanderers from Ys (X68000)',
-    gameId: '',
-    releaseDate: '1990-03',
-  },
-  dinosaur: {
-    name: 'Dinosaur',
-    gameId: '',
-    releaseDate: '1990-12',
-  },
-  'dragon-slayer-viii-lord-monarch': {
-    name: 'Dragon Slayer VIII: Lord Monarch',
-    gameId: '',
-    releaseDate: '1991-03',
-  },
-  brandish: {
-    name: 'Brandish',
-    gameId: '',
-    releaseDate: '1991-10',
-  },
-  'advanced-lord-monarch': {
-    name: 'Advanced Lord Monarch',
-    gameId: '',
-    releaseDate: '1991-11',
-  },
-  'popful-mail-pc-88-ver': {
-    name: 'Popful Mail (PC-88)',
-    gameId: '',
-    releaseDate: '1991-12',
-  },
-  'dragon-slayer-the-legend-of-heroes-ii': {
-    name: 'Dragon Slayer: The Legend of Heroes II',
-    gameId: '',
-    releaseDate: '1992-03',
-  },
-  'brandish-2-the-planet-buster': {
-    name: 'Brandish 2: The Planet Buster',
-    gameId: '',
-    releaseDate: '1993-03',
-  },
-  'ys-iv-mask-of-the-sun-music-arrangement-by-cube': {
-    name: 'Ys IV: Mask of the Sun (CUBE)',
-    gameId: '',
-    releaseDate: '1993-11',
-  },
-  'ys-iv-the-dawn-of-ys-music-arrangement-by-hudson-soft': {
-    name: 'Ys IV: The Dawn of Ys (Hudson Soft)',
-    gameId: '',
-    releaseDate: '1993-12',
-  },
-  'dragon-slayer-viii-the-legend-of-xanadu': {
-    name: 'Dragon Slayer VIII: The Legend of Xanadu',
-    gameId: '',
-    releaseDate: '1994-02',
-  },
-  'the-legend-of-heroes-iii-white-witch': {
-    name: 'The Legend of Heroes III: White Witch',
-    gameId: '',
-    releaseDate: '1994-03',
-  },
-  'popful-mail-sfc-ver': {
-    name: 'Popful Mail (SFC)',
-    gameId: '',
-    releaseDate: '1994-06',
-  },
-  'brandish-3-spirit-of-balcan': {
-    name: 'Brandish 3: Spirit of Balcan',
-    gameId: '',
-    releaseDate: '1994-11',
-  },
-  'revival-xanadu': {
-    name: 'Revival Xanadu',
-    gameId: '',
-    releaseDate: '1995-04',
-  },
-  'the-legend-of-xanadu-ii-the-last-of-dragon-slayer': {
-    name: 'The Legend of Xanadu II: The Last of Dragon Slayer',
-    gameId: '',
-    releaseDate: '1995-06',
-  },
-  'revival-xanadu-2-remix': {
-    name: 'Revival Xanadu 2 Remix',
-    gameId: '',
-    releaseDate: '1995-12',
-  },
-  'ys-v-lost-kefin-kingdom-of-sand': {
-    name: 'Ys V: Lost Kefin, Kingdom of Sand',
-    gameId: '',
-    releaseDate: '1995-12',
-  },
-  'the-legend-of-heroes-iv-a-tear-of-vermillion': {
-    name: 'The Legend of Heroes IV: A Tear of Vermillion',
-    gameId: '',
-    releaseDate: '1996-05',
-  },
-  'brandish-vt': {
-    name: 'Brandish VT',
-    gameId: '',
-    releaseDate: '1996-10',
-  },
-  'lord-monarch-original': {
-    name: 'Lord Monarch Original',
-    gameId: '',
-    releaseDate: '1996-12',
-  },
-  'lord-monarch-first': {
-    name: 'Lord Monarch First',
-    gameId: '',
-    releaseDate: '1997-03',
-  },
-  'new-the-legend-of-heroes-windows-ver': {
-    name: 'New The Legend of Heroes (Windows)',
-    gameId: '',
-    releaseDate: '1997-04',
-  },
-  'sorcerian-forever': {
-    name: 'Sorcerian Forever',
-    gameId: '',
-    releaseDate: '1996-06',
-  },
-  'sega-saturn-falcom-classics': {
-    name: 'Sega Saturn Falcom Classics',
-    gameId: '',
-    releaseDate: '1997-11',
-  },
-  'vantage-master': {
-    name: 'Vantage Master',
-    gameId: '',
-    releaseDate: '1997-12',
-  },
-  'ys-eternal': {
-    name: 'Ys Eternal',
-    gameId: '',
-    releaseDate: '1998-04',
-  },
-  'vantage-master-v2': {
-    name: 'Vantage Master V2',
-    gameId: '',
-    releaseDate: '1998-07',
-  },
-  'monarch-monarch': {
-    name: 'Monarch Monarch',
-    gameId: '',
-    releaseDate: '1998-11',
-  },
-  'brandish-4-brandish-vt-for-windows': {
-    name: 'Brandish 4 (Windows)',
-    gameId: '',
-    releaseDate: '1998-12',
-  },
-  'the-legend-of-heroes-iii-white-witch-windows-ver': {
-    name: 'The Legend of Heroes III: White Witch (Windows)',
-    gameId: '',
-    releaseDate: '1999-04',
-  },
-  'the-legend-of-heroes-v-cagesong-of-the-ocean': {
-    name: 'The Legend of Heroes V: Cagesong of the Ocean',
-    gameId: '',
-    releaseDate: '1999-12',
-  },
-  'ys-ii-eternal': {
-    name: 'Ys II Eternal',
-    gameId: '',
-    releaseDate: '2000-07',
-  },
-  'sorcerian-original': {
-    name: 'Sorcerian Original',
-    gameId: '',
-    releaseDate: '2000-11',
-  },
-  'the-legend-of-heroes-iv-a-tear-of-vermillion-windows-ver': {
-    name: 'The Legend of Heroes IV: A Tear of Vermillion (Windows)',
-    gameId: '',
-    releaseDate: '2000-12',
-  },
-  'ys-i-and-ii-complete': {
-    name: 'Ys I&II Complete',
-    gameId: '',
-    releaseDate: '2001-06',
-  },
-  zwei: {
-    name: 'Zwei!!',
-    gameId: '',
-    releaseDate: '2001-12',
-  },
-  'vm-japan-mystic-far-east': {
-    name: 'VM Japan -Mystic Far East-',
-    gameId: '',
-    releaseDate: '2002-06',
-  },
-  'vm-japan-power-up-kit': {
-    name: 'VM Japan Power-Up Kit',
-    gameId: '',
-    releaseDate: '2002-09',
-  },
-  'dinosaur-resurrection': {
-    name: 'Dinosaur Resurrection',
-    gameId: '',
-    releaseDate: '2002-12',
-  },
-  'ys-vi-the-ark-of-napishtim': {
-    name: 'Ys VI: The Ark of Napishtim',
-    gameId: '',
-    releaseDate: '2003-09',
-  },
-  'the-legend-of-heroes-trails-in-the-sky': {
-    name: 'The Legend of Heroes: Trails in the Sky',
-    gameId: '',
-    releaseDate: '2004-06',
-  },
-  gurumin: {
-    name: 'Gurumin',
-    gameId: '',
-    releaseDate: '2004-12',
-  },
-  'ys-the-oath-in-felghana': {
-    name: 'Ys: The Oath in Felghana',
-    gameId: '',
-    releaseDate: '2005-06',
-  },
-  rinne: {
-    name: 'RINNE',
-    gameId: '',
-    releaseDate: '2005-06',
-  },
-  'xanadu-next': {
-    name: 'Xanadu Next',
-    gameId: '',
-    releaseDate: '2005-11',
-  },
-  'the-legend-of-heroes-trails-in-the-sky-sc': {
-    name: 'The Legend of Heroes: Trails in the Sky SC',
-    gameId: '',
-    releaseDate: '2006-03',
-  },
-  'ys-origin': {
-    name: 'Ys Origin',
-    gameId: '',
-    releaseDate: '2006-12',
-  },
-  'the-legend-of-heroes-trails-in-the-sky-the-3rd': {
-    name: 'The Legend of Heroes: Trails in the Sky the 3rd',
-    gameId: '',
-    releaseDate: '2007-06',
-  },
-  'vantage-master-portable': {
-    name: 'Vantage Master Portable',
-    gameId: '',
-    releaseDate: '2008-04',
-  },
-  'zwei-ii': {
-    name: 'Zwei II',
-    gameId: '',
-    releaseDate: '2008-09',
-  },
-  'brandish-the-dark-revenant': {
-    name: 'Brandish: The Dark Revenant',
-    gameId: '',
-    releaseDate: '2009-03',
-  },
-  'ys-i-and-ii-chronicles': {
-    name: 'Ys I&II Chronicles',
-    gameId: '',
-    releaseDate: '2009-07',
-  },
-  'ys-seven': {
-    name: 'Ys Seven',
-    gameId: '',
-    releaseDate: '2009-09',
-  },
-  'ys-vs-sora-no-kiseki-alternative-saga': {
-    name: 'Ys vs. Sora no Kiseki: Alternative Saga',
-    gameId: '',
-    releaseDate: '2010-07',
-  },
-  'the-legend-of-heroes-zero-no-kiseki': {
-    name: 'The Legend of Heroes: Zero no Kiseki',
-    gameId: '',
-    releaseDate: '2010-09',
-  },
-  'the-legend-of-heroes-ao-no-kiseki': {
-    name: 'The Legend of Heroes: Ao no Kiseki',
-    gameId: '',
-    releaseDate: '2011-09',
-  },
-  'nayuta-no-kiseki': {
-    name: 'Nayuta no Kiseki',
-    gameId: '',
-    releaseDate: '2012-07',
-  },
-  'ys-memories-of-celceta': {
-    name: 'Ys: Memories of Celceta',
-    gameId: '',
-    releaseDate: '2012-09',
-  },
-  'the-legend-of-heroes-trails-of-cold-steel': {
-    name: 'The Legend of Heroes: Trails of Cold Steel',
-    gameId: '',
-    releaseDate: '2013-09',
-  },
-  'the-legend-of-heroes-trails-of-cold-steel-ii': {
-    name: 'The Legend of Heroes: Trails of Cold Steel II',
-    gameId: '',
-    releaseDate: '2014-09',
-  },
-  'tokyo-xanadu-vita-ver': {
-    name: 'Tokyo Xanadu (Vita)',
-    gameId: '',
-    releaseDate: '2015-09',
-  },
-  'ys-viii-lacrimosa-of-dana-vita-ver': {
-    name: 'Ys VIII -Lacrimosa of DANA- (Vita)',
-    gameId: '',
-    releaseDate: '2016-07',
-  },
-  'tokyo-xanadu-ex-plus-ps4-ver': {
-    name: 'Tokyo Xanadu eX+ (PS4)',
-    gameId: '',
-    releaseDate: '2016-09',
-  },
-  'ys-viii-lacrimosa-of-dana-ps4-ver': {
-    name: 'Ys VIII -Lacrimosa of DANA- (PS4)',
-    gameId: '',
-    releaseDate: '2017-05',
-  },
-  'the-legend-of-heroes-trails-of-cold-steel-iii': {
-    name: 'The Legend of Heroes: Trails of Cold Steel III',
-    gameId: '',
-    releaseDate: '2017-09',
-  },
-  'the-legend-of-heroes-trails-of-cold-steel-iv': {
-    name: 'The Legend of Heroes: Trails of Cold Steel IV',
-    gameId: '',
-    releaseDate: '2018-09',
-  },
-  'ys-ix-mostrum-nox': {
-    name: 'Ys IX -Mostrum NOX-',
-    gameId: '',
-    releaseDate: '2019-09',
-  },
-  'the-legend-of-heroes-hajimari-no-kiseki': {
-    name: 'The Legend of Heroes: Hajimari no Kiseki',
-    gameId: '',
-    releaseDate: '2020-08',
-  },
-  'the-legend-of-heroes-kuro-no-kiseki': {
-    name: 'The Legend of Heroes: Kuro no Kiseki',
-    gameId: '',
-    releaseDate: '2021-09',
-  },
-  'the-legend-of-heroes-kuro-no-kiseki-ii': {
-    name: 'The Legend of Heroes: Kuro no Kiseki II',
-    gameId: '',
-    releaseDate: '2022-09',
-  },
-  'ys-x-nordics': {
-    name: 'Ys X: Nordics',
-    gameId: '',
-    releaseDate: '2023-09',
-  },
-} as const;
+type TInvolvementType =
+  | 'composer'
+  | 'arranger'
+  | 'uncredited'
+  | 'miscredited'
+  | 'composerArranger';
 
-// type TStaffMemeber = {
+type TComposerTimeline = Record<
+  keyof typeof COMPOSER_TIMELINE_STAFF_MEMBERS,
+  Partial<Record<keyof typeof COMPOSER_TIMELINE_GAMES, TInvolvementType>>
+>;
+
+// type TStaffMember = {
 //   name: string;
 //   staffType: 'jdk' | 'outsourcing';
 //   firstGame: keyof typeof COMPOSER_TIMELINE_GAMES | '';
 // };
 
-export const COMPOSER_TIMELINE_STAFF_MEMBERS = {
+// cspell: disable
+
+// - keys generated using slugify
+// - releaseDate is in ISO 8601 format (YYYY-MM-DD or YYYY-MM or YYYY)
+const COMPOSER_TIMELINE_GAMES = {
+  'dragon-slayer-ii-xanadu': {
+    name: 'Dragon Slayer II: Xanadu',
+    releaseDate: '1985-10',
+  },
+  'xanadu-scenario-ii': {
+    name: 'Xanadu Scenario II',
+    releaseDate: '1986-10',
+  },
+  'dragon-slayer-jr-romancia': {
+    name: 'Dragon Slayer Jr.: Romancia',
+    releaseDate: '1986-10',
+  },
+  'asteka-ii-templo-del-sol': {
+    name: 'Asteka II: Templo del Sol',
+    releaseDate: '1986-10',
+  },
+  ys: {
+    name: 'Ys',
+    releaseDate: '1987-06',
+  },
+  'dragon-slayer-iv-drasle-family-msx-ver': {
+    name: 'Dragon Slayer IV: Drasle Family (MSX)',
+    releaseDate: '1987-07',
+  },
+  'dragon-slayer-iv-drasle-family-famicom-ver': {
+    name: 'Dragon Slayer IV: Drasle Family (Famicom)',
+    releaseDate: '1987-07',
+  },
+  'dragon-slayer-ii-xanadu-msx-rom-ver': {
+    name: 'Dragon Slayer II: Xanadu (MSX ROM)',
+    releaseDate: '1987-10',
+  },
+  'dragon-slayer-v-sorcerian': {
+    name: 'Dragon Slayer V: Sorcerian',
+    releaseDate: '1987-12',
+  },
+  'ys-ii': {
+    name: 'Ys II',
+    releaseDate: '1988-04',
+  },
+  'dragon-slayer-v-sorcerian-x1turbo-ver': {
+    name: 'Dragon Slayer V: Sorcerian (X1turbo)',
+    releaseDate: '1988-05',
+  },
+  'sorcerian-utility-vol-1': {
+    name: 'Sorcerian Utility Vol. 1',
+    releaseDate: '1988-07',
+  },
+  'sorcerian-additional-scenario-vol1': {
+    name: 'Sorcerian Additional Scenario Vol.1',
+    releaseDate: '1988-07',
+  },
+  'sorcerian-additional-scenario-vol2-sengoku-sorcerian': {
+    name: 'Sorcerian Additional Scenario Vol.2: Sengoku Sorcerian',
+    releaseDate: '1988-10',
+  },
+  'sorcerian-additional-scenario-vol3-pyramid-sorcerian': {
+    name: 'Sorcerian Additional Scenario Vol.3: Pyramid Sorcerian',
+    releaseDate: '1988-12',
+  },
+  'star-trader': {
+    name: 'Star Trader',
+    releaseDate: '1989-03',
+  },
+  'ys-iii-wanderers-from-ys': {
+    name: 'Ys III: Wanderers from Ys',
+    releaseDate: '1989-07',
+  },
+  'dragon-slayer-vi-the-legend-of-heroes': {
+    name: 'Dragon Slayer VI: The Legend of Heroes',
+    releaseDate: '1989-12',
+  },
+  'ys-iii-wanderers-from-ys-x68000-ver': {
+    name: 'Ys III: Wanderers from Ys (X68000)',
+    releaseDate: '1990-03',
+  },
+  dinosaur: {
+    name: 'Dinosaur',
+    releaseDate: '1990-12',
+  },
+  'dragon-slayer-viii-lord-monarch': {
+    name: 'Dragon Slayer VIII: Lord Monarch',
+    releaseDate: '1991-03',
+  },
+  brandish: {
+    name: 'Brandish',
+    releaseDate: '1991-10',
+  },
+  'advanced-lord-monarch': {
+    name: 'Advanced Lord Monarch',
+    releaseDate: '1991-11',
+  },
+  'popful-mail-pc-88-ver': {
+    name: 'Popful Mail (PC-88)',
+    releaseDate: '1991-12',
+  },
+  'dragon-slayer-the-legend-of-heroes-ii': {
+    name: 'Dragon Slayer: The Legend of Heroes II',
+    releaseDate: '1992-03',
+  },
+  'brandish-2-the-planet-buster': {
+    name: 'Brandish 2: The Planet Buster',
+    releaseDate: '1993-03',
+  },
+  'ys-iv-mask-of-the-sun-music-arrangement-by-cube': {
+    name: 'Ys IV: Mask of the Sun (CUBE)',
+    releaseDate: '1993-11',
+  },
+  'ys-iv-the-dawn-of-ys-music-arrangement-by-hudson-soft': {
+    name: 'Ys IV: The Dawn of Ys (Hudson Soft)',
+    releaseDate: '1993-12',
+  },
+  'dragon-slayer-viii-the-legend-of-xanadu': {
+    name: 'Dragon Slayer VIII: The Legend of Xanadu',
+    releaseDate: '1994-02',
+  },
+  'the-legend-of-heroes-iii-white-witch': {
+    name: 'The Legend of Heroes III: White Witch',
+    releaseDate: '1994-03',
+  },
+  'popful-mail-sfc-ver': {
+    name: 'Popful Mail (SFC)',
+    releaseDate: '1994-06',
+  },
+  'brandish-3-spirit-of-balcan': {
+    name: 'Brandish 3: Spirit of Balcan',
+    releaseDate: '1994-11',
+  },
+  'revival-xanadu': {
+    name: 'Revival Xanadu',
+    releaseDate: '1995-04',
+  },
+  'the-legend-of-xanadu-ii-the-last-of-dragon-slayer': {
+    name: 'The Legend of Xanadu II: The Last of Dragon Slayer',
+    releaseDate: '1995-06',
+  },
+  'revival-xanadu-2-remix': {
+    name: 'Revival Xanadu 2 Remix',
+    releaseDate: '1995-12',
+  },
+  'ys-v-lost-kefin-kingdom-of-sand': {
+    name: 'Ys V: Lost Kefin, Kingdom of Sand',
+    releaseDate: '1995-12',
+  },
+  'the-legend-of-heroes-iv-a-tear-of-vermillion': {
+    name: 'The Legend of Heroes IV: A Tear of Vermillion',
+    releaseDate: '1996-05',
+  },
+  'brandish-vt': {
+    name: 'Brandish VT',
+    releaseDate: '1996-10',
+  },
+  'lord-monarch-original': {
+    name: 'Lord Monarch Original',
+    releaseDate: '1996-12',
+  },
+  'lord-monarch-first': {
+    name: 'Lord Monarch First',
+    releaseDate: '1997-03',
+  },
+  'new-the-legend-of-heroes-windows-ver': {
+    name: 'New The Legend of Heroes (Windows)',
+    releaseDate: '1997-04',
+  },
+  'sorcerian-forever': {
+    name: 'Sorcerian Forever',
+    releaseDate: '1996-06',
+  },
+  'sega-saturn-falcom-classics': {
+    name: 'Sega Saturn Falcom Classics',
+    releaseDate: '1997-11',
+  },
+  'vantage-master': {
+    name: 'Vantage Master',
+    releaseDate: '1997-12',
+  },
+  'ys-eternal': {
+    name: 'Ys Eternal',
+    releaseDate: '1998-04',
+  },
+  'vantage-master-v2': {
+    name: 'Vantage Master V2',
+    releaseDate: '1998-07',
+  },
+  'monarch-monarch': {
+    name: 'Monarch Monarch',
+    releaseDate: '1998-11',
+  },
+  'brandish-4-brandish-vt-for-windows': {
+    name: 'Brandish 4 (Windows)',
+    releaseDate: '1998-12',
+  },
+  'the-legend-of-heroes-iii-white-witch-windows-ver': {
+    name: 'The Legend of Heroes III: White Witch (Windows)',
+    releaseDate: '1999-04',
+  },
+  'the-legend-of-heroes-v-cagesong-of-the-ocean': {
+    name: 'The Legend of Heroes V: Cagesong of the Ocean',
+    releaseDate: '1999-12',
+  },
+  'ys-ii-eternal': {
+    name: 'Ys II Eternal',
+    releaseDate: '2000-07',
+  },
+  'sorcerian-original': {
+    name: 'Sorcerian Original',
+    releaseDate: '2000-11',
+  },
+  'the-legend-of-heroes-iv-a-tear-of-vermillion-windows-ver': {
+    name: 'The Legend of Heroes IV: A Tear of Vermillion (Windows)',
+    releaseDate: '2000-12',
+  },
+  'ys-i-and-ii-complete': {
+    name: 'Ys I&II Complete',
+    releaseDate: '2001-06',
+  },
+  zwei: {
+    name: 'Zwei!!',
+    releaseDate: '2001-12',
+  },
+  'vm-japan-mystic-far-east': {
+    name: 'VM Japan -Mystic Far East-',
+    releaseDate: '2002-06',
+  },
+  'vm-japan-power-up-kit': {
+    name: 'VM Japan Power-Up Kit',
+    releaseDate: '2002-09',
+  },
+  'dinosaur-resurrection': {
+    name: 'Dinosaur Resurrection',
+    releaseDate: '2002-12',
+  },
+  'ys-vi-the-ark-of-napishtim': {
+    name: 'Ys VI: The Ark of Napishtim',
+    releaseDate: '2003-09',
+  },
+  'the-legend-of-heroes-trails-in-the-sky': {
+    name: 'The Legend of Heroes: Trails in the Sky',
+    releaseDate: '2004-06',
+  },
+  gurumin: {
+    name: 'Gurumin',
+    releaseDate: '2004-12',
+  },
+  'ys-the-oath-in-felghana': {
+    name: 'Ys: The Oath in Felghana',
+    releaseDate: '2005-06',
+  },
+  rinne: {
+    name: 'RINNE',
+    releaseDate: '2005-06',
+  },
+  'xanadu-next': {
+    name: 'Xanadu Next',
+    releaseDate: '2005-11',
+  },
+  'the-legend-of-heroes-trails-in-the-sky-sc': {
+    name: 'The Legend of Heroes: Trails in the Sky SC',
+    releaseDate: '2006-03',
+  },
+  'ys-origin': {
+    name: 'Ys Origin',
+    releaseDate: '2006-12',
+  },
+  'the-legend-of-heroes-trails-in-the-sky-the-3rd': {
+    name: 'The Legend of Heroes: Trails in the Sky the 3rd',
+    releaseDate: '2007-06',
+  },
+  'vantage-master-portable': {
+    name: 'Vantage Master Portable',
+    releaseDate: '2008-04',
+  },
+  'zwei-ii': {
+    name: 'Zwei II',
+    releaseDate: '2008-09',
+  },
+  'brandish-the-dark-revenant': {
+    name: 'Brandish: The Dark Revenant',
+    releaseDate: '2009-03',
+  },
+  'ys-i-and-ii-chronicles': {
+    name: 'Ys I&II Chronicles',
+    releaseDate: '2009-07',
+  },
+  'ys-seven': {
+    name: 'Ys Seven',
+    releaseDate: '2009-09',
+  },
+  'ys-vs-sora-no-kiseki-alternative-saga': {
+    name: 'Ys vs. Sora no Kiseki: Alternative Saga',
+    releaseDate: '2010-07',
+  },
+  'the-legend-of-heroes-zero-no-kiseki': {
+    name: 'The Legend of Heroes: Zero no Kiseki',
+    releaseDate: '2010-09',
+  },
+  'the-legend-of-heroes-ao-no-kiseki': {
+    name: 'The Legend of Heroes: Ao no Kiseki',
+    releaseDate: '2011-09',
+  },
+  'nayuta-no-kiseki': {
+    name: 'Nayuta no Kiseki',
+    releaseDate: '2012-07',
+  },
+  'ys-memories-of-celceta': {
+    name: 'Ys: Memories of Celceta',
+    releaseDate: '2012-09',
+  },
+  'the-legend-of-heroes-trails-of-cold-steel': {
+    name: 'The Legend of Heroes: Trails of Cold Steel',
+    releaseDate: '2013-09',
+  },
+  'the-legend-of-heroes-trails-of-cold-steel-ii': {
+    name: 'The Legend of Heroes: Trails of Cold Steel II',
+    releaseDate: '2014-09',
+  },
+  'tokyo-xanadu-vita-ver': {
+    name: 'Tokyo Xanadu (Vita)',
+    releaseDate: '2015-09',
+  },
+  'ys-viii-lacrimosa-of-dana-vita-ver': {
+    name: 'Ys VIII -Lacrimosa of DANA- (Vita)',
+    releaseDate: '2016-07',
+  },
+  'tokyo-xanadu-ex-plus-ps4-ver': {
+    name: 'Tokyo Xanadu eX+ (PS4)',
+    releaseDate: '2016-09',
+  },
+  'ys-viii-lacrimosa-of-dana-ps4-ver': {
+    name: 'Ys VIII -Lacrimosa of DANA- (PS4)',
+    releaseDate: '2017-05',
+  },
+  'the-legend-of-heroes-trails-of-cold-steel-iii': {
+    name: 'The Legend of Heroes: Trails of Cold Steel III',
+    releaseDate: '2017-09',
+  },
+  'the-legend-of-heroes-trails-of-cold-steel-iv': {
+    name: 'The Legend of Heroes: Trails of Cold Steel IV',
+    releaseDate: '2018-09',
+  },
+  'ys-ix-mostrum-nox': {
+    name: 'Ys IX -Mostrum NOX-',
+    releaseDate: '2019-09',
+  },
+  'the-legend-of-heroes-hajimari-no-kiseki': {
+    name: 'The Legend of Heroes: Hajimari no Kiseki',
+    releaseDate: '2020-08',
+  },
+  'the-legend-of-heroes-kuro-no-kiseki': {
+    name: 'The Legend of Heroes: Kuro no Kiseki',
+    releaseDate: '2021-09',
+  },
+  'the-legend-of-heroes-kuro-no-kiseki-ii': {
+    name: 'The Legend of Heroes: Kuro no Kiseki II',
+    releaseDate: '2022-09',
+  },
+  'ys-x-nordics': {
+    name: 'Ys X: Nordics',
+    releaseDate: '2023-09',
+  },
+} as const;
+
+const COMPOSER_TIMELINE_STAFF_MEMBERS = {
   'toshiya-takahashi': {
     name: 'Toshiya Takahashi',
     staffType: 'jdk',
@@ -655,19 +578,7 @@ export const COMPOSER_TIMELINE_STAFF_MEMBERS = {
   },
 } as const;
 
-type TInvolvementType =
-  | 'composer'
-  | 'arranger'
-  | 'uncredited'
-  | 'miscredited'
-  | 'composerArranger';
-
-type TComposerTimeline = Record<
-  keyof typeof COMPOSER_TIMELINE_STAFF_MEMBERS,
-  Partial<Record<keyof typeof COMPOSER_TIMELINE_GAMES, TInvolvementType>>
->;
-
-export const COMPOSER_TIMELINE: TComposerTimeline = {
+const COMPOSER_TIMELINE: TComposerTimeline = {
   'toshiya-takahashi': {
     'dragon-slayer-ii-xanadu': 'composer',
   },
@@ -1117,3 +1028,11 @@ export const COMPOSER_TIMELINE: TComposerTimeline = {
     'ys-ix-mostrum-nox': 'uncredited',
   },
 };
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  res.status(200).json({
+    games: COMPOSER_TIMELINE_GAMES,
+    staffMembers: COMPOSER_TIMELINE_STAFF_MEMBERS,
+    composerTimeline: COMPOSER_TIMELINE,
+  });
+}

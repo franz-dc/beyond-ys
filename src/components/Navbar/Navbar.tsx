@@ -1,9 +1,8 @@
 /* eslint-disable react/jsx-indent */
-import { FC, MouseEvent, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 
 import {
   AppBar,
-  Avatar,
   Box,
   Collapse,
   Container,
@@ -11,35 +10,21 @@ import {
   Drawer,
   IconButton,
   List,
-  ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   ListSubheader,
-  Menu,
-  MenuItem,
   Stack,
   SvgIcon,
   Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material';
-import { signInWithPopup } from 'firebase/auth';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
-import { FiChevronDown } from 'react-icons/fi';
-import { IoMdMoon, IoMdSunny } from 'react-icons/io';
-import {
-  MdClose,
-  MdExpandMore,
-  MdLogin,
-  MdLogout,
-  MdMenu,
-} from 'react-icons/md';
+import { IoMoon, IoSunny } from 'react-icons/io5';
+import { MdClose, MdExpandMore, MdMenu } from 'react-icons/md';
 
-import { auth, googleAuthProvider } from '~/configs';
 import {
-  USER_ROLES,
   exploreMenuItems,
   otherGamesSubcategories,
   trailsSubcategories,
@@ -125,7 +110,7 @@ const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
         }}
       >
         {name}
-        <FiChevronDown
+        <MdExpandMore
           style={{
             display: 'inline-block',
             marginLeft: '0.25rem',
@@ -270,34 +255,6 @@ const Navbar = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
-  // account menu
-  const [isSignedIn, setIsSignedIn] = useState(false);
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(e.currentTarget);
-  };
-  const handleClose = () => setAnchorEl(null);
-
-  const signIn = async () => {
-    try {
-      handleClose();
-      await signInWithPopup(auth, googleAuthProvider);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      handleClose();
-      await auth.signOut();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   // change theme if changed in other tab
@@ -310,54 +267,6 @@ const Navbar = () => {
     };
     return () => channel.close();
   }, [resolvedTheme, setTheme]);
-
-  // reuse toggle theme component
-  const ToggleThemeComponent = (
-    <MenuItem
-      key='toggle-theme'
-      onClick={() => {
-        setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-        // broadcast theme change to other tabs
-        const channel = new BroadcastChannel('theme');
-        channel.postMessage(resolvedTheme === 'dark' ? 'light' : 'dark');
-        channel.close();
-      }}
-    >
-      <ListItemIcon>
-        <SvgIcon fontSize='small' inheritViewBox>
-          {theme === 'dark' ? <IoMdMoon /> : <IoMdSunny />}
-        </SvgIcon>
-      </ListItemIcon>
-      <ListItemText>
-        Theme: {resolvedTheme === 'dark' ? 'Dark' : 'Light'}
-      </ListItemText>
-    </MenuItem>
-  );
-
-  const [photoURL, setPhotoURL] = useState<string | undefined>(undefined);
-  const [displayName, setDisplayName] = useState<string>('Unknown User');
-  const [userRole, setUserRole] = useState<string>('Contributor');
-
-  useEffect(() => {
-    return auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setIsSignedIn(true);
-        setPhotoURL(user.photoURL || undefined);
-        setDisplayName(user.displayName || 'Unknown User');
-        const tokenRes = await user.getIdTokenResult();
-        const role: string = tokenRes?.claims.role || 'contributor';
-        if (role) {
-          // @ts-ignore
-          setUserRole(USER_ROLES[role] || role);
-        }
-      } else {
-        setIsSignedIn(false);
-        setPhotoURL(undefined);
-        setDisplayName('Unknown User');
-        setUserRole('Contributor');
-      }
-    });
-  });
 
   return (
     <>
@@ -410,129 +319,31 @@ const Navbar = () => {
               )}
             </Stack>
             <IconButton
-              id='account-menu-button'
-              aria-controls={open ? 'account-menu' : undefined}
-              aria-haspopup='true'
-              aria-expanded={open ? 'true' : undefined}
-              color='inherit'
-              aria-label='menu'
-              onClick={handleClick}
+              aria-label={`toggle theme to ${
+                resolvedTheme === 'dark' ? 'light' : 'dark'
+              }`}
+              onClick={() => {
+                setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+                // broadcast theme change to other tabs
+                const channel = new BroadcastChannel('theme');
+                channel.postMessage(
+                  resolvedTheme === 'dark' ? 'light' : 'dark'
+                );
+                channel.close();
+              }}
               sx={{
-                ml: 1,
+                ml: 0.5,
                 mr: {
-                  md: '-4px',
+                  md: '-10px',
                 },
-                p: 0.5,
                 color: 'text.secondary',
               }}
             >
-              <Avatar
-                src={photoURL}
-                sx={{
-                  width: 32,
-                  height: 32,
-                  backgroundColor: 'text.secondary',
-                }}
-              />
+              <SvgIcon inheritViewBox>
+                {theme === 'dark' ? <IoMoon /> : <IoSunny />}
+              </SvgIcon>
             </IconButton>
-            <Menu
-              id='account-menu'
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              slotProps={{
-                paper: {
-                  sx: {
-                    px: 1.5,
-                    py: 0.5,
-                    backgroundImage: 'none',
-                    '& .MuiMenuItem-root': {
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 1,
-                    },
-                    '& .MuiListItemText-primary': {
-                      fontSize: '0.875rem',
-                      fontWeight: 'medium',
-                    },
-                    '& .MuiListItemIcon-root': {
-                      minWidth: 32,
-                      color: 'text.secondary',
-                    },
-                  },
-                },
-              }}
-            >
-              {isSignedIn
-                ? [
-                    <ListItem
-                      key='account-info'
-                      className='default-bg'
-                      sx={{
-                        pl: 1.2, // icon have extra space on sides
-                        pr: 1.5,
-                        py: 0,
-                        mb: 1,
-                        backgroundColor: 'background.default',
-                        borderRadius: 1,
-                      }}
-                    >
-                      <ListItemIcon
-                        sx={{
-                          minWidth: '46px !important',
-                        }}
-                      >
-                        <Avatar
-                          src={photoURL}
-                          sx={{
-                            width: 36,
-                            height: 36,
-                            backgroundColor: 'text.secondary',
-                          }}
-                        />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={displayName}
-                        secondary={userRole}
-                      />
-                    </ListItem>,
-                    ToggleThemeComponent,
-                    <Divider key='divider' light sx={{ mb: 1 }} />,
-                    <MenuItem key='sign-out' onClick={signOut}>
-                      <ListItemIcon>
-                        <SvgIcon fontSize='small' inheritViewBox>
-                          <MdLogout />
-                        </SvgIcon>
-                      </ListItemIcon>
-                      <ListItemText>Sign out</ListItemText>
-                    </MenuItem>,
-                  ]
-                : [
-                    ToggleThemeComponent,
-                    <Divider key='divider' light sx={{ mb: 1 }} />,
-                    <MenuItem key='sign-in' onClick={signIn}>
-                      <ListItemIcon>
-                        <SvgIcon fontSize='small' inheritViewBox>
-                          <MdLogin />
-                        </SvgIcon>
-                      </ListItemIcon>
-                      <ListItemText>Sign in</ListItemText>
-                    </MenuItem>,
-                  ]}
-            </Menu>
             <IconButton
-              // edge='end'
               color='inherit'
               aria-label='menu'
               onClick={handleDrawerToggle}
