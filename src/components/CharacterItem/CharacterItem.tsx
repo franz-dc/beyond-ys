@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { Box, ButtonBase, Typography } from '@mui/material';
 import type { BoxProps, ButtonBaseProps } from '@mui/material';
 import { MdNoAccounts } from 'react-icons/md';
@@ -20,7 +18,7 @@ export interface CharacterItemProps
   disableLink?: boolean; // for use in avatar preview
 }
 
-const CharacterItem: FC<CharacterItemProps> = ({
+const CharacterItem = ({
   id,
   name,
   accentColor,
@@ -30,7 +28,7 @@ const CharacterItem: FC<CharacterItemProps> = ({
   BoxProps,
   disableLink = false,
   ...rest
-}) => {
+}: CharacterItemProps) => {
   return (
     // @ts-ignore
     <ButtonBase

@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import {
   Box,
@@ -25,7 +25,7 @@ export interface StoryTimelineProps {
   category: string;
 }
 
-const StoryTimelineWrapper: FC<PropsWithChildren> = ({ children }) => (
+const StoryTimelineWrapper = ({ children }: PropsWithChildren) => (
   <Box component='section' sx={{ mb: 4 }}>
     <Typography
       component='h2'
@@ -43,7 +43,7 @@ const StoryTimelineWrapper: FC<PropsWithChildren> = ({ children }) => (
   </Box>
 );
 
-const StoryTimeline: FC<StoryTimelineProps> = ({ id, category }) => {
+const StoryTimeline = ({ id, category }: StoryTimelineProps) => {
   const theme = useTheme();
   const mdUp = useMediaQuery(theme.breakpoints.up('md'));
 

@@ -1,6 +1,7 @@
 // From https://github.com/mui/material-ui/blob/master/examples/material-next-ts/src/Link.tsx
 
-import * as React from 'react';
+import { forwardRef } from 'react';
+import type { AnchorHTMLAttributes } from 'react';
 
 import MuiLink from '@mui/material/Link';
 import type { LinkProps as MuiLinkProps } from '@mui/material/Link';
@@ -13,7 +14,7 @@ import { useRouter } from 'next/router';
 const Anchor = styled('a')({});
 
 interface NextLinkComposedProps
-  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
     Omit<
       NextLinkProps,
       'href' | 'as' | 'passHref' | 'onMouseEnter' | 'onClick' | 'onTouchStart'
@@ -22,7 +23,7 @@ interface NextLinkComposedProps
   linkAs?: NextLinkProps['as'];
 }
 
-export const NextLinkComposed = React.forwardRef<
+export const NextLinkComposed = forwardRef<
   HTMLAnchorElement,
   NextLinkComposedProps
 >(function NextLinkComposed(props, ref) {
@@ -66,7 +67,7 @@ export type LinkProps = {
 
 // A styled version of the Next.js Link component:
 // https://nextjs.org/docs/api-reference/next/link
-const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(
+const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
   props,
   ref
 ) {

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps<
   };
 };
 
-const CharacterList: FC<CharacterListProps> = ({ categorizedCharacters }) => {
+const CharacterList = ({ categorizedCharacters }: CharacterListProps) => {
   const description = "List of all characters from Falcom's games.";
 
   const [searchQuery, setSearchQuery] = useState('');

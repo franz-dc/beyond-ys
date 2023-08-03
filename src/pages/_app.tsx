@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { createRef, useEffect, useState } from 'react';
 
 import { CacheProvider } from '@emotion/react';
 import type { EmotionCache } from '@emotion/react';
@@ -27,22 +27,20 @@ export default function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   const [nowPlaying, setNowPlaying] =
-    React.useState<MusicPlayerContextProps['nowPlaying']>(null);
+    useState<MusicPlayerContextProps['nowPlaying']>(null);
 
-  const [queue, setQueue] = React.useState<MusicPlayerContextProps['queue']>(
-    []
-  );
+  const [queue, setQueue] = useState<MusicPlayerContextProps['queue']>([]);
 
   const [isPlaying, setIsPlaying] =
-    React.useState<MusicPlayerContextProps['isPlaying']>(false);
+    useState<MusicPlayerContextProps['isPlaying']>(false);
 
-  const notistackRef = React.createRef<any>();
+  const notistackRef = createRef<any>();
 
   const onClickDismiss = (key: any) => () => {
     notistackRef?.current?.closeSnackbar(key);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initZod = async () => {
       if (process.env.NODE_ENV === 'development') {
         const z = await import('zod');

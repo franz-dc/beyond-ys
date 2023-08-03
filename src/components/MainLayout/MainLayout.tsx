@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { Box, Container } from '@mui/material';
 import type { BoxProps, ContainerProps } from '@mui/material';
@@ -16,14 +16,14 @@ export interface MainLayoutProps extends BoxProps {
   ContainerProps?: ContainerProps;
 }
 
-const MainLayout: FC<PropsWithChildren<MainLayoutProps>> = ({
+const MainLayout = ({
   title,
   description = "Bringing light to Falcom's works of art.",
   image,
   children,
   ContainerProps,
   ...rest
-}) => (
+}: PropsWithChildren<MainLayoutProps>) => (
   <Box
     {...rest}
     sx={{

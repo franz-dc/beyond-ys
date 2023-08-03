@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { Box, Paper } from '@mui/material';
 import type { BoxProps } from '@mui/material';
 
@@ -7,7 +5,7 @@ export interface SearchbarProps extends BoxProps<'input'> {
   ContainerProps?: BoxProps;
 }
 
-const Searchbar: FC<SearchbarProps> = ({ ContainerProps, ...rest }) => {
+const Searchbar = ({ ContainerProps, ...rest }: SearchbarProps) => {
   return (
     <Box
       sx={{

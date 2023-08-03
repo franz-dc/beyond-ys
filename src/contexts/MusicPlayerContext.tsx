@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { Dispatch, SetStateAction, createContext } from 'react';
+import { createContext } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
 export interface NowPlaying {
   id: string;

@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { List, ListItem, ListSubheader } from '@mui/material';
 
 import { LinkProps, Link as UnstyledLink } from '~/components';
@@ -31,7 +29,7 @@ interface NavMenuListProps {
   };
 }
 
-const NavMenuList: FC<NavMenuListProps> = ({ labelPrefix, subcategory }) => {
+const NavMenuList = ({ labelPrefix, subcategory }: NavMenuListProps) => {
   return (
     <List
       key={subcategory.name}

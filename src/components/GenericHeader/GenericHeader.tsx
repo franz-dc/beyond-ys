@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { Box, Typography } from '@mui/material';
 import type { BoxProps } from '@mui/material';
 
@@ -9,12 +7,12 @@ export interface GenericHeaderProps extends BoxProps {
   gutterBottom?: boolean;
 }
 
-const GenericHeader: FC<GenericHeaderProps> = ({
+const GenericHeader = ({
   title,
   subtitle,
   gutterBottom,
   ...rest
-}) => {
+}: GenericHeaderProps) => {
   return (
     <Box
       {...rest}

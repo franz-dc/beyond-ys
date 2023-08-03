@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 
 import { Box, ButtonBase, Paper, Typography, alpha } from '@mui/material';
 
@@ -11,7 +11,7 @@ export interface GameItemProps extends GameCacheSchema {
   id: string;
 }
 
-const GameItem: FC<GameItemProps> = ({ id, name, hasCoverImage }) => {
+const GameItem = ({ id, name, hasCoverImage }: GameItemProps) => {
   // `isLoaded` disabled for now because it does not always trigger
   // const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);

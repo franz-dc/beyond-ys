@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { CacheProvider } from '@emotion/react';
 import type { EmotionCache } from '@emotion/react';

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 
 import {
   Avatar,
@@ -62,10 +62,10 @@ export const getServerSideProps: GetServerSideProps<
   };
 };
 
-const StaffList: FC<StaffListProps> = ({
+const StaffList = ({
   categorizedStaffInfoCache,
   description,
-}) => {
+}: StaffListProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const debounce = useDebouncedCallback((searchQuery) => {

@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { keyframes } from '@emotion/react';
 import {
@@ -92,13 +92,13 @@ const StyledSlider = styled(Slider)(({ theme }) => ({
   },
 }));
 
-const MusicPlayer: FC<MusicPlayerProps> = ({
+const MusicPlayer = ({
   title,
   artists,
   youtubeId,
   albumName,
   albumUrl,
-}) => {
+}: MusicPlayerProps) => {
   const theme = useTheme();
 
   // used to get react-youtube's ready state

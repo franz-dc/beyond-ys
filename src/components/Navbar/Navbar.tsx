@@ -1,5 +1,6 @@
 /* eslint-disable react/jsx-indent */
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 
 import {
   AppBar,
@@ -58,12 +59,12 @@ interface NavItemWithMenuProps {
   onNavigate?: () => void;
 }
 
-const NavItemWithMenu: FC<NavItemWithMenuProps & LinkProps> = ({
+const NavItemWithMenu = ({
   id,
   name,
   href,
   MenuComponent,
-}) => {
+}: NavItemWithMenuProps & LinkProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

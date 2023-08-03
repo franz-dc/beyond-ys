@@ -1,11 +1,14 @@
-import { FC, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { MdExpandMore } from 'react-icons/md';
 
 export type FaqContainerProps = PropsWithChildren<{ question: string }>;
 
-const FaqContainer: FC<FaqContainerProps> = ({ question, children }) => (
+const FaqContainer = ({
+  question,
+  children,
+}: PropsWithChildren<FaqContainerProps>) => (
   <Accordion
     disableGutters
     square

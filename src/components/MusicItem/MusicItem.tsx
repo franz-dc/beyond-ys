@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 
 import {
   Box,
@@ -35,7 +35,7 @@ export interface MusicItemProps {
   onPlay?: () => void;
 }
 
-const MusicItem: FC<MusicItemProps> = ({
+const MusicItem = ({
   id,
   title,
   artists,
@@ -46,7 +46,7 @@ const MusicItem: FC<MusicItemProps> = ({
   albumUrl,
   youtubeId,
   onPlay,
-}) => {
+}: MusicItemProps) => {
   const albumName = albumUrl
     ? initialAlbumName || 'Unknown album'
     : initialAlbumName || 'No album';
