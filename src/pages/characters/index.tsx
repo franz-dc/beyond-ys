@@ -27,7 +27,12 @@ interface CharacterListProps {
 
 export const getServerSideProps: GetServerSideProps<
   CharacterListProps
-> = async () => {
+> = async ({ res }) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
   const charactersDoc = await getDoc(doc(cacheCollection, 'characters'));
 
   const charactersCache: Record<string, CharacterCacheSchema> =

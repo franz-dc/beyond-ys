@@ -42,8 +42,13 @@ type ExtendedGameSchema = GameSchema & {
 
 export const getServerSideProps: GetServerSideProps<
   ExtendedGameSchema
-> = async (context) => {
-  const { gameId: gameIdRaw } = context.query;
+> = async ({ query, res }) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
+  const { gameId: gameIdRaw } = query;
 
   const gameId = String(gameIdRaw);
 

@@ -19,7 +19,14 @@ interface Props {
   categorizedGames: [string, (GameCacheSchema & { id: string })[]][];
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  res,
+}) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
   const cachedGamesDoc = await getDoc<Record<string, GameCacheSchema>>(
     doc(cacheCollection, 'games')
   );

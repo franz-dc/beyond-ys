@@ -31,10 +31,16 @@ type Props = StaffInfoSchema & {
   cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
-) => {
-  const { staffId: staffIdRaw } = context.query;
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  query,
+  res,
+}) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
+  const { staffId: staffIdRaw } = query;
 
   const staffId = String(staffIdRaw);
 

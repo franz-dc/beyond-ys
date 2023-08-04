@@ -11,6 +11,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import type { GetServerSideProps } from 'next';
 import { BsSlashCircleFill } from 'react-icons/bs';
 import { FaTimes } from 'react-icons/fa';
 import { MdArrowDropDown, MdLayers, MdMusicNote } from 'react-icons/md';
@@ -19,7 +20,12 @@ import { PiTriangleFill } from 'react-icons/pi';
 import { GenericHeader, Link, MainLayout } from '~/components';
 import { TComposerTimeline } from '~/types';
 
-export const getServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
   const data: TComposerTimeline = await fetch(
     `${process.env.NEXT_PUBLIC_SITE_URL}/api/composer-timeline`
   ).then((res) => res.json());

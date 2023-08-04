@@ -15,7 +15,14 @@ interface Props {
   musicAlbumCache: Record<string, MusicAlbumCacheSchema>;
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  res,
+}) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
   const musicAlbumCacheDoc = await getDoc(doc(cacheCollection, 'musicAlbums'));
 
   if (!musicAlbumCacheDoc.exists()) {

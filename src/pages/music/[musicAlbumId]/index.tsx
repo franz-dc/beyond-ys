@@ -17,7 +17,13 @@ interface Props {
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   query,
+  res,
 }) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
   const { musicAlbumId: musicAlbumIdRaw } = query;
 
   const musicAlbumId = String(musicAlbumIdRaw);

@@ -25,9 +25,14 @@ interface StaffListProps {
   description: string;
 }
 
-export const getServerSideProps: GetServerSideProps<
-  StaffListProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<StaffListProps> = async ({
+  res,
+}) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
   const staffInfoCache = await getDoc<Record<string, StaffInfoCacheSchema>>(
     doc(cacheCollection, 'staffInfo')
   );

@@ -33,10 +33,16 @@ interface Props extends CharacterSchema {
   staffInfoCache: Record<string, StaffInfoCacheSchema>;
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async (
-  context
-) => {
-  const { characterId: characterIdRaw } = context.query;
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  query,
+  res,
+}) => {
+  res.setHeader(
+    'Cache-Control',
+    'public, s-maxage=60, stale-while-revalidate=3600'
+  );
+
+  const { characterId: characterIdRaw } = query;
   const characterId = String(characterIdRaw);
 
   const docSnap = await getDoc(doc(charactersCollection, characterId));
