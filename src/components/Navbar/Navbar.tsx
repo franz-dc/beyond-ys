@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-indent */
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 
 import {
@@ -259,15 +259,15 @@ const Navbar = () => {
   const { theme, resolvedTheme, setTheme } = useTheme();
 
   // change theme if changed in other tab
-  useEffect(() => {
-    const channel = new BroadcastChannel('theme');
-    channel.onmessage = (e: MessageEvent<string>) => {
-      if (['light', 'dark'].includes(e.data) && e.data !== resolvedTheme) {
-        setTheme(e.data);
-      }
-    };
-    return () => channel.close();
-  }, [resolvedTheme, setTheme]);
+  // useEffect(() => {
+  //   const channel = new BroadcastChannel('theme');
+  //   channel.onmessage = (e: MessageEvent<string>) => {
+  //     if (['light', 'dark'].includes(e.data) && e.data !== resolvedTheme) {
+  //       setTheme(e.data);
+  //     }
+  //   };
+  //   return () => channel.close();
+  // }, [resolvedTheme, setTheme]);
 
   return (
     <>
@@ -326,11 +326,11 @@ const Navbar = () => {
               onClick={() => {
                 setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
                 // broadcast theme change to other tabs
-                const channel = new BroadcastChannel('theme');
-                channel.postMessage(
-                  resolvedTheme === 'dark' ? 'light' : 'dark'
-                );
-                channel.close();
+                // const channel = new BroadcastChannel('theme');
+                // channel.postMessage(
+                //   resolvedTheme === 'dark' ? 'light' : 'dark'
+                // );
+                // channel.close();
               }}
               sx={{
                 ml: 0.5,
