@@ -26,7 +26,11 @@ import 'yet-another-react-lightbox/plugins/counter.css';
 import { GameItem, Link, MainLayout } from '~/components';
 import { cacheCollection, charactersCollection } from '~/configs';
 import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
-import { CharacterSchema, StaffInfoCacheSchema } from '~/schemas';
+import {
+  CharacterCacheSchema,
+  CharacterSchema,
+  StaffInfoCacheSchema,
+} from '~/schemas';
 
 interface Props extends CharacterSchema {
   id: string;
@@ -37,10 +41,20 @@ type Params = {
   characterId: string;
 };
 
-export const getStaticPaths: GetStaticPaths<Params> = async () => ({
-  paths: [],
-  fallback: 'blocking',
-});
+export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  const charactersDoc = await getDoc<Record<string, CharacterCacheSchema>>(
+    doc(cacheCollection, 'characters')
+  );
+
+  const charactersCache = charactersDoc.data() || {};
+
+  return {
+    paths: Object.keys(charactersCache).map((characterId) => ({
+      params: { characterId },
+    })),
+    fallback: 'blocking',
+  };
+};
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const characterId = params?.characterId as string;

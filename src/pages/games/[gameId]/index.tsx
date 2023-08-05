@@ -29,6 +29,7 @@ import {
 } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import {
+  GameCacheSchema,
   GameSchema,
   MusicAlbumCacheSchema,
   StaffInfoCacheSchema,
@@ -44,10 +45,20 @@ type Params = {
   gameId: string;
 };
 
-export const getStaticPaths: GetStaticPaths<Params> = async () => ({
-  paths: [],
-  fallback: 'blocking',
-});
+export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  const cachedGamesDoc = await getDoc<Record<string, GameCacheSchema>>(
+    doc(cacheCollection, 'games')
+  );
+
+  const cachedGames = cachedGamesDoc.data() || {};
+
+  return {
+    paths: Object.keys(cachedGames).map((gameId) => ({
+      params: { gameId },
+    })),
+    fallback: 'blocking',
+  };
+};
 
 export const getStaticProps: GetStaticProps<ExtendedGameSchema> = async ({
   params,
