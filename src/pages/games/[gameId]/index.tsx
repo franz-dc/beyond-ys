@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { GetServerSideProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import { MdCircle } from 'react-icons/md';
 
 import {
@@ -40,17 +40,21 @@ type ExtendedGameSchema = GameSchema & {
   cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
-export const getServerSideProps: GetServerSideProps<
-  ExtendedGameSchema
-> = async ({ query, res }) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
+type Params = {
+  gameId: string;
+};
 
-  const { gameId: gameIdRaw } = query;
+export const getStaticPaths: GetStaticPaths<Params> = async () => ({
+  paths: [],
+  fallback: 'blocking',
+});
 
-  const gameId = String(gameIdRaw);
+export const getStaticProps: GetStaticProps<ExtendedGameSchema> = async ({
+  params,
+}) => {
+  const gameId = params?.gameId as string;
+
+  if (!gameId) return { notFound: true };
 
   const docRef = doc(gamesCollection, gameId);
   const docSnap = await getDoc(docRef);
