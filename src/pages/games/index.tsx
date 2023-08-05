@@ -114,7 +114,7 @@ const GameList = ({ categorizedGames }: Props) => {
             <Grid container spacing={2}>
               {filteredGames.map((game) => (
                 <Grid item xs={6} xs3={4} sm4={3} md={2.4} key={game.id}>
-                  <GameItem {...game} />
+                  <GameItem {...game} prefetch={false} />
                 </Grid>
               ))}
             </Grid>

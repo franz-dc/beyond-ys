@@ -125,6 +125,7 @@ const StaffList = ({
                         <ButtonBase
                           focusRipple
                           component={Link}
+                          prefetch={false}
                           href={`/staff/${id}`}
                           sx={{
                             display: 'block',

@@ -86,6 +86,7 @@ const NavMenuList = ({ labelPrefix, subcategory }: NavMenuListProps) => {
           }}
         >
           <Link
+            prefetch={false}
             href={item.href}
             sx={{
               px: 1,

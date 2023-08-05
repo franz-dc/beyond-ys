@@ -212,6 +212,7 @@ const Music = ({ musicAlbumCache }: Props) => {
               <ButtonBase
                 component={Link}
                 href={`/music/${id}`}
+                prefetch={false}
                 focusRipple
                 sx={{
                   position: 'absolute',

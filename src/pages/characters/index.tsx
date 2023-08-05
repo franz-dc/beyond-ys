@@ -129,6 +129,7 @@ const CharacterList = ({ categorizedCharacters }: CharacterListProps) => {
                                   ? `${CLOUD_STORAGE_URL}/character-avatars/${id}`
                                   : undefined
                               }
+                              prefetch={false}
                               sx={{ mb: 3 }}
                             />
                           </Grid>

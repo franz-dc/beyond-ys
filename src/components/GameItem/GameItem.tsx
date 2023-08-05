@@ -9,9 +9,10 @@ import Link from '../Link';
 
 export interface GameItemProps extends GameCacheSchema {
   id: string;
+  prefetch?: boolean;
 }
 
-const GameItem = ({ id, name, hasCoverImage }: GameItemProps) => {
+const GameItem = ({ id, name, hasCoverImage, prefetch }: GameItemProps) => {
   // `isLoaded` disabled for now because it does not always trigger
   // const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -119,6 +120,7 @@ const GameItem = ({ id, name, hasCoverImage }: GameItemProps) => {
           borderRadius: 2,
         }}
         aria-labelledby={`${id}-name`}
+        prefetch={prefetch}
       />
     </Paper>
   );
