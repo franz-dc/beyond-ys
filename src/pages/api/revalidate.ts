@@ -1,22 +1,36 @@
-import { credential } from 'firebase-admin';
-import { initializeApp } from 'firebase-admin/app';
+import { apps, credential } from 'firebase-admin';
+import { type App, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 
-const app = initializeApp({
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  credential: credential.cert({
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  }),
-});
-
+const app = apps.some((app) => app?.name === 'beyond-ys-admin')
+  ? (apps?.find((app) => app?.name === 'beyond-ys-admin') as App)
+  : initializeApp(
+      {
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        credential: credential.cert({
+          projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(
+            /\\n/g,
+            '\n'
+          ),
+        }),
+      },
+      'beyond-ys-admin'
+    );
 const auth = getAuth(app);
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'POST')
+    return res
+      .status(405)
+      .json({ message: `Method ${req.method} not allowed` });
   try {
     const { authorization } = req.headers;
     if (!authorization)
