@@ -326,14 +326,14 @@ const Navbar = () => {
             </Stack>
             <IconButton
               aria-label={`toggle theme to ${
-                !isMounted || resolvedTheme === 'light' ? 'dark' : 'light'
+                !isMounted || resolvedTheme === 'dark' ? 'light' : 'dark'
               }`}
               onClick={() => {
-                setTheme(resolvedTheme === 'light' ? 'dark' : 'light');
+                setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
                 // broadcast theme change to other tabs
                 // const channel = new BroadcastChannel('theme');
                 // channel.postMessage(
-                //   resolvedTheme === 'light' ? 'dark' : 'light'
+                //   resolvedTheme === 'dark' ? 'light' : 'dark'
                 // );
                 // channel.close();
               }}
@@ -346,7 +346,7 @@ const Navbar = () => {
               }}
             >
               <SvgIcon inheritViewBox>
-                {!isMounted || theme === 'light' ? <IoSunny /> : <IoMoon />}
+                {!isMounted || theme === 'dark' ? <IoMoon /> : <IoSunny />}
               </SvgIcon>
             </IconButton>
             <IconButton
