@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import type { GetServerSideProps } from 'next';
+import type { GetStaticProps } from 'next';
 import slugify from 'slugify';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -19,14 +19,7 @@ interface Props {
   categorizedGames: [string, (GameCacheSchema & { id: string })[]][];
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  res,
-}) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
-
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const cachedGamesDoc = await getDoc<Record<string, GameCacheSchema>>(
     doc(cacheCollection, 'games')
   );
