@@ -63,7 +63,7 @@ Check out the project's progress regarding content [here](https://relic-beak-0d6
 
    2. Create a service account key and download the generated JSON file.
 
-   3. Set `GOOGLE_APPLICATION_CREDENTIALS` to the path of the JSON file in `.env.local`.
+   3. Update the values of `FIREBASE_ADMIN_PRIVATE_KEY` and `FIREBASE_ADMIN_CLIENT_EMAIL` in `.env.local` with the values from the JSON file.
 
    4. Make your storage bucket publicly readable. For more information, see [this](https://stackoverflow.com/a/61129057).
 
