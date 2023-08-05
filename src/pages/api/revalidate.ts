@@ -2,6 +2,7 @@ import { apps, credential } from 'firebase-admin';
 import { type App, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import NextCors from 'nextjs-cors';
 
 const app = apps.some((app) => app?.name === 'beyond-ys-admin')
   ? (apps?.find((app) => app?.name === 'beyond-ys-admin') as App)
@@ -26,6 +27,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  await NextCors(req, res, {
+    // Options
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    origin: '*',
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  });
+
   if (req.method !== 'GET')
     return res.status(405).json({ message: 'Method not allowed' });
 
