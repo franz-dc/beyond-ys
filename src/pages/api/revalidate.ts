@@ -2,7 +2,6 @@ import { apps, credential } from 'firebase-admin';
 import { type App, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { z } from 'zod';
 
 const app = apps.some((app) => app?.name === 'beyond-ys-admin')
   ? (apps?.find((app) => app?.name === 'beyond-ys-admin') as App)
@@ -23,14 +22,7 @@ const app = apps.some((app) => app?.name === 'beyond-ys-admin')
     );
 const auth = getAuth(app);
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST')
-    return res
-      .status(405)
-      .json({ message: `Method ${req.method} not allowed` });
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { authorization } = req.headers;
     if (!authorization)
@@ -40,15 +32,11 @@ export default async function handler(
     if (decodedToken.role !== 'admin')
       return res.status(401).json({ message: 'Insufficient permissions' });
 
-    const { paths } = req.body;
+    const paths = req.query.paths as string;
     if (!paths) return res.status(400).json({ message: 'No paths provided' });
 
-    const pathsSchema = z.string().array().nonempty();
-    const parsedPaths = pathsSchema.safeParse(paths);
-    if (!parsedPaths.success)
-      return res.status(400).json({ message: 'Invalid paths provided' });
-
-    await Promise.all(paths.map((path: string) => res.revalidate(path)));
+    const formattedPaths = paths.split(',');
+    await Promise.all(formattedPaths.map((path) => res.revalidate(path)));
     return res.status(200).json({ message: 'Revalidation successful' });
   } catch (err) {
     console.error(err);
