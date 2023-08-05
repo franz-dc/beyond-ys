@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-indent */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 
 import {
@@ -256,7 +256,12 @@ const Navbar = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
+  const [isMounted, setIsMounted] = useState(false);
   const { theme, resolvedTheme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // change theme if changed in other tab
   // useEffect(() => {
@@ -321,7 +326,7 @@ const Navbar = () => {
             </Stack>
             <IconButton
               aria-label={`toggle theme to ${
-                resolvedTheme === 'dark' ? 'light' : 'dark'
+                !isMounted || resolvedTheme === 'dark' ? 'light' : 'dark'
               }`}
               onClick={() => {
                 setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
@@ -341,7 +346,7 @@ const Navbar = () => {
               }}
             >
               <SvgIcon inheritViewBox>
-                {theme === 'dark' ? <IoMoon /> : <IoSunny />}
+                {!isMounted || theme === 'dark' ? <IoMoon /> : <IoSunny />}
               </SvgIcon>
             </IconButton>
             <IconButton
