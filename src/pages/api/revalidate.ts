@@ -2,7 +2,6 @@ import { credential } from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import NextCors from 'nextjs-cors';
 
 const app = initializeApp({
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -18,13 +17,6 @@ const auth = getAuth(app);
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
-    await NextCors(req, res, {
-      // Options
-      methods: ['GET', 'HEAD'],
-      origin: '*',
-      optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-    });
-
     const { authorization } = req.headers;
     if (!authorization)
       return res.status(401).json({ message: 'Unauthorized' });
