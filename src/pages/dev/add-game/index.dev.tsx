@@ -44,6 +44,7 @@ import {
   SwitchElement,
 } from '~/components';
 import {
+  auth,
   cacheCollection,
   charactersCollection,
   db,
@@ -295,8 +296,21 @@ const AddGame = () => {
       });
       return;
     }
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
 
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload images first to update hasCoverImage and hasBannerImage
       let hasCoverImage = false;
       if (coverImage) {
@@ -417,6 +431,23 @@ const AddGame = () => {
       });
 
       await batch.commit();
+
+      const revalidatePaths = formattedCharacterIds.map(
+        (id) => `/characters/${id}`
+      );
+
+      await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate?` +
+          new URLSearchParams({
+            paths: revalidatePaths.join(','),
+          }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: tokenRes.token,
+          },
+        }
+      );
 
       reset();
 

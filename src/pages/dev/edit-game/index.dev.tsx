@@ -40,6 +40,7 @@ import { z } from 'zod';
 
 import { DatePickerElement, GenericHeader, MainLayout } from '~/components';
 import {
+  auth,
   cacheCollection,
   charactersCollection,
   db,
@@ -283,7 +284,21 @@ const EditGame = () => {
     bannerImage,
   }: Schema) => {
     if (!id) return;
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload images first to update hasCoverImage and hasBannerImage
       let newHasCoverImage = hasCoverImage;
       if (coverImage) {
@@ -415,11 +430,12 @@ const EditGame = () => {
 
       // update gameId from character docs if the characterIds have changed
       // 1. removed characters
-      const removedCharacterIds = currentGameData?.characterIds.filter(
-        (id) => !formattedCharacterIds.includes(id)
-      );
+      const removedCharacterIds =
+        currentGameData?.characterIds.filter(
+          (id) => !formattedCharacterIds.includes(id)
+        ) || [];
 
-      if (removedCharacterIds?.length) {
+      if (removedCharacterIds.length) {
         removedCharacterIds.forEach((characterId) => {
           batch.update(doc(charactersCollection, characterId), {
             gameIds: arrayRemove(id),
@@ -460,12 +476,13 @@ const EditGame = () => {
         });
       }
 
-      if (
+      const isCacheDataChanged =
         currentGameData?.name !== name ||
         currentGameData?.category !== category ||
         currentGameData?.releaseDate !== formattedReleaseDate ||
-        currentGameData?.hasCoverImage !== newHasCoverImage
-      ) {
+        currentGameData?.hasCoverImage !== newHasCoverImage;
+
+      if (isCacheDataChanged) {
         // 3. retained characters
         const retainedCharacterIds = formattedCharacterIds.filter((id) =>
           currentGameData?.characterIds.includes(id)
@@ -495,6 +512,26 @@ const EditGame = () => {
       batch.set(doc(gamesCollection, id), newData);
 
       await batch.commit();
+
+      const revalidatePaths = [
+        `/games/${id}`,
+        ...(isCacheDataChanged ? ['/games'] : []),
+        ...removedCharacterIds.map((id) => `/characters/${id}`),
+        ...addedCharacterIds.map((id) => `/characters/${id}`),
+      ];
+
+      await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate?` +
+          new URLSearchParams({
+            paths: revalidatePaths.join(','),
+          }),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: tokenRes.token,
+          },
+        }
+      );
 
       setCurrentGameData((prev) => {
         if (!prev) return null;
