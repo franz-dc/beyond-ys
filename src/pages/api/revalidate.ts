@@ -15,7 +15,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 
-export const POST = async (req: NextApiRequest, res: NextApiResponse) => {
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { authorization } = req.headers;
     if (!authorization)
@@ -35,4 +35,4 @@ export const POST = async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(err);
     return res.status(500).json({ message: 'Revalidation failed' });
   }
-};
+}
