@@ -1,12 +1,8 @@
-import dotenv from 'dotenv';
 import { credential } from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-dotenv.config({
-  path: '.env',
-});
+import NextCors from 'nextjs-cors';
 
 const app = initializeApp({
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -22,6 +18,13 @@ const auth = getAuth(app);
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    await NextCors(req, res, {
+      methods: ['POST'],
+      // TODO: Change this to admin URL after MVP is complete
+      origin: '*',
+      optionsSuccessStatus: 200,
+    });
+
     const { authorization } = req.headers;
     if (!authorization)
       return res.status(401).json({ message: 'Unauthorized' });
