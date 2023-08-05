@@ -1,7 +1,12 @@
+import dotenv from 'dotenv';
 import { credential } from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import type { NextApiRequest, NextApiResponse } from 'next';
+
+dotenv.config({
+  path: '.env',
+});
 
 const app = initializeApp({
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
