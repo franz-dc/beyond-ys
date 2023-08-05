@@ -15,7 +15,7 @@ const app = initializeApp({
 
 const auth = getAuth(app);
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+export const POST = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { authorization } = req.headers;
     if (!authorization)
@@ -36,5 +36,3 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(500).json({ message: 'Revalidation failed' });
   }
 };
-
-export default handler;
