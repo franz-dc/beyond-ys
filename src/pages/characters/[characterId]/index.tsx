@@ -14,7 +14,7 @@ import {
   alpha,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { GetServerSideProps } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 import { ReactCountryFlag } from 'react-country-flag';
 import { MdNoAccounts } from 'react-icons/md';
 import { Lightbox } from 'yet-another-react-lightbox';
@@ -33,17 +33,19 @@ interface Props extends CharacterSchema {
   staffInfoCache: Record<string, StaffInfoCacheSchema>;
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  query,
-  res,
-}) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
+type Params = {
+  characterId: string;
+};
 
-  const { characterId: characterIdRaw } = query;
-  const characterId = String(characterIdRaw);
+export const getStaticPaths: GetStaticPaths<Params> = async () => ({
+  paths: [],
+  fallback: 'blocking',
+});
+
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const characterId = params?.characterId as string;
+
+  if (!characterId) return { notFound: true };
 
   const docSnap = await getDoc(doc(charactersCollection, characterId));
 

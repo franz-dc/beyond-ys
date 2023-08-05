@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 import { MdCircle } from 'react-icons/md';
 
 import {
