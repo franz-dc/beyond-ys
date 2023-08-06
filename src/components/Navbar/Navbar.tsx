@@ -326,7 +326,7 @@ const Navbar = () => {
             </Stack>
             <IconButton
               aria-label={`toggle theme to ${
-                !isMounted || resolvedTheme === 'dark' ? 'light' : 'dark'
+                isMounted && resolvedTheme === 'dark' ? 'light' : 'dark'
               }`}
               onClick={() => {
                 setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
@@ -346,7 +346,7 @@ const Navbar = () => {
               }}
             >
               <SvgIcon inheritViewBox>
-                {!isMounted || theme === 'dark' ? <IoSunny /> : <IoMoon />}
+                {isMounted && theme === 'dark' ? <IoSunny /> : <IoMoon />}
               </SvgIcon>
             </IconButton>
             <IconButton
