@@ -1,3 +1,13 @@
+/** HOW TO EDIT getStaticProps() DATA: ----------------------------------------
+ * - For new games, add a new entry to the COMPOSER_TIMELINE_GAMES object.
+ *
+ * - For new composers, add a new entry to COMPOSER_TIMELINE_STAFF_MEMBERS and
+ * COMPOSER_TIMELINE objects.
+ *
+ * - Recommended: Use intellisense when filling out COMPOSER_TIMELINE keys to
+ * prevent typos.
+ * ------------------------------------------------------------------------- */
+
 import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 
