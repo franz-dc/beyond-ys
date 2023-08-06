@@ -377,6 +377,7 @@ const AddMusicAlbum = () => {
 
       await revalidatePaths(
         [
+          `/musicAlbums/${id}`,
           '/music',
           ...Object.keys(staffInfoChanges).map(
             (staffId) => `/staff/${staffId}`

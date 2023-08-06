@@ -337,7 +337,10 @@ const AddCharacter = () => {
 
       await batch.commit();
 
-      await revalidatePaths(['/characters'], tokenRes.token);
+      await revalidatePaths(
+        [`/characters/${id}`, '/characters'],
+        tokenRes.token
+      );
 
       // don't wait for onSnapshot to update the characterNames state
       setCharactersCache((prev) => ({

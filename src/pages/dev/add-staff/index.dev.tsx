@@ -234,7 +234,7 @@ const AddStaff = () => {
 
       await batch.commit();
 
-      await revalidatePaths(['/staff'], tokenRes.token);
+      await revalidatePaths([`/staff/${id}`, '/staff'], tokenRes.token);
 
       // don't wait for onSnapshot to update the staffInfoCache state
       setStaffInfoCache((prev) => ({ ...prev, [id]: newCacheData }));

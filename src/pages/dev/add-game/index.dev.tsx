@@ -433,7 +433,11 @@ const AddGame = () => {
       await batch.commit();
 
       await revalidatePaths(
-        ['/games', ...formattedCharacterIds.map((id) => `/characters/${id}`)],
+        [
+          `/games/${id}`,
+          '/games',
+          ...formattedCharacterIds.map((id) => `/characters/${id}`),
+        ],
         tokenRes.token
       );
 
