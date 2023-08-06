@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Box, ButtonBase, Grid, Paper, Stack, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import type { GetServerSideProps } from 'next';
+import type { GetStaticProps } from 'next';
 import { MdAlbum } from 'react-icons/md';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -15,14 +15,7 @@ interface Props {
   musicAlbumCache: Record<string, MusicAlbumCacheSchema>;
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  res,
-}) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
-
+export const getStaticProps: GetStaticProps<Props> = async () => {
   const musicAlbumCacheDoc = await getDoc(doc(cacheCollection, 'musicAlbums'));
 
   if (!musicAlbumCacheDoc.exists()) {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Box, Divider, Grid, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import type { GetServerSideProps } from 'next';
+import type { GetStaticProps } from 'next';
 import { useDebouncedCallback } from 'use-debounce';
 
 import {
@@ -25,14 +25,7 @@ interface CharacterListProps {
   categorizedCharacters: CategorizedCharacters;
 }
 
-export const getServerSideProps: GetServerSideProps<
-  CharacterListProps
-> = async ({ res }) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
-
+export const getStaticProps: GetStaticProps<CharacterListProps> = async () => {
   const charactersDoc = await getDoc(doc(cacheCollection, 'characters'));
 
   const charactersCache: Record<string, CharacterCacheSchema> =

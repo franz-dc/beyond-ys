@@ -32,11 +32,6 @@ import {
   StaffInfoCacheSchema,
 } from '~/schemas';
 
-interface Props extends CharacterSchema {
-  id: string;
-  staffInfoCache: Record<string, StaffInfoCacheSchema>;
-}
-
 type Params = {
   characterId: string;
 };
@@ -55,6 +50,11 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
     fallback: 'blocking',
   };
 };
+
+interface Props extends CharacterSchema {
+  id: string;
+  staffInfoCache: Record<string, StaffInfoCacheSchema>;
+}
 
 export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   const characterId = params?.characterId as string;

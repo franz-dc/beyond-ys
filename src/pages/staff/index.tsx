@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import type { GetServerSideProps } from 'next';
+import type { GetStaticProps } from 'next';
 import { useDebouncedCallback } from 'use-debounce';
 
 import { GenericHeader, Link, MainLayout, Searchbar } from '~/components';
@@ -25,14 +25,7 @@ interface StaffListProps {
   description: string;
 }
 
-export const getServerSideProps: GetServerSideProps<StaffListProps> = async ({
-  res,
-}) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
-
+export const getStaticProps: GetStaticProps<StaffListProps> = async () => {
   const staffInfoCache = await getDoc<Record<string, StaffInfoCacheSchema>>(
     doc(cacheCollection, 'staffInfo')
   );

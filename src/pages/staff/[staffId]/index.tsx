@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { GetServerSideProps } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 
 import { Link, MainLayout, MusicItem } from '~/components';
 import { cacheCollection, staffInfosCollection } from '~/configs';
@@ -24,6 +24,25 @@ import {
   StaffInfoSchema,
 } from '~/schemas';
 
+type Params = {
+  staffId: string;
+};
+
+export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  const staffsDoc = await getDoc<Record<string, StaffInfoCacheSchema>>(
+    doc(cacheCollection, 'staffInfo')
+  );
+
+  const staffsCache = staffsDoc.data() || {};
+
+  return {
+    paths: Object.keys(staffsCache).map((staffId) => ({
+      params: { staffId },
+    })),
+    fallback: 'blocking',
+  };
+};
+
 type Props = StaffInfoSchema & {
   id: string;
   staffInfoCache: Record<string, StaffInfoCacheSchema>;
@@ -31,18 +50,10 @@ type Props = StaffInfoSchema & {
   cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  query,
-  res,
-}) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const staffId = params?.staffId as string;
 
-  const { staffId: staffIdRaw } = query;
-
-  const staffId = String(staffIdRaw);
+  if (!staffId) return { notFound: true };
 
   const docRef = doc(staffInfosCollection, staffId);
   const docSnap = await getDoc(docRef);

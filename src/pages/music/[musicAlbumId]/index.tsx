@@ -1,6 +1,6 @@
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
-import { GetServerSideProps } from 'next';
+import type { GetStaticPaths, GetStaticProps } from 'next';
 import { MdAlbum } from 'react-icons/md';
 
 import { MainLayout, MusicItem } from '~/components';
@@ -9,24 +9,34 @@ import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { MusicAlbumSchema, StaffInfoCacheSchema } from '~/schemas';
 import { formatReleaseDate } from '~/utils';
+
+type Params = {
+  musicAlbumId: string;
+};
+
+export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  const musicAlbumsDoc = await getDoc(doc(cacheCollection, 'musicAlbums'));
+
+  const musicAlbumsCache = musicAlbumsDoc.data() || {};
+
+  return {
+    paths: Object.keys(musicAlbumsCache).map((musicAlbumId) => ({
+      params: { musicAlbumId },
+    })),
+    fallback: 'blocking',
+  };
+};
+
 interface Props {
   id: string;
   musicAlbum: MusicAlbumSchema;
   staffInfo: Record<string, StaffInfoCacheSchema>;
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async ({
-  query,
-  res,
-}) => {
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, stale-while-revalidate=3600'
-  );
+export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
+  const musicAlbumId = params?.musicAlbumId as string;
 
-  const { musicAlbumId: musicAlbumIdRaw } = query;
-
-  const musicAlbumId = String(musicAlbumIdRaw);
+  if (!musicAlbumId) return { notFound: true };
 
   const docSnap = await getDoc(doc(musicAlbumsCollection, musicAlbumId));
 

@@ -35,12 +35,6 @@ import {
   StaffInfoCacheSchema,
 } from '~/schemas';
 
-type ExtendedGameSchema = GameSchema & {
-  id: string;
-  staffInfoCache: Record<string, StaffInfoCacheSchema>;
-  cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
-};
-
 type Params = {
   gameId: string;
 };
@@ -58,6 +52,12 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
     })),
     fallback: 'blocking',
   };
+};
+
+type ExtendedGameSchema = GameSchema & {
+  id: string;
+  staffInfoCache: Record<string, StaffInfoCacheSchema>;
+  cachedMusicAlbums: Record<string, MusicAlbumCacheSchema>;
 };
 
 export const getStaticProps: GetStaticProps<ExtendedGameSchema> = async ({
