@@ -33,10 +33,10 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
     doc(cacheCollection, 'staffInfo')
   );
 
-  const staffsCache = staffsDoc.data() || {};
+  const staffInfoCache = staffsDoc.data() || {};
 
   return {
-    paths: Object.keys(staffsCache).map((staffId) => ({
+    paths: Object.keys(staffInfoCache).map((staffId) => ({
       params: { staffId },
     })),
     fallback: 'blocking',
