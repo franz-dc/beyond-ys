@@ -67,6 +67,8 @@ Check out the project's progress regarding content [here](https://relic-beak-0d6
 
    4. Make your storage bucket publicly readable. For more information, see [this](https://stackoverflow.com/a/61129057).
 
+   **Please be aware of Firebase's free plan daily quota, especially if you are seeding (writes) or building (reads for ISR caching) the project very often.**
+
    b. **Firebase Local Emulator Suite**
 
    1. Make sure that `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` is set to `true` in `.env.local`.
