@@ -15,6 +15,9 @@ type Params = {
 };
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  if (process.env.USE_EMPTY_STATIC_PATHS)
+    return { paths: [], fallback: 'blocking' };
+
   const musicAlbumsDoc = await getDoc(doc(cacheCollection, 'musicAlbums'));
 
   const musicAlbumsCache = musicAlbumsDoc.data() || {};

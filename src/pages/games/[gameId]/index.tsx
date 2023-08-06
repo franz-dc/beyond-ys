@@ -40,6 +40,9 @@ type Params = {
 };
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  if (process.env.USE_EMPTY_STATIC_PATHS)
+    return { paths: [], fallback: 'blocking' };
+
   const cachedGamesDoc = await getDoc<Record<string, GameCacheSchema>>(
     doc(cacheCollection, 'games')
   );

@@ -29,6 +29,9 @@ type Params = {
 };
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
+  if (process.env.USE_EMPTY_STATIC_PATHS)
+    return { paths: [], fallback: 'blocking' };
+
   const staffsDoc = await getDoc<Record<string, StaffInfoCacheSchema>>(
     doc(cacheCollection, 'staffInfo')
   );
