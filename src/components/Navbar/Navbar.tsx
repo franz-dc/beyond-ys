@@ -346,7 +346,7 @@ const Navbar = () => {
               }}
             >
               <SvgIcon inheritViewBox>
-                {!isMounted || theme === 'dark' ? <IoMoon /> : <IoSunny />}
+                {!isMounted || theme === 'dark' ? <IoSunny /> : <IoMoon />}
               </SvgIcon>
             </IconButton>
             <IconButton
