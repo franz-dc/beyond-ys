@@ -37,7 +37,7 @@ type Params = {
 };
 
 export const getStaticPaths: GetStaticPaths<Params> = async () => {
-  if (process.env.USE_EMPTY_STATIC_PATHS)
+  if (process.env.USE_EMPTY_STATIC_PATHS === 'true')
     return { paths: [], fallback: 'blocking' };
 
   const charactersDoc = await getDoc<Record<string, CharacterCacheSchema>>(
