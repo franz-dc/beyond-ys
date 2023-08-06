@@ -61,13 +61,13 @@ Check out the project's progress regarding content [here](https://relic-beak-0d6
 
    1. Make sure that `NEXT_PUBLIC_USE_FIREBASE_EMULATOR` is set to `false` in `.env.local`.
 
-   2. Create a service account key and download the generated JSON file.
+   2. Optional: Set `USE_EMPTY_STATIC_PATHS` to `true` in `.env.local`. This is recommended if you're using a free Firebase plan to avoid exceeding the free quota.
 
-   3. Update the values of `FIREBASE_ADMIN_PRIVATE_KEY` and `FIREBASE_ADMIN_CLIENT_EMAIL` in `.env.local` with the values from the JSON file.
+   3. Create a service account key and download the generated JSON file.
 
-   4. Make your storage bucket publicly readable. For more information, see [this](https://stackoverflow.com/a/61129057).
+   4. Update the values of `FIREBASE_ADMIN_PRIVATE_KEY` and `FIREBASE_ADMIN_CLIENT_EMAIL` in `.env.local` with the values from the JSON file.
 
-   **Please be aware of Firebase's free plan daily quota, especially if you are seeding (writes) or building (reads for ISR caching) the project very often.**
+   5. Make your storage bucket publicly readable. For more information, see [this](https://stackoverflow.com/a/61129057).
 
    b. **Firebase Local Emulator Suite**
 
