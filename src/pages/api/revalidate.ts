@@ -38,10 +38,11 @@ export default async function handler(
 
   try {
     const { authorization } = req.headers;
-    if (!authorization)
+    const authorizationWithoutBearer = authorization?.replace('Bearer ', '');
+    if (!authorizationWithoutBearer)
       return res.status(401).json({ message: 'Unauthorized' });
 
-    const decodedToken = await auth.verifyIdToken(authorization);
+    const decodedToken = await auth.verifyIdToken(authorizationWithoutBearer);
     if (decodedToken.role !== 'admin')
       return res.status(401).json({ message: 'Insufficient permissions' });
 
