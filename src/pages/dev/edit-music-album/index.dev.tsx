@@ -36,6 +36,7 @@ import { z } from 'zod';
 
 import { DatePickerElement, GenericHeader, MainLayout } from '~/components';
 import {
+  auth,
   cacheCollection,
   db,
   gamesCollection,
@@ -52,7 +53,7 @@ import {
   imageSchema,
   musicAlbumSchema,
 } from '~/schemas';
-import { formatISO } from '~/utils';
+import { formatISO, revalidatePaths } from '~/utils';
 
 const EditMusicAlbum = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -269,7 +270,21 @@ const EditMusicAlbum = () => {
     ...values
   }: Schema) => {
     if (!id) return;
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload image first to update hasAlbumArt
       let newHasAlbumArt = hasAlbumArt;
       if (albumArt) {
@@ -308,12 +323,13 @@ const EditMusicAlbum = () => {
 
       const batch = writeBatch(db);
 
-      // update musicAlbums cache if name is changed
-      if (
+      const isCacheDataChanged =
         currentMusicAlbumData?.name !== values.name ||
         currentMusicAlbumData?.releaseDate !== formattedReleaseDate ||
-        currentMusicAlbumData?.hasAlbumArt !== newHasAlbumArt
-      ) {
+        currentMusicAlbumData?.hasAlbumArt !== newHasAlbumArt;
+
+      // update musicAlbums cache if name is changed
+      if (isCacheDataChanged) {
         const musicAlbumCacheDocRef = doc(cacheCollection, 'musicAlbums');
 
         batch.update(musicAlbumCacheDocRef, {
@@ -540,6 +556,18 @@ const EditMusicAlbum = () => {
       });
 
       await batch.commit();
+
+      await revalidatePaths(
+        [
+          `/music/${id}`,
+          ...(isCacheDataChanged ? ['/music'] : []),
+          ...Object.keys(staffInfoChanges).map(
+            (staffId) => `/staff/${staffId}`
+          ),
+          ...Object.keys(changedGames).map((gameId) => `/games/${gameId}`),
+        ],
+        tokenRes.token
+      );
 
       setCurrentMusicAlbumData((prev) => ({
         ...prev!,

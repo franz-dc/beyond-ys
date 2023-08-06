@@ -36,6 +36,7 @@ import { z } from 'zod';
 
 import { CharacterItem, GenericHeader, MainLayout } from '~/components';
 import {
+  auth,
   cacheCollection,
   charactersCollection,
   db,
@@ -51,6 +52,7 @@ import {
   characterSchema,
   imageSchema,
 } from '~/schemas';
+import { revalidatePaths } from '~/utils';
 
 const EditCharacter = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -269,7 +271,21 @@ const EditCharacter = () => {
     ...rest
   }: Schema) => {
     if (!id) return;
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload images first to update hasAvatar/hasMainImage
       let newHasAvatar = hasAvatar;
       if (avatar) {
@@ -362,14 +378,15 @@ const EditCharacter = () => {
         ...rest,
       });
 
-      // update the characters cache
-      if (
+      const isCacheDataChanged =
         currentCharacterData?.name !== name ||
         currentCharacterData?.category !== category ||
         currentCharacterData?.imageDirection !== imageDirection ||
         currentCharacterData?.accentColor !== accentColor ||
-        currentCharacterData?.hasAvatar !== newHasAvatar
-      ) {
+        currentCharacterData?.hasAvatar !== newHasAvatar;
+
+      // update the characters cache
+      if (isCacheDataChanged) {
         const newCharacterCacheData = {
           name,
           category,
@@ -403,6 +420,11 @@ const EditCharacter = () => {
           )
         );
       }
+
+      await revalidatePaths(
+        [`characters/${id}`, ...(isCacheDataChanged ? ['/characters'] : [])],
+        tokenRes.token
+      );
 
       // don't wait for onSnapshot to update the characterNames state
       setCharactersCache((prev) => ({

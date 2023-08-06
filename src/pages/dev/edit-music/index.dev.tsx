@@ -33,6 +33,7 @@ import { z } from 'zod';
 
 import { GenericHeader, MainLayout } from '~/components';
 import {
+  auth,
   cacheCollection,
   db,
   gamesCollection,
@@ -47,6 +48,7 @@ import {
   StaffInfoCacheSchema,
   musicSchema,
 } from '~/schemas';
+import { revalidatePaths } from '~/utils';
 
 const EditMusic = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -196,7 +198,21 @@ const EditMusic = () => {
     youtubeId,
   }: Schema) => {
     if (!id) return;
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       const batch = writeBatch(db);
 
       const dependentGameIds = currentMusicData?.dependentGameIds || [];
@@ -288,6 +304,11 @@ const EditMusic = () => {
           ...otherArtists.map(({ staffId }) => staffId),
         ]),
       ];
+
+      // general retained staff (for revalidation only, specifics at bottom)
+      const retainedStaffIds = newStaffIds.filter((id) =>
+        originalStaffIds.includes(id)
+      );
 
       // 1. removed staff
       const removedStaffIds = originalStaffIds.filter(
@@ -382,6 +403,17 @@ const EditMusic = () => {
       }
 
       await batch.commit();
+
+      await revalidatePaths(
+        [
+          `/music/${albumId}`,
+          ...dependentGameIds.map((gameId) => `/games/${gameId}`),
+          ...addedStaffIds.map((staffId) => `/staff/${staffId}`),
+          ...removedStaffIds.map((staffId) => `/staff/${staffId}`),
+          ...retainedStaffIds.map((staffId) => `/staff/${staffId}`),
+        ],
+        tokenRes.token
+      );
 
       setCurrentMusicData((prev) => {
         if (!prev) return null;

@@ -61,7 +61,7 @@ import {
   gameSchema,
   imageSchema,
 } from '~/schemas';
-import { formatISO } from '~/utils';
+import { formatISO, revalidatePaths } from '~/utils';
 
 const AddGame = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -432,21 +432,9 @@ const AddGame = () => {
 
       await batch.commit();
 
-      const revalidatePaths = formattedCharacterIds.map(
-        (id) => `/characters/${id}`
-      );
-
-      await fetch(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate?` +
-          new URLSearchParams({
-            paths: revalidatePaths.join(','),
-          }),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: tokenRes.token,
-          },
-        }
+      await revalidatePaths(
+        ['/games', ...formattedCharacterIds.map((id) => `/characters/${id}`)],
+        tokenRes.token
       );
 
       reset();

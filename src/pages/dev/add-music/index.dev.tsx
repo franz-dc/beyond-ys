@@ -23,6 +23,7 @@ import { z } from 'zod';
 
 import { GenericHeader, MainLayout } from '~/components';
 import {
+  auth,
   cacheCollection,
   db,
   musicAlbumsCollection,
@@ -34,6 +35,7 @@ import {
   StaffInfoCacheSchema,
   musicSchema,
 } from '~/schemas';
+import { revalidatePaths } from '~/utils';
 
 const AddMusic = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -157,7 +159,21 @@ const AddMusic = () => {
     seconds,
     youtubeId,
   }: Schema) => {
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       const formattedComposerIds = composerIds.map(({ value }) => value);
       const formattedArrangerIds = arrangerIds.map(({ value }) => value);
 
@@ -215,6 +231,14 @@ const AddMusic = () => {
       });
 
       await batch.commit();
+
+      await revalidatePaths(
+        [
+          ...(albumId ? [`music/${albumId}`] : []),
+          ...staffIds.map((staffId) => `staff/${staffId}`),
+        ],
+        tokenRes.token
+      );
 
       reset();
 

@@ -38,7 +38,13 @@ import {
   MainLayout,
   SwitchElement,
 } from '~/components';
-import { cacheCollection, charactersCollection, db, storage } from '~/configs';
+import {
+  auth,
+  cacheCollection,
+  charactersCollection,
+  db,
+  storage,
+} from '~/configs';
 import { LANGUAGES } from '~/constants';
 import {
   CharacterCacheSchema,
@@ -47,6 +53,7 @@ import {
   characterSchema,
   imageSchema,
 } from '~/schemas';
+import { revalidatePaths } from '~/utils';
 
 const AddCharacter = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -234,8 +241,21 @@ const AddCharacter = () => {
     if (charactersCache[id]) {
       throw new Error(`Slug '${id}' is already taken.`);
     }
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
 
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload images first to update hasAvatar/hasMainImage
       let hasAvatar = false;
       if (avatar) {
@@ -316,6 +336,8 @@ const AddCharacter = () => {
       });
 
       await batch.commit();
+
+      await revalidatePaths(['/characters'], tokenRes.token);
 
       // don't wait for onSnapshot to update the characterNames state
       setCharactersCache((prev) => ({

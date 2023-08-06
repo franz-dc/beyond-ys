@@ -13,6 +13,7 @@ import { z } from 'zod';
 
 import { GenericHeader, MainLayout } from '~/components';
 import {
+  auth,
   cacheCollection,
   db,
   musicAlbumsCollection,
@@ -20,6 +21,7 @@ import {
   staffInfosCollection,
 } from '~/configs';
 import { MusicSchema, musicSchema } from '~/schemas';
+import { revalidatePaths } from '~/utils';
 
 const BulkAddMusic = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -75,13 +77,30 @@ const BulkAddMusic = () => {
   } = formContext;
 
   const handleSave = async ({ json }: Schema) => {
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       const musics: Omit<MusicSchema, 'dependentGameIds' | 'updatedAt'>[] =
         JSON.parse(json);
       const batch = writeBatch(db);
 
       // useful for updating game soundtracks in bulk
       const musicIds: string[] = [];
+
+      let staffIdsWithChanges: string[] = [];
+      let albumIdsWithChanges: string[] = [];
 
       musics.forEach(
         ({
@@ -143,9 +162,25 @@ const BulkAddMusic = () => {
               [`cachedMusic.${id}`]: newData,
             });
           });
+
+          staffIdsWithChanges = [...staffIdsWithChanges, ...staffIds];
+          albumIdsWithChanges = [...albumIdsWithChanges, albumId];
         }
       );
+
       await batch.commit();
+
+      staffIdsWithChanges = [...new Set(staffIdsWithChanges)];
+      albumIdsWithChanges = [...new Set(albumIdsWithChanges)].filter(Boolean);
+
+      await revalidatePaths(
+        [
+          ...staffIdsWithChanges.map((id) => `/staff/${id}`),
+          ...albumIdsWithChanges.map((id) => `/music/${id}`),
+        ],
+        tokenRes.token
+      );
+
       reset();
       enqueueSnackbar('Music added successfully.', { variant: 'success' });
       // eslint-disable-next-line no-console

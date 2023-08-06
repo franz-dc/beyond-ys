@@ -30,7 +30,13 @@ import {
 import { z } from 'zod';
 
 import { GenericHeader, MainLayout } from '~/components';
-import { cacheCollection, db, staffInfosCollection, storage } from '~/configs';
+import {
+  auth,
+  cacheCollection,
+  db,
+  staffInfosCollection,
+  storage,
+} from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import {
   GameCacheSchema,
@@ -39,6 +45,7 @@ import {
   imageSchema,
   staffInfoSchema,
 } from '~/schemas';
+import { revalidatePaths } from '~/utils';
 
 const EditStaff = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -225,7 +232,21 @@ const EditStaff = () => {
 
   const handleSave = async ({ id, hasAvatar, avatar, ...values }: Schema) => {
     if (!id) return;
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
+
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload images first to update hasAvatar
       let newHasAvatar = hasAvatar;
       if (avatar) {
@@ -254,18 +275,24 @@ const EditStaff = () => {
         hasAvatar: newHasAvatar,
       };
 
-      if (
+      const isCacheDataChanged =
         currentStaffData?.name !== values.name ||
         JSON.stringify(currentStaffData?.roles) !==
           JSON.stringify(values.roles) ||
-        currentStaffData?.hasAvatar !== newHasAvatar
-      ) {
+        currentStaffData?.hasAvatar !== newHasAvatar;
+
+      if (isCacheDataChanged) {
         batch.update(doc(cacheCollection, 'staffInfo'), {
           [id]: newCacheData,
         });
       }
 
       await batch.commit();
+
+      await revalidatePaths(
+        [`/staff/${id}`, ...(isCacheDataChanged ? ['/staff'] : [])],
+        tokenRes.token
+      );
 
       setCurrentStaffData((prev) => ({
         ...prev!,

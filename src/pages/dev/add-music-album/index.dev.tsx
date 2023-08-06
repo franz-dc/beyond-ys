@@ -42,6 +42,7 @@ import {
   SwitchElement,
 } from '~/components';
 import {
+  auth,
   cacheCollection,
   db,
   gamesCollection,
@@ -56,7 +57,7 @@ import {
   imageSchema,
   musicAlbumSchema,
 } from '~/schemas';
-import { formatISO } from '~/utils';
+import { formatISO, revalidatePaths } from '~/utils';
 
 const AddMusicAlbum = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -208,8 +209,21 @@ const AddMusicAlbum = () => {
       });
       return;
     }
+    if (!auth.currentUser) {
+      enqueueSnackbar('You must be logged in to perform this action.', {
+        variant: 'error',
+      });
+    }
 
     try {
+      // get auth token for revalidation
+      const tokenRes = await auth.currentUser?.getIdTokenResult();
+
+      if (tokenRes?.claims?.role !== 'admin') {
+        enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
+        return;
+      }
+
       // upload image first to update hasAlbumArt
       let hasAlbumArt = false;
       if (albumArt) {
@@ -360,6 +374,17 @@ const AddMusicAlbum = () => {
       });
 
       await batch.commit();
+
+      await revalidatePaths(
+        [
+          '/music',
+          ...Object.keys(staffInfoChanges).map(
+            (staffId) => `/staff/${staffId}`
+          ),
+          ...Object.keys(changedGames).map((gameId) => `/games/${gameId}`),
+        ],
+        tokenRes.token
+      );
 
       // don't wait for onSnapshot to update the musicAlbumCache state
       setMusicAlbumsCache((prev) => ({
