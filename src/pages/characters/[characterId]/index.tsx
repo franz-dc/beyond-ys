@@ -205,11 +205,12 @@ const CharacterInfo = ({
                       sx={{
                         borderRadius: 2,
                       }}
+                      aria-label='view main image'
                     >
                       <Box
                         component='img'
                         src={`${CLOUD_STORAGE_URL}/characters/${id}`}
-                        alt={name}
+                        alt='main image'
                         width='100%'
                         height='auto'
                         sx={{
@@ -322,6 +323,7 @@ const CharacterInfo = ({
                             height: 56,
                             borderRadius: 1,
                           }}
+                          aria-label='view character gallery image'
                         >
                           <Box
                             component='img'
@@ -336,6 +338,7 @@ const CharacterInfo = ({
                             onClick={() =>
                               setPhotoIndex(hasMainImage ? idx + 1 : idx)
                             }
+                            alt={`gallery image ${idx + 1}`}
                           />
                         </ButtonBase>
                       ))}
@@ -348,6 +351,7 @@ const CharacterInfo = ({
                             height: 56,
                             borderRadius: 1,
                           }}
+                          aria-label='view character gallery image'
                         >
                           <Box
                             component='img'
@@ -360,6 +364,7 @@ const CharacterInfo = ({
                               backgroundColor: 'background.paper',
                             }}
                             onClick={() => setPhotoIndex(hasMainImage ? 4 : 3)}
+                            alt='gallery image 4'
                           />
                           {extraImages.length > 4 ||
                             (true && (
@@ -507,6 +512,7 @@ const CharacterInfo = ({
                       sx={{
                         mt: 1,
                       }}
+                      aria-label='view character gallery'
                     >
                       <Typography color='text.secondary' fontSize={14}>
                         {isGamesExpanded
@@ -538,6 +544,7 @@ const CharacterInfo = ({
                           boxShadow: ({ shadows }) => shadows[6],
                         },
                       }}
+                      aria-label='view character gallery'
                     >
                       <Paper
                         sx={{
@@ -595,6 +602,7 @@ const CharacterInfo = ({
                                   height: 'auto !important',
                                   borderRadius: 1,
                                 }}
+                                aria-label={voiceActor.language}
                               />
                             </Box>
                           </Box>
