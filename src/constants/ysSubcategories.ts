@@ -109,8 +109,8 @@ export const ysSubcategories = [
         href: '/games/ys-vi-online-the-ark-of-napishtim',
       },
       {
-        name: 'Ys: Dreamweaved Long Night',
-        href: '/games/ys-dreamweaved-long-night',
+        name: 'Ys VIII: Lacrimosa of Dana Mobile',
+        href: '/games/ys-viii-lacrimosa-of-dana-mobile',
       },
     ],
   },
