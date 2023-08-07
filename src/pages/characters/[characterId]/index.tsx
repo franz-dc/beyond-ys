@@ -210,7 +210,7 @@ const CharacterInfo = ({
                       <Box
                         component='img'
                         src={`${CLOUD_STORAGE_URL}/characters/${id}`}
-                        alt='main image'
+                        alt={`${name} main image`}
                         width='100%'
                         height='auto'
                         sx={{
@@ -564,6 +564,12 @@ const CharacterInfo = ({
                                 staffInfoCache[voiceActor.staffId]?.hasAvatar
                                   ? `${CLOUD_STORAGE_URL}/staff/${voiceActor.staffId}`
                                   : undefined
+                              }
+                              alt={
+                                staffInfoCache[voiceActor.staffId]?.hasAvatar
+                                  ? undefined
+                                  : staffInfoCache[voiceActor.staffId]?.name ||
+                                    'voice actor avatar'
                               }
                               imgProps={{
                                 loading: 'lazy',
