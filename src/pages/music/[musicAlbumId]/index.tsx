@@ -194,6 +194,7 @@ const AlbumInfo = ({
                 <Box
                   component='img'
                   src={`${CLOUD_STORAGE_URL}/album-arts/${id}`}
+                  alt='album art'
                   sx={{
                     position: 'relative',
                     width: 144, // 160 - 16

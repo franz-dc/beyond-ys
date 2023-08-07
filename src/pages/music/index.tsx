@@ -79,6 +79,7 @@ const AlbumArt = ({
         <Box
           component='img'
           src={`${CLOUD_STORAGE_URL}/album-arts/${id}`}
+          alt='album art'
           loading='lazy'
           sx={{
             width: '100%',
@@ -188,6 +189,7 @@ const Music = ({ musicAlbumCache }: Props) => {
                       },
                       fontWeight: 'medium',
                     }}
+                    id={`${id}-name`}
                   >
                     {album.name}
                   </Typography>
@@ -215,6 +217,7 @@ const Music = ({ musicAlbumCache }: Props) => {
                   height: '100%',
                   borderRadius: 2,
                 }}
+                aria-labelledby={`${id}-name`}
               />
             </Paper>
           </Grid>
