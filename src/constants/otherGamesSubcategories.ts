@@ -9,20 +9,12 @@ export const otherGamesSubcategories = [
         href: '/games/dragon-slayer',
       },
       {
-        name: 'Xanadu',
-        href: '/games/dragon-slayer-ii-xanadu',
-      },
-      {
         name: 'Romancia',
         href: '/games/dragon-slayer-jr-romancia',
       },
       {
         name: 'Legacy of the Wizard',
         href: '/games/dragon-slayer-iv-legacy-of-the-wizard',
-      },
-      {
-        name: 'Faxanadu',
-        href: '/games/faxanadu',
       },
       {
         name: 'Sorcerian',
@@ -33,20 +25,38 @@ export const otherGamesSubcategories = [
         href: '/games/lord-monarch',
       },
       {
-        name: 'The Legend of Xanadu',
-        href: '/games/the-legend-of-xanadu',
-      },
-      {
-        name: 'The Legend of Xanadu II',
-        href: '/games/the-legend-of-xanadu-ii',
-      },
-      {
         name: 'The Legend of Heroes',
         href: '/games/dragon-slayer-the-legend-of-heroes',
       },
       {
         name: 'The Legend of Heroes II',
         href: '/games/dragon-slayer-the-legend-of-heroes-ii',
+      },
+    ],
+  },
+  {
+    id: 'xanadu-series',
+    name: 'Xanadu Series',
+    items: [
+      {
+        name: 'Xanadu',
+        href: '/games/dragon-slayer-ii-xanadu',
+      },
+      {
+        name: 'Xanadu Scenario II',
+        href: '/games/xanadu-scenario-ii',
+      },
+      {
+        name: 'Faxanadu',
+        href: '/games/faxanadu',
+      },
+      {
+        name: 'The Legend of Xanadu',
+        href: '/games/the-legend-of-xanadu',
+      },
+      {
+        name: 'The Legend of Xanadu II',
+        href: '/games/the-legend-of-xanadu-ii',
       },
       {
         name: 'Xanadu Next',
