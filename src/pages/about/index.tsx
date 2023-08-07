@@ -285,6 +285,14 @@ const About = () => {
           timeliness. It is advised to verify information through additional
           sources.
         </Typography>
+        <Typography gutterBottom>
+          Game ports, remakes, or extensions with a different title that does
+          not deviate too much from the original title are referred to by their
+          original title. For example, Ys I Chronicles and Ys I Complete are
+          referred to as Ys I: Ancient Ys Vanished Omen. Some exceptions are
+          made for games that are not made by Falcom and does have some
+          significant differences from the original title.
+        </Typography>
         <Typography>
           This website contains links to external websites for informational
           purposes only. The owner of this site has no control over the content
