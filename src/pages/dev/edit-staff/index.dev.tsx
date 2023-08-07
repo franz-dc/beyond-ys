@@ -4,6 +4,7 @@ import type { ChangeEvent } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LoadingButton } from '@mui/lab';
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -666,6 +667,13 @@ const EditStaff = () => {
                 )}
               </Box>
             </Paper>
+            {!!avatar && (
+              <Alert severity='warning' sx={{ mb: 2 }}>
+                Please be advised that replaced images will take up at most 60
+                minutes to reflect on the page. This is due to Google Cloud
+                Storage object caching.
+              </Alert>
+            )}
             <LoadingButton
               type='submit'
               variant='contained'
