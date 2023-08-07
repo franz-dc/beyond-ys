@@ -258,7 +258,7 @@ export const globalStyles = css`
       background-color: ${darkTheme.palette.background.default};
       color: ${darkTheme.palette.text.primary};
     }
-    .MuiPaper-root {
+    .MuiPaper-root.not(.MuiAlert-root) {
       background-color: ${darkTheme.palette.background.paper};
     }
     .header-bg {
@@ -276,7 +276,7 @@ export const globalStyles = css`
       background-color: ${lightTheme.palette.background.default};
       color: ${lightTheme.palette.text.primary};
     }
-    .MuiPaper-root {
+    .MuiPaper-root.not(.MuiAlert-root) {
       background-color: ${lightTheme.palette.background.paper};
     }
     .header-bg {
