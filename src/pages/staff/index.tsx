@@ -142,6 +142,7 @@ const StaffList = ({
                                     ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
                                     : undefined
                                 }
+                                alt={hasAvatar ? `${name} avatar` : undefined}
                                 imgProps={{
                                   loading: 'lazy',
                                 }}

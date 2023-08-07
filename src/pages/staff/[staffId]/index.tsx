@@ -264,6 +264,7 @@ const StaffInfo = ({
                     ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
                     : undefined
                 }
+                alt={hasAvatar ? `${name} avatar` : undefined}
                 sx={{
                   width: 128,
                   height: 128,
