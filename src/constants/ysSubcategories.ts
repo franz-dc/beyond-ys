@@ -105,7 +105,7 @@ export const ysSubcategories = [
         href: '/games/ys-the-five-dragons-of-altago',
       },
       {
-        name: 'Ys VI Online ~ The Ark of Napishtim',
+        name: 'Ys VI Online: The Ark of Napishtim',
         href: '/games/ys-vi-online-the-ark-of-napishtim',
       },
       {
