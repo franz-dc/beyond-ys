@@ -46,7 +46,6 @@ const GenericHeader = ({
         </Typography>
         {subtitle && (
           <Typography
-            variant='subtitle1'
             sx={{
               lineHeight: 1.4,
             }}
