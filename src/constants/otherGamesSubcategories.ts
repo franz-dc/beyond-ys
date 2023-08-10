@@ -193,6 +193,10 @@ export const otherGamesSubcategories = [
         href: '/games/tombs-and-treasure',
       },
       {
+        name: 'Exile',
+        href: '/games/exile',
+      },
+      {
         name: 'Star Trader',
         href: '/games/star-trader',
       },
