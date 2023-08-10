@@ -103,6 +103,10 @@ export const otherGamesSubcategories = [
         href: '/games/sorcerian-forever',
       },
       {
+        name: 'Monarch Monarch',
+        href: '/games/monarch-monarch',
+      },
+      {
         name: 'The Legend of Heroes',
         href: '/games/dragon-slayer-the-legend-of-heroes',
       },
