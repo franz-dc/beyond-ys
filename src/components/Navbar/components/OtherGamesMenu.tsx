@@ -30,7 +30,7 @@ const OtherGamesMenu = () => {
         spacing={2}
         divider={<Divider light sx={{ pt: 1 }} />}
       >
-        {otherGamesSubcategories.slice(2, 5).map((subcategory) => (
+        {otherGamesSubcategories.slice(2, 6).map((subcategory) => (
           <Box key={subcategory.name} sx={{ width: 200 }}>
             <NavMenuList
               labelPrefix='other-games-menu'
@@ -42,7 +42,7 @@ const OtherGamesMenu = () => {
       <Box sx={{ width: 200 }}>
         <NavMenuList
           labelPrefix='other-games-menu'
-          subcategory={otherGamesSubcategories[5]}
+          subcategory={otherGamesSubcategories[6]}
         />
       </Box>
     </Stack>

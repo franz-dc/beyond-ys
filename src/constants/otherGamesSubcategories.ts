@@ -123,6 +123,20 @@ export const otherGamesSubcategories = [
     ],
   },
   {
+    id: 'vantage-master-series',
+    name: 'Vantage Master Series',
+    items: [
+      {
+        name: 'Vantage Master',
+        href: '/games/vantage-master',
+      },
+      {
+        name: 'Vantage Master V2',
+        href: '/games/vantage-master-v2',
+      },
+    ],
+  },
+  {
     id: 'others',
     name: 'Others',
     items: [
@@ -185,14 +199,6 @@ export const otherGamesSubcategories = [
       {
         name: 'Popful Mail',
         href: '/games/popful-mail',
-      },
-      {
-        name: 'Vantage Master',
-        href: '/games/vantage-master',
-      },
-      {
-        name: 'Vantage Master V2',
-        href: '/games/vantage-master-v2',
       },
       {
         name: 'Gurumin: A Monstrous Adventure',
