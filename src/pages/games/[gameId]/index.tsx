@@ -209,6 +209,7 @@ const GamePage = ({
       image={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
     >
       <Box
+        className='header-bg'
         sx={{
           height: {
             xs: 120,
@@ -216,7 +217,6 @@ const GamePage = ({
             md: 200,
           },
           borderRadius: 4,
-          backgroundColor: 'headerBackground',
         }}
       >
         {hasBannerImage && (
