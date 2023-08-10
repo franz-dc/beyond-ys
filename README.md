@@ -18,9 +18,9 @@ You can visit the demo site [here](https://beyond-ys.vercel.app).
 
 ## Technologies Used
 
-- [Next.js](https://nextjs.org): React framework for server-side rendering and static site generation.
-- [Firebase](https://firebase.google.com): Comprehensive development platform providing authentication, real-time database, and hosting services.
-- [MUI](https://mui.com): React UI framework for building responsive web applications.
+- [Next.js](https://nextjs.org): React framework for server-side rendering, static site generation, and incremental static regeneration.
+- [Firebase](https://firebase.google.com): Comprehensive development platform providing authentication, real-time database, etc.
+- [Material UI (MUI)](https://mui.com): React UI library for building responsive web applications.
 - [Vercel](https://vercel.com): Cloud platform for static sites and serverless functions.
 
 ## Content Progress
