@@ -1,36 +1,20 @@
 // cspell:disable
 export const otherGamesSubcategories = [
   {
-    id: 'dragon-slayer-series',
-    name: 'Dragon Slayer Series',
+    id: 'gagharv-trilogy',
+    name: 'Gagharv Trilogy',
     items: [
       {
-        name: 'Dragon Slayer',
-        href: '/games/dragon-slayer',
+        name: 'White Witch',
+        href: '/games/the-legend-of-heroes-iii-white-witch',
       },
       {
-        name: 'Romancia',
-        href: '/games/dragon-slayer-jr-romancia',
+        name: 'A Tear of Vermillion',
+        href: '/games/the-legend-of-heroes-iv-a-tear-of-vermillion',
       },
       {
-        name: 'Legacy of the Wizard',
-        href: '/games/dragon-slayer-iv-legacy-of-the-wizard',
-      },
-      {
-        name: 'Sorcerian',
-        href: '/games/dragon-slayer-v-sorcerian',
-      },
-      {
-        name: 'Lord Monarch',
-        href: '/games/lord-monarch',
-      },
-      {
-        name: 'The Legend of Heroes',
-        href: '/games/dragon-slayer-the-legend-of-heroes',
-      },
-      {
-        name: 'The Legend of Heroes II',
-        href: '/games/dragon-slayer-the-legend-of-heroes-ii',
+        name: 'Cagesong of the Ocean',
+        href: '/games/the-legend-of-heroes-v-cagesong-of-the-ocean',
       },
     ],
   },
@@ -69,20 +53,54 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'gagharv-trilogy',
-    name: 'Gagharv Trilogy',
+    id: 'vantage-master-series',
+    name: 'Vantage Master Series',
     items: [
       {
-        name: 'White Witch',
-        href: '/games/the-legend-of-heroes-iii-white-witch',
+        name: 'Vantage Master',
+        href: '/games/vantage-master',
       },
       {
-        name: 'A Tear of Vermillion',
-        href: '/games/the-legend-of-heroes-iv-a-tear-of-vermillion',
+        name: 'Vantage Master V2',
+        href: '/games/vantage-master-v2',
       },
       {
-        name: 'Cagesong of the Ocean',
-        href: '/games/the-legend-of-heroes-v-cagesong-of-the-ocean',
+        name: 'Vantage Master Portable',
+        href: '/games/vantage-master-portable',
+      },
+    ],
+  },
+  {
+    id: 'dragon-slayer-series',
+    name: 'Dragon Slayer Series',
+    items: [
+      {
+        name: 'Dragon Slayer',
+        href: '/games/dragon-slayer',
+      },
+      {
+        name: 'Romancia',
+        href: '/games/dragon-slayer-jr-romancia',
+      },
+      {
+        name: 'Legacy of the Wizard',
+        href: '/games/dragon-slayer-iv-legacy-of-the-wizard',
+      },
+      {
+        name: 'Sorcerian',
+        href: '/games/dragon-slayer-v-sorcerian',
+      },
+      {
+        name: 'Lord Monarch',
+        href: '/games/lord-monarch',
+      },
+      {
+        name: 'The Legend of Heroes',
+        href: '/games/dragon-slayer-the-legend-of-heroes',
+      },
+      {
+        name: 'The Legend of Heroes II',
+        href: '/games/dragon-slayer-the-legend-of-heroes-ii',
       },
     ],
   },
@@ -119,20 +137,6 @@ export const otherGamesSubcategories = [
       {
         name: 'Brandish 4: Tower of the Sleeping God',
         href: '/games/brandish-4-tower-of-the-sleeping-god',
-      },
-    ],
-  },
-  {
-    id: 'vantage-master-series',
-    name: 'Vantage Master Series',
-    items: [
-      {
-        name: 'Vantage Master',
-        href: '/games/vantage-master',
-      },
-      {
-        name: 'Vantage Master V2',
-        href: '/games/vantage-master-v2',
       },
     ],
   },

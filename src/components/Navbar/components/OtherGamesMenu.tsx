@@ -16,7 +16,7 @@ const OtherGamesMenu = () => {
         spacing={2}
         divider={<Divider light sx={{ pt: 1 }} />}
       >
-        {otherGamesSubcategories.slice(0, 2).map((subcategory) => (
+        {otherGamesSubcategories.slice(0, 3).map((subcategory) => (
           <Box key={subcategory.name} sx={{ width: 200 }}>
             <NavMenuList
               labelPrefix='other-games-menu'
@@ -30,7 +30,7 @@ const OtherGamesMenu = () => {
         spacing={2}
         divider={<Divider light sx={{ pt: 1 }} />}
       >
-        {otherGamesSubcategories.slice(2, 6).map((subcategory) => (
+        {otherGamesSubcategories.slice(3, 6).map((subcategory) => (
           <Box key={subcategory.name} sx={{ width: 200 }}>
             <NavMenuList
               labelPrefix='other-games-menu'
