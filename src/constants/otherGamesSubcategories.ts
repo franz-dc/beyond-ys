@@ -163,6 +163,10 @@ export const otherGamesSubcategories = [
         href: '/games/demons-ring',
       },
       {
+        name: 'Asteka',
+        href: '/games/asteka',
+      },
+      {
         name: 'Escape from Twilight Zone',
         href: '/games/escape-from-twilight-zone',
       },
