@@ -65,6 +65,10 @@ export const otherGamesSubcategories = [
         href: '/games/vantage-master-v2',
       },
       {
+        name: 'VM Japan',
+        href: '/games/vm-japan',
+      },
+      {
         name: 'Vantage Master Portable',
         href: '/games/vantage-master-portable',
       },
