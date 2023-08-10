@@ -88,15 +88,19 @@ export const otherGamesSubcategories = [
       },
       {
         name: 'Legacy of the Wizard',
-        href: '/games/dragon-slayer-iv-legacy-of-the-wizard',
+        href: '/games/legacy-of-the-wizard',
       },
       {
         name: 'Sorcerian',
-        href: '/games/dragon-slayer-v-sorcerian',
+        href: '/games/sorcerian',
       },
       {
         name: 'Lord Monarch',
         href: '/games/lord-monarch',
+      },
+      {
+        name: 'Sorcerian Forever',
+        href: '/games/sorcerian-forever',
       },
       {
         name: 'The Legend of Heroes',
