@@ -61,10 +61,16 @@ export const GAME_PLATFORMS: Record<
     name: 'Fujitsu FM-7',
     // width: 16,
   },
+  gameBoy: {
+    // icon: MdCircle,
+    // iconType: 'component',
+    name: 'Game Boy',
+    // width: 16,
+  },
   ibmPc: {
     // icon: SiIbm,
     // iconType: 'component',
-    name: 'IBM PC',
+    name: 'IBM PC / DOS',
     // width: 24,
   },
   ios: {
@@ -179,6 +185,12 @@ export const GAME_PLATFORMS: Record<
     // icon: MdCircle,
     // iconType: 'component',
     name: 'Super Nintendo Entertainment System / Super Famicom',
+    // width: 16,
+  },
+  superCassetteVision: {
+    // icon: MdCircle,
+    // iconType: 'component',
+    name: 'Super Cassette Vision',
     // width: 16,
   },
   switch: {
