@@ -84,7 +84,7 @@ export const otherGamesSubcategories = [
       },
       {
         name: 'Romancia',
-        href: '/games/dragon-slayer-jr-romancia',
+        href: '/games/romancia',
       },
       {
         name: 'Legacy of the Wizard',
