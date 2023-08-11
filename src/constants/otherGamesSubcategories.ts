@@ -147,6 +147,10 @@ export const otherGamesSubcategories = [
         href: '/games/brandish-3-spirit-of-balcan',
       },
       {
+        name: 'Brandish VT',
+        href: '/games/brandish-vt',
+      },
+      {
         name: 'Brandish 4: Tower of the Sleeping God',
         href: '/games/brandish-4-tower-of-the-sleeping-god',
       },
