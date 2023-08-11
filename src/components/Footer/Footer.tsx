@@ -67,9 +67,6 @@ const Footer = () => {
 
   return (
     <Paper
-      // for some reason, bg gets delayed when changing theme
-      // so use global css instead
-      className='paper-bg'
       sx={{
         mt: 3,
         py: 3,
