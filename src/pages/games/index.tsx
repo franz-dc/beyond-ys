@@ -56,11 +56,13 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       }, {})
   ).sort(([a], [b]) => {
     // category sorting:
-    // Ys Series first, Trails Series second, rest a-z, Uncategorized last
+    // Ys Series first, Trails Series second, rest a-z, Single-title second to last, Uncategorized last
     if (a === 'Ys Series') return -1;
     if (b === 'Ys Series') return 1;
     if (a === 'Trails Series') return -1;
     if (b === 'Trails Series') return 1;
+    if (a === 'Single-title') return 1;
+    if (b === 'Single-title') return -1;
     if (a === 'Uncategorized') return 1;
     if (b === 'Uncategorized') return -1;
     return a.localeCompare(b);
