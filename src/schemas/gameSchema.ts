@@ -24,6 +24,8 @@ export const gameSchema = z.object({
   // for reducing the amount of reads
   cachedSoundtracks: z.record(musicSchema),
   cachedCharacters: z.record(characterCacheSchema),
+  // schema additions (optional)
+  aliases: z.string().min(1).array().optional(),
 });
 
 export type GameSchema = z.infer<typeof gameSchema>;

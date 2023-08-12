@@ -140,12 +140,14 @@ const EditGame = () => {
       platforms: true,
       characterIds: true,
       soundtrackIds: true,
+      aliases: true,
     })
     .extend({
       id: z.string().nullable(),
       platforms: z.object({ value: z.string().min(1) }).array(),
       characterIds: z.object({ value: z.string().min(1) }).array(),
       soundtrackIds: z.object({ value: z.string().min(1) }).array(),
+      aliases: z.object({ value: z.string().min(1) }).array(),
       coverImage: imageSchema
         // check if less than 500x500
         .refine(
@@ -207,6 +209,7 @@ const EditGame = () => {
       hasBannerImage: false,
       coverImage: null,
       bannerImage: null,
+      aliases: [],
     },
     resolver: zodResolver(schema),
   });
@@ -260,6 +263,16 @@ const EditGame = () => {
     name: 'characterIds',
   });
 
+  const {
+    fields: aliases,
+    append: appendAlias,
+    remove: removeAlias,
+    swap: swapAlias,
+  } = useFieldArray({
+    control,
+    name: 'aliases',
+  });
+
   const [lastGameId, setLastGameId] = useState<string | null>(null);
   const [isLoadingGame, setIsLoadingGame] = useState(false);
   const [currentGameData, setCurrentGameData] = useState<GameSchema | null>(
@@ -283,6 +296,7 @@ const EditGame = () => {
     hasBannerImage,
     coverImage,
     bannerImage,
+    aliases,
   }: Schema) => {
     if (!id) return;
     if (!auth.currentUser) {
@@ -338,6 +352,7 @@ const EditGame = () => {
         cachedCharacters: currentGameData?.cachedCharacters || {},
         hasCoverImage: newHasCoverImage,
         hasBannerImage: newHasBannerImage,
+        aliases: aliases.map(({ value }) => value),
       };
 
       // update these if cache fields have changed
@@ -580,6 +595,7 @@ const EditGame = () => {
           })),
           coverImage: null,
           bannerImage: null,
+          aliases: game.aliases ? game.aliases.map((value) => ({ value })) : [],
         });
         setLastGameId(id);
       } else {
@@ -600,6 +616,7 @@ const EditGame = () => {
           hasBannerImage: false,
           cachedSoundtracks: {},
           cachedCharacters: {},
+          aliases: [],
         });
         reset({
           id,
@@ -618,6 +635,7 @@ const EditGame = () => {
           hasBannerImage: false,
           coverImage: null,
           bannerImage: null,
+          aliases: [],
         });
         setLastGameId(id);
       }
@@ -700,6 +718,57 @@ const EditGame = () => {
                   },
                 }}
               />
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Aliases</Typography>
+              {aliases.map((role, idx) => (
+                <Stack direction='row' spacing={2} key={role.id}>
+                  <TextFieldElement
+                    name={`aliases.${idx}.value`}
+                    label={`Alias ${idx + 1}`}
+                    fullWidth
+                    margin='normal'
+                    required
+                  />
+                  <Button
+                    variant='outlined'
+                    onClick={() => removeAlias(idx)}
+                    sx={{ mt: '16px !important', height: 56 }}
+                  >
+                    Remove
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === 0) return;
+                      swapAlias(idx, idx - 1);
+                    }}
+                    disabled={idx === 0}
+                    sx={{ mt: '16px !important', height: 56 }}
+                  >
+                    Up
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === aliases.length - 1) return;
+                      swapAlias(idx, idx + 1);
+                    }}
+                    disabled={idx === aliases.length - 1}
+                    sx={{ mt: '16px !important', height: 56 }}
+                  >
+                    Down
+                  </Button>
+                </Stack>
+              ))}
+              <Button
+                variant='outlined'
+                onClick={() => appendAlias({ value: '' })}
+                fullWidth
+                sx={{ mt: 1 }}
+              >
+                Add Alias
+              </Button>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Description</Typography>
