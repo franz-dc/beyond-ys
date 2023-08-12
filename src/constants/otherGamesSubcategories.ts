@@ -76,6 +76,10 @@ export const otherGamesSubcategories = [
         name: 'Zwei: The Ilvard Insurrection',
         href: '/games/zwei-the-ilvard-insurrection',
       },
+      {
+        name: 'Zwei!! Online',
+        href: '/games/zwei-online',
+      },
     ],
   },
   {
@@ -161,36 +165,72 @@ export const otherGamesSubcategories = [
     ],
   },
   {
+    id: 'horror-house-series',
+    name: 'Horror House Series',
+    items: [
+      {
+        name: 'Horror House',
+        href: '/games/horror-house',
+      },
+      {
+        name: 'Horror House Part-II',
+        href: '/games/horror-house-part-ii',
+      },
+    ],
+  },
+  {
+    id: 'asteka-series',
+    name: 'Asteka Series',
+    items: [
+      {
+        name: 'Asteka',
+        href: '/games/asteka',
+      },
+      {
+        name: 'Tombs & Treasure',
+        href: '/games/tombs-and-treasure',
+      },
+    ],
+  },
+  {
     id: 'others',
     name: 'Others',
     items: [
       {
-        name: 'Galactic Wars',
-        href: '/games/galactic-wars',
-      },
-      {
-        name: 'Super Mahjong',
-        href: '/games/super-mahjong',
+        name: 'Galactic Wars 1',
+        href: '/games/galactic-wars-1',
       },
       {
         name: 'Computer the Golf',
         href: '/games/computer-the-golf',
       },
       {
-        name: 'Horror House',
-        href: '/games/horror-house',
+        name: 'Super Mahjong',
+        href: '/games/super-mahjong',
+      },
+      {
+        name: 'Super Horoscope Kanji Version',
+        href: '/games/super-horoscope-kanji-version',
+      },
+      {
+        name: 'Cosmo Fighter II',
+        href: '/games/cosmo-fighter-ii',
+      },
+      {
+        name: 'Bird Land',
+        href: '/games/bird-land',
       },
       {
         name: 'Private Stripper',
         href: '/games/private-stripper',
       },
       {
-        name: 'Panorama Toh',
-        href: '/games/panorama-toh',
+        name: 'SSGN Covert Cruise Special Attack Strategy',
+        href: '/games/ssgn-covert-cruise-special-attack-strategy',
       },
       {
-        name: 'Horror House Part-II',
-        href: '/games/horror-house-part-ii',
+        name: 'Panorama Toh',
+        href: '/games/panorama-toh',
       },
       {
         name: 'Monster House',
@@ -201,16 +241,12 @@ export const otherGamesSubcategories = [
         href: '/games/demons-ring',
       },
       {
-        name: 'Asteka',
-        href: '/games/asteka',
+        name: 'The Threat of North',
+        href: '/games/the-threat-of-north',
       },
       {
         name: 'Escape from Twilight Zone',
         href: '/games/escape-from-twilight-zone',
-      },
-      {
-        name: 'Tombs & Treasure',
-        href: '/games/tombs-and-treasure',
       },
       {
         name: 'Exile',
