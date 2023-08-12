@@ -169,6 +169,12 @@ export const GAME_PLATFORMS: Record<
     name: 'Sega Saturn',
     // width: 16,
   },
+  sharpMz: {
+    // icon: MdCircle,
+    // iconType: 'component',
+    name: 'Sharp MZ',
+    // width: 16,
+  },
   sharpX1: {
     // icon: MdCircle,
     // iconType: 'component',
