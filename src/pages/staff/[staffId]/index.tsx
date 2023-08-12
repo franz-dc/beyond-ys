@@ -117,6 +117,8 @@ const StaffInfo = ({
   staffInfoCache,
   cachedGames,
   hasAvatar,
+  aliases,
+  relevantLinks,
 }: Props) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -575,6 +577,43 @@ const StaffInfo = ({
           )}
         </Box>
       )}
+      <Box component='section'>
+        <Typography variant='h2' mb={2}>
+          Other Information
+        </Typography>
+        {aliases && aliases.length > 0 && (
+          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+            <Typography component='h3' fontWeight='bold'>
+              Aliases
+            </Typography>
+            <Box component='ul' sx={{ m: 0, pl: 2 }}>
+              {aliases.map((alias) => (
+                <li key={alias}>{alias}</li>
+              ))}
+            </Box>
+          </Paper>
+        )}
+        {relevantLinks && relevantLinks.length > 0 && (
+          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+            <Typography component='h3' fontWeight='bold'>
+              Relevant Links
+            </Typography>
+            <Box component='ul' sx={{ m: 0, pl: 2 }}>
+              {relevantLinks.map((link) => (
+                <li key={link.url}>
+                  <Link
+                    href={link.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </Box>
+          </Paper>
+        )}
+      </Box>
     </MainLayout>
   );
 };
