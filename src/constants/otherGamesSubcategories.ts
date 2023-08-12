@@ -24,7 +24,7 @@ export const otherGamesSubcategories = [
     items: [
       {
         name: 'Xanadu',
-        href: '/games/dragon-slayer-ii-xanadu',
+        href: '/games/xanadu-dragon-slayer-ii',
       },
       {
         name: 'Xanadu Scenario II',
