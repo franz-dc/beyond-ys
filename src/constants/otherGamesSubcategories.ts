@@ -19,6 +19,50 @@ export const otherGamesSubcategories = [
     ],
   },
   {
+    id: 'brandish-series',
+    name: 'Brandish Series',
+    items: [
+      {
+        name: 'Brandish',
+        href: '/games/brandish',
+      },
+      {
+        name: 'Brandish 2: The Planet Buster',
+        href: '/games/brandish-2-the-planet-buster',
+      },
+      {
+        name: 'Brandish 3: Spirit of Balcan',
+        href: '/games/brandish-3-spirit-of-balcan',
+      },
+      {
+        name: 'Brandish VT',
+        href: '/games/brandish-vt',
+      },
+      {
+        name: 'Brandish 4: Tower of the Sleeping God',
+        href: '/games/brandish-4-tower-of-the-sleeping-god',
+      },
+    ],
+  },
+  {
+    id: 'zwei-series',
+    name: 'Zwei Series',
+    items: [
+      {
+        name: 'Zwei: The Arges Adventure',
+        href: '/games/zwei-the-arges-adventure',
+      },
+      {
+        name: 'Zwei: The Ilvard Insurrection',
+        href: '/games/zwei-the-ilvard-insurrection',
+      },
+      {
+        name: 'Zwei!! Online',
+        href: '/games/zwei-online',
+      },
+    ],
+  },
+  {
     id: 'dragon-slayer-series',
     name: 'Dragon Slayer Series',
     items: [
@@ -65,20 +109,24 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'zwei-series',
-    name: 'Zwei Series',
+    id: 'vantage-master-series',
+    name: 'Vantage Master Series',
     items: [
       {
-        name: 'Zwei: The Arges Adventure',
-        href: '/games/zwei-the-arges-adventure',
+        name: 'Vantage Master',
+        href: '/games/vantage-master',
       },
       {
-        name: 'Zwei: The Ilvard Insurrection',
-        href: '/games/zwei-the-ilvard-insurrection',
+        name: 'Vantage Master V2',
+        href: '/games/vantage-master-v2',
       },
       {
-        name: 'Zwei!! Online',
-        href: '/games/zwei-online',
+        name: 'VM Japan',
+        href: '/games/vm-japan',
+      },
+      {
+        name: 'Vantage Master Portable',
+        href: '/games/vantage-master-portable',
       },
     ],
   },
@@ -117,54 +165,6 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'brandish-series',
-    name: 'Brandish Series',
-    items: [
-      {
-        name: 'Brandish',
-        href: '/games/brandish',
-      },
-      {
-        name: 'Brandish 2: The Planet Buster',
-        href: '/games/brandish-2-the-planet-buster',
-      },
-      {
-        name: 'Brandish 3: Spirit of Balcan',
-        href: '/games/brandish-3-spirit-of-balcan',
-      },
-      {
-        name: 'Brandish VT',
-        href: '/games/brandish-vt',
-      },
-      {
-        name: 'Brandish 4: Tower of the Sleeping God',
-        href: '/games/brandish-4-tower-of-the-sleeping-god',
-      },
-    ],
-  },
-  {
-    id: 'vantage-master-series',
-    name: 'Vantage Master Series',
-    items: [
-      {
-        name: 'Vantage Master',
-        href: '/games/vantage-master',
-      },
-      {
-        name: 'Vantage Master V2',
-        href: '/games/vantage-master-v2',
-      },
-      {
-        name: 'VM Japan',
-        href: '/games/vm-japan',
-      },
-      {
-        name: 'Vantage Master Portable',
-        href: '/games/vantage-master-portable',
-      },
-    ],
-  },
-  {
     id: 'horror-house-series',
     name: 'Horror House Series',
     items: [
@@ -193,8 +193,8 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'others',
-    name: 'Others',
+    id: 'single-title',
+    name: 'Single-title',
     items: [
       {
         name: 'Galactic Wars 1',
