@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import {
   Box,
   ButtonBase,
   Collapse,
   Grid,
+  Paper,
   Stack,
   // SvgIcon,
   // Tooltip,
@@ -25,7 +26,7 @@ import { cacheCollection, gamesCollection } from '~/configs';
 import {
   CATEGORIES_WITH_TIMELINE,
   CLOUD_STORAGE_URL,
-  // GAME_PLATFORMS,
+  GAME_PLATFORMS,
 } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import {
@@ -34,6 +35,7 @@ import {
   MusicAlbumCacheSchema,
   StaffInfoCacheSchema,
 } from '~/schemas';
+import { formatReleaseDate } from '~/utils';
 
 type Params = {
   gameId: string;
@@ -121,8 +123,8 @@ const GamePage = ({
   name,
   category,
   subcategory,
-  // platforms,
-  // releaseDate: releaseDateRaw,
+  platforms,
+  releaseDate,
   description = 'No description available.',
   descriptionSourceName,
   descriptionSourceUrl,
@@ -135,12 +137,9 @@ const GamePage = ({
   cachedMusicAlbums,
   hasBannerImage,
   hasCoverImage,
+  aliases,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
-
-  // const releaseYear = releaseDateRaw
-  //   ? new Date(releaseDateRaw).getFullYear()
-  //   : null;
 
   const formattedSoundtracks = soundtrackIds
     .map((soundtrackId) => {
@@ -667,6 +666,39 @@ const GamePage = ({
           )}
         </Box>
       )}
+      <Box component='section'>
+        <Typography variant='h2' mb={2}>
+          Other Information
+        </Typography>
+        {aliases && aliases.length > 0 && (
+          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+            <Typography fontWeight='bold'>Aliases</Typography>
+            <Box component='ul' sx={{ m: 0, pl: 2 }}>
+              {aliases.map((alias) => (
+                <li key={alias}>{alias}</li>
+              ))}
+            </Box>
+          </Paper>
+        )}
+        {releaseDate && (
+          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+            <Typography fontWeight='bold'>Release date</Typography>
+            <Typography>{formatReleaseDate(releaseDate as string)}</Typography>
+          </Paper>
+        )}
+        {platforms.length > 0 && (
+          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+            <Typography fontWeight='bold'>Platforms</Typography>
+            <Box component='ul' sx={{ m: 0, pl: 2 }}>
+              {platforms.map((platform) => {
+                const platformName = GAME_PLATFORMS[platform]?.name;
+                if (!platformName) return null;
+                return <li key={platform}>{platformName}</li>;
+              })}
+            </Box>
+          </Paper>
+        )}
+      </Box>
     </MainLayout>
   );
 };
