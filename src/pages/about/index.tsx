@@ -76,11 +76,12 @@ const About = () => {
       <GenericHeader title='About' />
       <Typography
         sx={{
-          textAlign: 'center',
-          fontSize: '1.25rem',
-          maxWidth: 500,
           mx: 'auto',
           my: 6,
+          maxWidth: 550,
+          textAlign: 'center',
+          fontSize: '1.25rem',
+          fontWeight: 500,
         }}
       >
         {description}
@@ -198,9 +199,9 @@ const About = () => {
           Contributing
         </Typography>
         <Typography gutterBottom>
-          As of now, there is no way to directly contribute to the contents of
-          this website yet. In the future, depending on the outcome of this
-          project, it might be implemented. In the meantime, you can email at{' '}
+          As of now, contributing to the contents of this website is limited. In
+          the future, depending on the outcome of this project, it might be
+          fully implemented for everyone. In the meantime, you can email at{' '}
           <Link
             href='mailto:hello@beyondys.com'
             target='_blank'
@@ -208,19 +209,10 @@ const About = () => {
           >
             hello@beyondys.com
           </Link>{' '}
-          for suggestions, new features, or new content for this site. If you
-          are interested in contributing to the codebase, please refer to the{' '}
-          <Link
-            href='https://github.com/franz-dc/beyond-ys'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            GitHub repository
-          </Link>{' '}
-          for more information.
+          for suggestions, new features, or new content for this site.
         </Typography>
         {/* cspell:disable */}
-        <Typography>
+        <Typography gutterBottom>
           As an alternative, you can start contributing through other means like
           sharing knowledge at dedicated wikis (
           <Link
@@ -266,6 +258,18 @@ const About = () => {
           by doing guess contributions.
         </Typography>
         {/* cspell:enable */}
+        <Typography>
+          If you are interested in contributing to the codebase, please refer to
+          the{' '}
+          <Link
+            href='https://github.com/franz-dc/beyond-ys'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            GitHub repository
+          </Link>{' '}
+          for more information.
+        </Typography>
       </Box>
       <Box component='section'>
         <Typography variant='h2' sx={{ mb: 1 }}>
