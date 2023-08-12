@@ -33,6 +33,7 @@ import { useSnackbar } from 'notistack';
 import {
   AutocompleteElement,
   FormContainer,
+  RadioButtonGroup,
   TextFieldElement,
   useFieldArray,
   useForm,
@@ -148,6 +149,7 @@ const EditGame = () => {
       characterIds: z.object({ value: z.string().min(1) }).array(),
       soundtrackIds: z.object({ value: z.string().min(1) }).array(),
       aliases: z.object({ value: z.string().min(1) }).array(),
+      releaseDatePrecision: z.enum(['day', 'month', 'year', 'unknown']),
       coverImage: imageSchema
         // check if less than 500x500
         .refine(
@@ -188,7 +190,25 @@ const EditGame = () => {
           },
           { message: 'Banner must not be bigger than 2000x2000 pixels.' }
         ),
-    });
+    })
+    .refine(
+      (data) => {
+        const { releaseDate, releaseDatePrecision } = data;
+
+        if (
+          ['day', 'month', 'year'].includes(releaseDatePrecision) &&
+          !releaseDate
+        ) {
+          return false;
+        }
+
+        return true;
+      },
+      {
+        message: 'Release date is required if precision is not unknown.',
+        path: ['releaseDate'],
+      }
+    );
 
   type Schema = z.infer<typeof schema>;
 
@@ -199,6 +219,7 @@ const EditGame = () => {
       subcategory: '',
       platforms: [],
       releaseDate: null,
+      releaseDatePrecision: 'unknown',
       description: '',
       descriptionSourceName: '',
       descriptionSourceUrl: '',
@@ -286,6 +307,7 @@ const EditGame = () => {
     subcategory,
     platforms,
     releaseDate,
+    releaseDatePrecision,
     description,
     descriptionSourceName,
     descriptionSourceUrl,
@@ -331,9 +353,18 @@ const EditGame = () => {
 
       const formattedSoundtrackIds = soundtrackIds.map(({ value }) => value);
       const formattedCharacterIds = characterIds.map(({ value }) => value);
-      const formattedReleaseDate = releaseDate
-        ? formatISO(releaseDate as Date, 'day')
-        : '';
+
+      let formattedReleaseDate = '';
+
+      if (
+        releaseDate &&
+        ['day', 'month', 'year'].includes(releaseDatePrecision)
+      ) {
+        formattedReleaseDate = formatISO(
+          new Date(releaseDate),
+          releaseDatePrecision as 'day' | 'month' | 'year'
+        );
+      }
 
       const newData: GameSchema = {
         name,
@@ -578,11 +609,28 @@ const EditGame = () => {
           ...rest
         } = game;
 
+        const releaseDatePrecision = (() => {
+          // releaseDate is string here
+          const releaseDateStr = releaseDate as string;
+
+          switch (releaseDateStr.length) {
+            case 4: // 2000
+              return 'year';
+            case 7: // 2000-01
+              return 'month';
+            case 10: // 2000-01-01
+              return 'day';
+            default:
+              return 'unknown';
+          }
+        })();
+
         setCurrentGameData(game);
         reset({
           ...rest,
           id,
           releaseDate: releaseDate ? new Date(releaseDate) : null,
+          releaseDatePrecision,
           platforms: platforms.map((value) => ({
             value,
           })),
@@ -625,6 +673,7 @@ const EditGame = () => {
           subcategory: '',
           platforms: [],
           releaseDate: null,
+          releaseDatePrecision: 'unknown',
           description: '',
           descriptionSourceName: '',
           descriptionSourceUrl: '',
@@ -705,19 +754,6 @@ const EditGame = () => {
                 fullWidth
                 margin='normal'
               />
-              <DatePickerElement
-                name='releaseDate'
-                label='Release Date'
-                inputProps={{
-                  fullWidth: true,
-                  margin: 'normal',
-                }}
-                slotProps={{
-                  actionBar: {
-                    actions: ['clear'],
-                  },
-                }}
-              />
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Aliases</Typography>
@@ -769,6 +805,33 @@ const EditGame = () => {
               >
                 Add Alias
               </Button>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Release Date</Typography>
+              <DatePickerElement
+                name='releaseDate'
+                label='Release Date'
+                inputProps={{
+                  fullWidth: true,
+                  margin: 'normal',
+                }}
+                slotProps={{
+                  actionBar: {
+                    actions: ['clear'],
+                  },
+                }}
+                helperText='For dates with less precision, fill in the rest with random values.'
+              />
+              <RadioButtonGroup
+                name='releaseDatePrecision'
+                label='Precision'
+                options={[
+                  { label: 'Year, month, and day', id: 'day' },
+                  { label: 'Year and month only', id: 'month' },
+                  { label: 'Year only', id: 'year' },
+                  { label: 'Unknown date', id: 'unknown' },
+                ]}
+              />
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Description</Typography>

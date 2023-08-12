@@ -111,7 +111,7 @@ const AddMusicAlbum = () => {
           message: 'Slug is already taken.',
         }),
       musicIds: z.object({ value: z.string().min(1) }).array(),
-      releaseDatePrecision: z.string().min(1),
+      releaseDatePrecision: z.enum(['day', 'month', 'year', 'unknown']),
       albumArt: imageSchema
         // check if less than 500x500
         .refine(
@@ -162,7 +162,7 @@ const AddMusicAlbum = () => {
       name: '',
       customSlug: false,
       releaseDate: null,
-      releaseDatePrecision: '',
+      releaseDatePrecision: 'unknown',
       albumArt: null,
       musicIds: [],
     },
