@@ -4,6 +4,18 @@ export const formatReleaseDate = (dateStr: string) => {
   const date = new Date(dateStr);
   const year = date.getFullYear();
 
-  // TODO: add month and day logic
-  return year;
+  if (dateStr.length === 4) return year.toString();
+
+  if (dateStr.length === 7) {
+    const month = date.toLocaleString('default', { month: 'long' });
+    return `${month} ${year}`;
+  }
+
+  if (dateStr.length === 10) {
+    const month = date.toLocaleString('default', { month: 'long' });
+    const day = date.getDate();
+    return `${day} ${month} ${year}`;
+  }
+
+  return 'Unknown';
 };
