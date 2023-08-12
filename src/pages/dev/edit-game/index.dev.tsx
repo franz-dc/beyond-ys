@@ -606,6 +606,7 @@ const EditGame = () => {
           characterSpoilerIds,
           soundtrackIds,
           releaseDate,
+          aliases,
           ...rest
         } = game;
 
@@ -643,7 +644,7 @@ const EditGame = () => {
           })),
           coverImage: null,
           bannerImage: null,
-          aliases: game.aliases ? game.aliases.map((value) => ({ value })) : [],
+          aliases: aliases ? aliases.map((value) => ({ value })) : [],
         });
         setLastGameId(id);
       } else {
