@@ -672,7 +672,9 @@ const GamePage = ({
         </Typography>
         {aliases && aliases.length > 0 && (
           <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography fontWeight='bold'>Aliases</Typography>
+            <Typography component='h3' fontWeight='bold'>
+              Aliases
+            </Typography>
             <Box component='ul' sx={{ m: 0, pl: 2 }}>
               {aliases.map((alias) => (
                 <li key={alias}>{alias}</li>
@@ -682,13 +684,17 @@ const GamePage = ({
         )}
         {releaseDate && (
           <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography fontWeight='bold'>Release Date</Typography>
+            <Typography component='h3' fontWeight='bold'>
+              Release Date
+            </Typography>
             <Typography>{formatReleaseDate(releaseDate as string)}</Typography>
           </Paper>
         )}
         {platforms.length > 0 && (
           <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography fontWeight='bold'>Platforms</Typography>
+            <Typography component='h3' fontWeight='bold'>
+              Platforms
+            </Typography>
             <Box component='ul' sx={{ m: 0, pl: 2 }}>
               {platforms.map((platform) => {
                 const platformName = GAME_PLATFORMS[platform]?.name;
