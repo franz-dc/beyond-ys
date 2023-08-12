@@ -168,7 +168,7 @@ const AddGame = () => {
       characterIds: z.object({ value: z.string().min(1) }).array(),
       soundtrackIds: z.object({ value: z.string().min(1) }).array(),
       aliases: z.object({ value: z.string().min(1) }).array(),
-      releaseDatePrecision: z.enum(['day', 'month', 'year', 'unknown']),
+      releaseDatePrecision: z.string().min(1),
       coverImage: imageSchema
         // check if less than 500x500
         .refine(
@@ -240,7 +240,7 @@ const AddGame = () => {
       subcategory: '',
       platforms: [],
       releaseDate: null,
-      releaseDatePrecision: 'unknown',
+      releaseDatePrecision: '',
       description: '',
       descriptionSourceName: '',
       descriptionSourceUrl: '',
