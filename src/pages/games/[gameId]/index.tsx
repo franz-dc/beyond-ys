@@ -682,7 +682,7 @@ const GamePage = ({
         )}
         {releaseDate && (
           <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography fontWeight='bold'>Release date</Typography>
+            <Typography fontWeight='bold'>Release Date</Typography>
             <Typography>{formatReleaseDate(releaseDate as string)}</Typography>
           </Paper>
         )}
