@@ -19,62 +19,6 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'xanadu-series',
-    name: 'Xanadu Series',
-    items: [
-      {
-        name: 'Xanadu',
-        href: '/games/xanadu-dragon-slayer-ii',
-      },
-      {
-        name: 'Xanadu Scenario II',
-        href: '/games/xanadu-scenario-ii',
-      },
-      {
-        name: 'Faxanadu',
-        href: '/games/faxanadu',
-      },
-      {
-        name: 'The Legend of Xanadu',
-        href: '/games/the-legend-of-xanadu',
-      },
-      {
-        name: 'The Legend of Xanadu II',
-        href: '/games/the-legend-of-xanadu-ii',
-      },
-      {
-        name: 'Xanadu Next',
-        href: '/games/xanadu-next',
-      },
-      {
-        name: 'Tokyo Xanadu',
-        href: '/games/tokyo-xanadu',
-      },
-    ],
-  },
-  {
-    id: 'vantage-master-series',
-    name: 'Vantage Master Series',
-    items: [
-      {
-        name: 'Vantage Master',
-        href: '/games/vantage-master',
-      },
-      {
-        name: 'Vantage Master V2',
-        href: '/games/vantage-master-v2',
-      },
-      {
-        name: 'VM Japan',
-        href: '/games/vm-japan',
-      },
-      {
-        name: 'Vantage Master Portable',
-        href: '/games/vantage-master-portable',
-      },
-    ],
-  },
-  {
     id: 'dragon-slayer-series',
     name: 'Dragon Slayer Series',
     items: [
@@ -97,6 +41,10 @@ export const otherGamesSubcategories = [
       {
         name: 'Lord Monarch',
         href: '/games/lord-monarch',
+      },
+      {
+        name: 'Dragon Slayer Gaiden',
+        href: '/games/dragon-slayer-gaiden',
       },
       {
         name: 'Sorcerian Forever',
@@ -131,6 +79,40 @@ export const otherGamesSubcategories = [
     ],
   },
   {
+    id: 'xanadu-series',
+    name: 'Xanadu Series',
+    items: [
+      {
+        name: 'Xanadu',
+        href: '/games/xanadu-dragon-slayer-ii',
+      },
+      {
+        name: 'Xanadu Scenario II',
+        href: '/games/xanadu-scenario-ii',
+      },
+      {
+        name: 'Faxanadu',
+        href: '/games/faxanadu',
+      },
+      {
+        name: 'The Legend of Xanadu',
+        href: '/games/the-legend-of-xanadu',
+      },
+      {
+        name: 'The Legend of Xanadu II',
+        href: '/games/the-legend-of-xanadu-ii',
+      },
+      {
+        name: 'Xanadu Next',
+        href: '/games/xanadu-next',
+      },
+      {
+        name: 'Tokyo Xanadu',
+        href: '/games/tokyo-xanadu',
+      },
+    ],
+  },
+  {
     id: 'brandish-series',
     name: 'Brandish Series',
     items: [
@@ -153,6 +135,28 @@ export const otherGamesSubcategories = [
       {
         name: 'Brandish 4: Tower of the Sleeping God',
         href: '/games/brandish-4-tower-of-the-sleeping-god',
+      },
+    ],
+  },
+  {
+    id: 'vantage-master-series',
+    name: 'Vantage Master Series',
+    items: [
+      {
+        name: 'Vantage Master',
+        href: '/games/vantage-master',
+      },
+      {
+        name: 'Vantage Master V2',
+        href: '/games/vantage-master-v2',
+      },
+      {
+        name: 'VM Japan',
+        href: '/games/vm-japan',
+      },
+      {
+        name: 'Vantage Master Portable',
+        href: '/games/vantage-master-portable',
       },
     ],
   },
