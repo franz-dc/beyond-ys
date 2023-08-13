@@ -324,7 +324,7 @@ const EditStaff = () => {
       const isCacheDataChanged =
         currentStaffData?.name !== values.name ||
         JSON.stringify(currentStaffData?.roles) !==
-          JSON.stringify(values.roles) ||
+          JSON.stringify(formattedRoles) ||
         currentStaffData?.hasAvatar !== newHasAvatar;
 
       if (isCacheDataChanged) {
