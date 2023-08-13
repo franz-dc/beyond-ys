@@ -23,6 +23,10 @@ export const exploreMenuItems = [
         name: 'Composer Timeline',
         href: '/composer-timeline',
       },
+      {
+        name: 'About Falcom',
+        href: '/nihon-falcom-corporation',
+      },
     ],
     hideSubheader: true,
   },

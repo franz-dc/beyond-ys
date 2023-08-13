@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   ButtonBase,
   Grid,
   Paper,
@@ -15,6 +16,7 @@ import { GiSpinningSword } from 'react-icons/gi';
 import { MdMusicNote } from 'react-icons/md';
 import { TbTimelineEventText } from 'react-icons/tb';
 
+import falcomLogo from '~/../public/assets/falcom-logo.webp';
 import gagharvImg from '~/../public/assets/landing-gagharv.webp';
 import heroBg from '~/../public/assets/landing-hero-bg.webp';
 import heroImg from '~/../public/assets/landing-hero.webp';
@@ -668,13 +670,107 @@ const HomePage = () => {
           </Box>
         </Box>
       </Box>
-      <Typography
-        variant='h2'
+      <Box
+        component='section'
         sx={{
           mt: {
             xs: 6,
             md: 10,
           },
+          mb: 6,
+        }}
+      >
+        <Typography
+          variant='h2'
+          sx={{
+            mb: 2,
+            textAlign: 'center',
+          }}
+        >
+          New to Falcom?
+        </Typography>
+        <Paper
+          sx={{
+            display: 'flex',
+            mx: {
+              md: 4,
+            },
+            mb: 2,
+            px: {
+              xs: 3,
+              md: 4,
+            },
+            py: {
+              xs: 2,
+              md: 3,
+            },
+          }}
+        >
+          <Grid
+            container
+            spacing={{
+              xs: 2,
+              md: 4,
+            }}
+          >
+            <Grid item xs={12} md={3}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                }}
+              >
+                <Box
+                  component={Image}
+                  src={falcomLogo}
+                  alt='falcom logo'
+                  width={262}
+                  height={60}
+                  sx={{
+                    width: {
+                      xs: '60%',
+                      xs2: '50%',
+                      sm: '40%',
+                      sm2: '30%',
+                      md: '100%',
+                    },
+                    height: 'auto',
+                  }}
+                />
+              </Box>
+            </Grid>
+            <Grid item xs={12} md={9}>
+              <Typography>
+                <strong>Nihon Falcom Corporation</strong>, commonly known as
+                Falcom, is a Japanese video game developer and publisher
+                renowned for its contributions to the role-playing game (RPG)
+                genre. Founded in 1981, Falcom has created several influential
+                and beloved game series that have left a significant mark on
+                gaming history.
+              </Typography>
+            </Grid>
+          </Grid>
+        </Paper>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Button
+            size='large'
+            component={Link}
+            href='/nihon-falcom-corporation'
+          >
+            Learn More
+          </Button>
+        </Box>
+      </Box>
+      <Typography
+        variant='h2'
+        sx={{
           mb: 3,
           textAlign: 'center',
         }}
