@@ -88,6 +88,7 @@ const EditStaff = () => {
       musicIds: true,
       updatedAt: true,
       roles: true,
+      aliases: true,
     })
     .extend({
       id: z.string().nullable(),
@@ -98,6 +99,7 @@ const EditStaff = () => {
           value: z.string(),
         })
         .array(),
+      aliases: z.object({ value: z.string().min(1) }).array(),
       avatar: imageSchema
         // check if less than 500x500
         .refine(
@@ -139,6 +141,8 @@ const EditStaff = () => {
       roles: [],
       games: [],
       hasAvatar: false,
+      aliases: [],
+      relevantLinks: [],
     },
     resolver: zodResolver(schema),
   });
@@ -174,6 +178,26 @@ const EditStaff = () => {
     name: 'games',
   });
 
+  const {
+    fields: aliases,
+    append: appendAlias,
+    remove: removeAlias,
+    swap: swapAlias,
+  } = useFieldArray({
+    control,
+    name: 'aliases',
+  });
+
+  const {
+    fields: relevantLinks,
+    append: appendRelevantLink,
+    remove: removeRelevantLink,
+    swap: swapRelevantLink,
+  } = useFieldArray({
+    control,
+    name: 'relevantLinks',
+  });
+
   const currentId = watch('id');
   const hasAvatar = watch('hasAvatar');
   const avatar = watch('avatar');
@@ -185,13 +209,23 @@ const EditStaff = () => {
       const staffInfo = staffInfoSnap.data();
 
       if (staffInfo) {
-        const { musicIds, cachedMusic, updatedAt, roles, ...rest } = staffInfo;
+        const {
+          musicIds,
+          cachedMusic,
+          updatedAt,
+          roles,
+          aliases,
+          relevantLinks,
+          ...rest
+        } = staffInfo;
 
         setCurrentStaffData(staffInfo);
         reset({
           ...rest,
           id,
           roles: roles.map((role) => ({ value: role })),
+          aliases: aliases ? aliases.map((value) => ({ value })) : [],
+          relevantLinks: relevantLinks || [],
           avatar: null,
         });
         setLastStaffId(id);
@@ -207,6 +241,8 @@ const EditStaff = () => {
           cachedMusic: {},
           hasAvatar: false,
           updatedAt: null,
+          aliases: [],
+          relevantLinks: [],
         });
         reset({
           id,
@@ -217,6 +253,8 @@ const EditStaff = () => {
           roles: [],
           games: [],
           hasAvatar: false,
+          aliases: [],
+          relevantLinks: [],
         });
         setLastStaffId(id);
       }
@@ -231,7 +269,13 @@ const EditStaff = () => {
     }
   };
 
-  const handleSave = async ({ id, hasAvatar, avatar, ...values }: Schema) => {
+  const handleSave = async ({
+    id,
+    hasAvatar,
+    avatar,
+    aliases,
+    ...values
+  }: Schema) => {
     if (!id) return;
     if (!auth.currentUser) {
       enqueueSnackbar('You must be logged in to perform this action.', {
@@ -266,6 +310,7 @@ const EditStaff = () => {
         ...values,
         roles: formattedRoles,
         hasAvatar: newHasAvatar,
+        aliases: aliases.map(({ value }) => value),
         updatedAt: serverTimestamp(),
       });
 
@@ -387,6 +432,57 @@ const EditStaff = () => {
                 fullWidth
                 margin='normal'
               />
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2'>Aliases</Typography>
+              {aliases.map((role, idx) => (
+                <Stack direction='row' spacing={2} key={role.id}>
+                  <TextFieldElement
+                    name={`aliases.${idx}.value`}
+                    label={`Alias ${idx + 1}`}
+                    fullWidth
+                    margin='normal'
+                    required
+                  />
+                  <Button
+                    variant='outlined'
+                    onClick={() => removeAlias(idx)}
+                    sx={{ mt: '16px !important', height: 56 }}
+                  >
+                    Remove
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === 0) return;
+                      swapAlias(idx, idx - 1);
+                    }}
+                    disabled={idx === 0}
+                    sx={{ mt: '16px !important', height: 56 }}
+                  >
+                    Up
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    onClick={() => {
+                      if (idx === aliases.length - 1) return;
+                      swapAlias(idx, idx + 1);
+                    }}
+                    disabled={idx === aliases.length - 1}
+                    sx={{ mt: '16px !important', height: 56 }}
+                  >
+                    Down
+                  </Button>
+                </Stack>
+              ))}
+              <Button
+                variant='outlined'
+                onClick={() => appendAlias({ value: '' })}
+                fullWidth
+                sx={{ mt: 1 }}
+              >
+                Add Alias
+              </Button>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
               <Typography variant='h2'>Roles</Typography>
@@ -540,6 +636,78 @@ const EditStaff = () => {
                 disabled={games.length >= Object.keys(cachedGames).length}
               >
                 Add Game
+              </Button>
+            </Paper>
+            <Paper sx={{ px: 3, py: 2, mb: 2 }}>
+              <Typography variant='h2' sx={{ mb: 2 }}>
+                Relevant Links
+              </Typography>
+              {relevantLinks.map((relevantLink, idx) => (
+                <Box
+                  key={relevantLink.id}
+                  className='default-bg'
+                  sx={{ mb: 2, p: 2, borderRadius: 2 }}
+                >
+                  <Stack direction='column' sx={{ mt: -1 }}>
+                    <TextFieldElement
+                      name={`relevantLinks.${idx}.name`}
+                      label={`Name ${idx + 1}`}
+                      fullWidth
+                      margin='normal'
+                      required
+                    />
+                    <TextFieldElement
+                      name={`relevantLinks.${idx}.url`}
+                      label={`URL ${idx + 1}`}
+                      fullWidth
+                      margin='normal'
+                      required
+                    />
+                    <Stack direction='row' spacing={2} sx={{ mt: 1 }}>
+                      <Button
+                        variant='outlined'
+                        onClick={() => removeRelevantLink(idx)}
+                        fullWidth
+                      >
+                        Remove
+                      </Button>
+                      <Button
+                        variant='outlined'
+                        onClick={() => {
+                          if (idx === 0) return;
+                          swapRelevantLink(idx, idx - 1);
+                        }}
+                        disabled={idx === 0}
+                        fullWidth
+                      >
+                        Up
+                      </Button>
+                      <Button
+                        variant='outlined'
+                        onClick={() => {
+                          if (idx === relevantLinks.length - 1) return;
+                          swapRelevantLink(idx, idx + 1);
+                        }}
+                        disabled={idx === relevantLinks.length - 1}
+                        fullWidth
+                      >
+                        Down
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Box>
+              ))}
+              <Button
+                variant='outlined'
+                onClick={() =>
+                  appendRelevantLink({
+                    name: '',
+                    url: '',
+                  })
+                }
+                fullWidth
+              >
+                Add Relevant Link
               </Button>
             </Paper>
             <Paper sx={{ px: 3, py: 2, mb: 2 }}>
