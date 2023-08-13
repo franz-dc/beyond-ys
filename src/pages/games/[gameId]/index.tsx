@@ -201,6 +201,9 @@ const GamePage = ({
     setIsSoundtracksExpanded(false);
   }, [id]);
 
+  const hasOtherInformation =
+    (!!aliases && aliases.length > 0) || !!releaseDate || platforms.length > 0;
+
   return (
     <MainLayout
       title={name}
@@ -666,45 +669,49 @@ const GamePage = ({
           )}
         </Box>
       )}
-      <Box component='section'>
-        <Typography variant='h2' mb={2}>
-          Other Information
-        </Typography>
-        {aliases && aliases.length > 0 && (
-          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography component='h3' fontWeight='bold'>
-              Aliases
-            </Typography>
-            <Box component='ul' sx={{ m: 0, pl: 2 }}>
-              {aliases.map((alias) => (
-                <li key={alias}>{alias}</li>
-              ))}
-            </Box>
-          </Paper>
-        )}
-        {releaseDate && (
-          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography component='h3' fontWeight='bold'>
-              Release Date
-            </Typography>
-            <Typography>{formatReleaseDate(releaseDate as string)}</Typography>
-          </Paper>
-        )}
-        {platforms.length > 0 && (
-          <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
-            <Typography component='h3' fontWeight='bold'>
-              Platforms
-            </Typography>
-            <Box component='ul' sx={{ m: 0, pl: 2 }}>
-              {platforms.map((platform) => {
-                const platformName = GAME_PLATFORMS[platform]?.name;
-                if (!platformName) return null;
-                return <li key={platform}>{platformName}</li>;
-              })}
-            </Box>
-          </Paper>
-        )}
-      </Box>
+      {hasOtherInformation && (
+        <Box component='section'>
+          <Typography variant='h2' mb={2}>
+            Other Information
+          </Typography>
+          {aliases && aliases.length > 0 && (
+            <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+              <Typography component='h3' fontWeight='bold'>
+                Aliases
+              </Typography>
+              <Box component='ul' sx={{ m: 0, pl: 2 }}>
+                {aliases.map((alias) => (
+                  <li key={alias}>{alias}</li>
+                ))}
+              </Box>
+            </Paper>
+          )}
+          {releaseDate && (
+            <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+              <Typography component='h3' fontWeight='bold'>
+                Release Date
+              </Typography>
+              <Typography>
+                {formatReleaseDate(releaseDate as string)}
+              </Typography>
+            </Paper>
+          )}
+          {platforms.length > 0 && (
+            <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+              <Typography component='h3' fontWeight='bold'>
+                Platforms
+              </Typography>
+              <Box component='ul' sx={{ m: 0, pl: 2 }}>
+                {platforms.map((platform) => {
+                  const platformName = GAME_PLATFORMS[platform]?.name;
+                  if (!platformName) return null;
+                  return <li key={platform}>{platformName}</li>;
+                })}
+              </Box>
+            </Paper>
+          )}
+        </Box>
+      )}
     </MainLayout>
   );
 };
