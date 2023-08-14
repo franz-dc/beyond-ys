@@ -293,7 +293,7 @@ const MusicPlayer = ({
 
   // change volume when client volume changes
   useEffect(() => {
-    if (!isVolumeInitialized || !isReady || volume === clientVolume) return;
+    if (!isVolumeInitialized || !isReady) return;
     player?.setVolume(clientVolume);
   }, [isVolumeInitialized, isReady, clientVolume, player, volume]);
 
@@ -654,6 +654,7 @@ const MusicPlayer = ({
                 />
                 {albumUrl && (
                   <Image
+                    key={albumUrl}
                     src={albumUrl}
                     alt='Album art'
                     width={42}
@@ -895,14 +896,16 @@ const MusicPlayer = ({
               <IconButton
                 size='small'
                 onClick={() => {
-                  const newMuted = !isMuted;
-                  if (newMuted) {
-                    setClientVolume(0);
-                  } else {
-                    setClientVolume(unmutedVolume);
-                  }
-                  setIsMuted(newMuted);
-                  localStorage.setItem('isMuted', (!isMuted).toString());
+                  setIsMuted((prev) => {
+                    const newMuted = !prev;
+                    if (newMuted) {
+                      setClientVolume(0);
+                    } else {
+                      setClientVolume(unmutedVolume);
+                    }
+                    localStorage.setItem('isMuted', (!isMuted).toString());
+                    return newMuted;
+                  });
                 }}
                 aria-label={isMuted ? 'unmute' : 'mute'}
                 sx={{ mr: 0.5, color: 'text.secondary', fontSize: 24 }}
