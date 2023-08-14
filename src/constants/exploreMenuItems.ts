@@ -25,7 +25,7 @@ export const exploreMenuItems = [
       },
       {
         name: 'About Falcom',
-        href: '/nihon-falcom-corporation',
+        href: '/nihon-falcom',
       },
     ],
     hideSubheader: true,
