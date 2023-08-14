@@ -4,6 +4,22 @@ export const exploreMenuItems = [
     name: 'Explore',
     items: [
       {
+        name: 'Nihon Falcom',
+        href: '/nihon-falcom',
+      },
+      {
+        name: 'Ys Series',
+        href: '/ys-series',
+      },
+      {
+        name: 'Trails Series',
+        href: '/trails-series',
+      },
+      {
+        name: 'Gagharv Trilogy',
+        href: '/gagharv-trilogy',
+      },
+      {
         name: 'Games',
         href: '/games',
       },
@@ -22,10 +38,6 @@ export const exploreMenuItems = [
       {
         name: 'Composer Timeline',
         href: '/composer-timeline',
-      },
-      {
-        name: 'About Falcom',
-        href: '/nihon-falcom',
       },
     ],
     hideSubheader: true,
