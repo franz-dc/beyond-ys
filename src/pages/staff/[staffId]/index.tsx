@@ -103,6 +103,55 @@ export const getStaticProps: GetStaticProps<Props> = async ({ params }) => {
   return { props: data };
 };
 
+const GameInvolvementItem = ({
+  gameId,
+  roles,
+  name,
+  order,
+}: Props['games'][0] & {
+  name: string;
+  order: number;
+}) => (
+  <Paper key={gameId} sx={{ overflow: 'hidden' }}>
+    <ButtonBase
+      focusRipple
+      component={Link}
+      href={`/games/${gameId}`}
+      sx={{
+        display: 'block',
+        width: '100%',
+        px: 2,
+        py: 1.5,
+      }}
+    >
+      <Stack direction='row' spacing={2}>
+        <Box
+          sx={{
+            width: 32,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'text.secondary',
+          }}
+        >
+          {order}
+        </Box>
+        <Box sx={{ width: '100%' }}>
+          <Typography sx={{ fontWeight: 'medium' }}>{name}</Typography>
+          <Typography
+            sx={{
+              fontSize: 14,
+              color: 'text.secondary',
+            }}
+          >
+            {roles.join(', ') || 'Unknown role'}
+          </Typography>
+        </Box>
+      </Stack>
+    </ButtonBase>
+  </Paper>
+);
+
 const StaffInfo = ({
   id,
   name,
@@ -346,40 +395,12 @@ const StaffInfo = ({
           </Typography>
           <Stack spacing={1}>
             {games.slice(0, 10).map((game, idx) => (
-              <Paper
+              <GameInvolvementItem
                 key={game.gameId}
-                sx={{
-                  px: 2,
-                  py: 1.5,
-                }}
-              >
-                <Stack direction='row' spacing={2}>
-                  <Box
-                    sx={{
-                      width: 32,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'text.secondary',
-                    }}
-                  >
-                    {idx + 1}
-                  </Box>
-                  <Box sx={{ width: '100%' }}>
-                    <Typography sx={{ fontWeight: 'medium' }}>
-                      {cachedGames[game.gameId]?.name || 'Unknown game'}
-                    </Typography>
-                    <Typography
-                      sx={{
-                        fontSize: 14,
-                        color: 'text.secondary',
-                      }}
-                    >
-                      {game.roles.join(', ') || 'Unknown role'}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Paper>
+                order={idx + 1}
+                name={cachedGames[game.gameId]?.name || 'Unknown game'}
+                {...game}
+              />
             ))}
           </Stack>
           {games.length > 10 && (
@@ -387,40 +408,12 @@ const StaffInfo = ({
               <Collapse in={isGameInvolvementsExpanded}>
                 <Stack spacing={1} sx={{ mt: 1 }}>
                   {games.slice(10).map((game, idx) => (
-                    <Paper
+                    <GameInvolvementItem
                       key={game.gameId}
-                      sx={{
-                        px: 2,
-                        py: 1.5,
-                      }}
-                    >
-                      <Stack direction='row' spacing={2}>
-                        <Box
-                          sx={{
-                            width: 32,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'text.secondary',
-                          }}
-                        >
-                          {idx + 11}
-                        </Box>
-                        <Box sx={{ width: '100%' }}>
-                          <Typography sx={{ fontWeight: 'medium' }}>
-                            {cachedGames[game.gameId]?.name || 'Unknown game'}
-                          </Typography>
-                          <Typography
-                            sx={{
-                              fontSize: 14,
-                              color: 'text.secondary',
-                            }}
-                          >
-                            {game.roles.join(', ') || 'Unknown role'}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </Paper>
+                      order={idx + 11}
+                      name={cachedGames[game.gameId]?.name || 'Unknown game'}
+                      {...game}
+                    />
                   ))}
                 </Stack>
               </Collapse>
