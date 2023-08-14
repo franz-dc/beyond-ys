@@ -31,6 +31,7 @@ const StoryTimelineWrapper = ({
   <Box component='section' sx={{ mb: 4 }}>
     <Typography
       variant='h2'
+      id='story-timeline'
       sx={{
         mb: isVertical
           ? 1
@@ -240,7 +241,7 @@ const StoryTimeline = ({
     return createTimelineComponent({
       id,
       timeline: ysStoryTimeline,
-      timelineUrl: '/ys-timeline',
+      timelineUrl: '/ys-series#story-timeline',
     });
   }
 
@@ -248,7 +249,7 @@ const StoryTimeline = ({
     return createTimelineComponent({
       id,
       timeline: trailsStoryTimeline,
-      timelineUrl: '/trails-timeline',
+      timelineUrl: '/trails-series#story-timeline',
       resizeStepLabel: true,
     });
   }
@@ -257,7 +258,7 @@ const StoryTimeline = ({
     return createTimelineComponent({
       id,
       timeline: gagharvStoryTimeline,
-      timelineUrl: '/gagharv-timeline',
+      timelineUrl: '/gagharv-trilogy#story-timeline',
     });
   }
 
