@@ -423,7 +423,10 @@ const EditCharacter = () => {
       }
 
       await revalidatePaths(
-        [`characters/${id}`, ...(isCacheDataChanged ? ['/characters'] : [])],
+        [
+          `characters/${id}`,
+          ...(isCacheDataChanged || !!avatar ? ['/characters'] : []),
+        ],
         tokenRes.token
       );
 

@@ -563,7 +563,7 @@ const EditGame = () => {
       await revalidatePaths(
         [
           `/games/${id}`,
-          ...(isCacheDataChanged ? ['/games'] : []),
+          ...(isCacheDataChanged || !!coverImage ? ['/games'] : []),
           ...removedCharacterIds.map((id) => `/characters/${id}`),
           ...addedCharacterIds.map((id) => `/characters/${id}`),
         ],

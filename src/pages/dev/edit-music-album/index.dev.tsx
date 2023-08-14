@@ -561,7 +561,7 @@ const EditMusicAlbum = () => {
       await revalidatePaths(
         [
           `/music/${id}`,
-          ...(isCacheDataChanged ? ['/music'] : []),
+          ...(isCacheDataChanged || !!albumArt ? ['/music'] : []),
           ...Object.keys(staffInfoChanges).map(
             (staffId) => `/staff/${staffId}`
           ),

@@ -336,7 +336,7 @@ const EditStaff = () => {
       await batch.commit();
 
       await revalidatePaths(
-        [`/staff/${id}`, ...(isCacheDataChanged ? ['/staff'] : [])],
+        [`/staff/${id}`, ...(isCacheDataChanged || !!avatar ? ['/staff'] : [])],
         tokenRes.token
       );
 
