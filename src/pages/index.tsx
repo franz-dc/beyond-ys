@@ -726,8 +726,6 @@ const HomePage = () => {
                   component={Image}
                   src={falcomLogo}
                   alt='falcom logo'
-                  width={262}
-                  height={60}
                   sx={{
                     width: {
                       xs: '60%',
@@ -759,11 +757,7 @@ const HomePage = () => {
             justifyContent: 'center',
           }}
         >
-          <Button
-            size='large'
-            component={Link}
-            href='/nihon-falcom-corporation'
-          >
+          <Button size='large' component={Link} href='/nihon-falcom'>
             Learn More
           </Button>
         </Box>

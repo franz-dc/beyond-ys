@@ -1,21 +1,17 @@
 import { useState } from 'react';
 
-import {
-  Avatar,
-  Box,
-  ButtonBase,
-  Grid,
-  Paper,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import type { GetStaticProps } from 'next';
 import { useDebouncedCallback } from 'use-debounce';
 
-import { GenericHeader, Link, MainLayout, Searchbar } from '~/components';
+import {
+  GenericHeader,
+  MainLayout,
+  Searchbar,
+  StaffMemberItem,
+} from '~/components';
 import { cacheCollection } from '~/configs';
-import { CLOUD_STORAGE_URL } from '~/constants';
 import { StaffInfoCacheSchema } from '~/schemas';
 interface StaffListProps {
   categorizedStaffInfoCache: Record<
@@ -112,80 +108,11 @@ const StaffList = ({
                     sm: 2,
                   }}
                 >
-                  {filteredStaffMembers.map(
-                    ({ id, name, roles, hasAvatar }) => (
-                      <Grid item key={id} xs={12} sm={6} md={4}>
-                        <ButtonBase
-                          focusRipple
-                          component={Link}
-                          prefetch={false}
-                          href={`/staff/${id}`}
-                          sx={{
-                            display: 'block',
-                            borderRadius: 2,
-                            '&:hover > .MuiPaper-root, &:focus > .MuiPaper-root':
-                              {
-                                boxShadow: ({ shadows }) => shadows[6],
-                              },
-                          }}
-                        >
-                          <Paper
-                            sx={{
-                              px: 2,
-                              py: 1.5,
-                            }}
-                          >
-                            <Stack direction='row' spacing={2}>
-                              <Avatar
-                                src={
-                                  hasAvatar
-                                    ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}`
-                                    : undefined
-                                }
-                                alt={hasAvatar ? `${name} avatar` : undefined}
-                                imgProps={{
-                                  loading: 'lazy',
-                                }}
-                                sx={{
-                                  width: 40,
-                                  height: 40,
-                                  backgroundColor: 'text.disabled',
-                                }}
-                              />
-                              <Box>
-                                <Typography
-                                  sx={{
-                                    fontWeight: 'medium',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 1,
-                                    WebkitBoxOrient: 'vertical',
-                                  }}
-                                >
-                                  {name}
-                                </Typography>
-                                <Typography
-                                  sx={{
-                                    fontSize: 14,
-                                    color: 'text.secondary',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 1,
-                                    WebkitBoxOrient: 'vertical',
-                                  }}
-                                  aria-label='artist'
-                                >
-                                  {roles.join(', ') || 'Unknown role'}
-                                </Typography>
-                              </Box>
-                            </Stack>
-                          </Paper>
-                        </ButtonBase>
-                      </Grid>
-                    )
-                  )}
+                  {filteredStaffMembers.map((staffMember) => (
+                    <Grid item key={staffMember.id} xs={12} sm={6} md={4}>
+                      <StaffMemberItem {...staffMember} />
+                    </Grid>
+                  ))}
                 </Grid>
               </Box>
             );

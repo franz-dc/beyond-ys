@@ -32,6 +32,9 @@ export { default as Navbar } from './Navbar';
 export { default as Searchbar } from './Searchbar';
 export * from './Searchbar';
 
+export { default as StaffMemberItem } from './StaffMemberItem';
+export * from './StaffMemberItem';
+
 export { default as StoryTimeline } from './StoryTimeline';
 export * from './StoryTimeline';
 
