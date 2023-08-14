@@ -263,7 +263,7 @@ const YsSeries = ({ games }: Props) => {
                 Party System
               </Typography>
               <Typography>
-                In the later entries of the Ys series, Players found themselves
+                In later entries of the Ys series, players found themselves
                 accompanied by a diverse cast of allies, each with their unique
                 skills and abilities. This shift introduced strategic depth,
                 enabling players to harness the strengths of different
