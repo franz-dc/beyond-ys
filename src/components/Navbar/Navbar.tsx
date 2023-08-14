@@ -222,14 +222,14 @@ const Navbar = () => {
     {
       id: 'ys-series',
       name: 'Ys Series',
-      href: '/games#ys-series',
+      href: '/ys-series',
       MenuComponent: <YsSeriesMenu />,
       menuItems: ysSubcategories,
     },
     {
       id: 'trails-series',
       name: 'Trails Series',
-      href: '/games#trails-series',
+      href: '/trails-series',
       MenuComponent: <TrailsSeriesMenu />,
       menuItems: trailsSubcategories,
     },
