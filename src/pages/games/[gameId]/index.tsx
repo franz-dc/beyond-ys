@@ -594,12 +594,11 @@ const GamePage = ({
                             title: s.title,
                             youtubeId: s.youtubeId,
                             artists: s.artists,
-                            albumName:
-                              cachedMusicAlbums[soundtrack.albumId]?.name,
+                            albumName: cachedMusicAlbums[s.albumId]?.name,
                             albumUrl:
-                              soundtrack.albumId &&
-                              cachedMusicAlbums[soundtrack.albumId]?.hasAlbumArt
-                                ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                              s.albumId &&
+                              cachedMusicAlbums[s.albumId]?.hasAlbumArt
+                                ? `${CLOUD_STORAGE_URL}/album-arts/${s.albumId}`
                                 : undefined,
                           }))
                         );
@@ -651,13 +650,11 @@ const GamePage = ({
                                   title: s.title,
                                   youtubeId: s.youtubeId,
                                   artists: s.artists,
-                                  albumName:
-                                    cachedMusicAlbums[soundtrack.albumId]?.name,
+                                  albumName: cachedMusicAlbums[s.albumId]?.name,
                                   albumUrl:
-                                    soundtrack.albumId &&
-                                    cachedMusicAlbums[soundtrack.albumId]
-                                      ?.hasAlbumArt
-                                      ? `${CLOUD_STORAGE_URL}/album-arts/${soundtrack.albumId}`
+                                    s.albumId &&
+                                    cachedMusicAlbums[s.albumId]?.hasAlbumArt
+                                      ? `${CLOUD_STORAGE_URL}/album-arts/${s.albumId}`
                                       : undefined,
                                 }))
                               );

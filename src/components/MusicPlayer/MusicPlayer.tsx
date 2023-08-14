@@ -654,7 +654,6 @@ const MusicPlayer = ({
                 />
                 {albumUrl && (
                   <Image
-                    key={albumUrl}
                     src={albumUrl}
                     alt='Album art'
                     width={42}
