@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, Typography } from '@mui/material';
+import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import type { GetStaticProps } from 'next';
 import Image from 'next/image';
@@ -143,7 +143,7 @@ const YsSeries = ({ games }: Props) => {
           Throughout the years, it embraced an evolution of mechanics that
           pushed the boundaries of Falcom&apos;s RPG gameplay.
         </Typography>
-        <Box component='section' sx={{ mb: 3 }}>
+        <Paper component='section' sx={{ mb: 2, p: 2 }}>
           <Grid container spacing={2} direction={{ sm3: 'row-reverse' }}>
             <Grid item xs={12} sm3={3}>
               <Box
@@ -186,8 +186,8 @@ const YsSeries = ({ games }: Props) => {
               </Typography>
             </Grid>
           </Grid>
-        </Box>
-        <Box component='section' sx={{ mb: 3 }}>
+        </Paper>
+        <Paper component='section' sx={{ mb: 2, p: 2 }}>
           <Grid container spacing={2} direction={{ sm3: 'row-reverse' }}>
             <Grid item xs={12} sm3={3}>
               <Box
@@ -229,8 +229,8 @@ const YsSeries = ({ games }: Props) => {
               </Typography>
             </Grid>
           </Grid>
-        </Box>
-        <Box component='section' sx={{ mb: 3 }}>
+        </Paper>
+        <Paper component='section' sx={{ mb: 2, p: 2 }}>
           <Grid container spacing={2} direction={{ sm3: 'row-reverse' }}>
             <Grid item xs={12} sm3={3}>
               <Box
@@ -273,7 +273,7 @@ const YsSeries = ({ games }: Props) => {
               </Typography>
             </Grid>
           </Grid>
-        </Box>
+        </Paper>
       </Box>
       <StoryTimeline id='' category='Ys Series' showAll forceVertical />
       <Box component='section' sx={{ mb: 3 }}>
