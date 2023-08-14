@@ -295,7 +295,7 @@ const MusicPlayer = ({
   useEffect(() => {
     if (!isVolumeInitialized || !isReady) return;
     player?.setVolume(clientVolume);
-  }, [isVolumeInitialized, isReady, clientVolume, player, volume]);
+  }, [isVolumeInitialized, isReady, clientVolume, player]);
 
   // set volume on mount
   useEffect(() => {
