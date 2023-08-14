@@ -112,7 +112,15 @@ const GameInvolvementItem = ({
   name: string;
   order: number;
 }) => (
-  <Paper key={gameId} sx={{ overflow: 'hidden' }}>
+  <Paper
+    key={gameId}
+    sx={{
+      overflow: 'hidden',
+      '&:hover, &:focus-within': {
+        boxShadow: ({ shadows }) => shadows[6],
+      },
+    }}
+  >
     <ButtonBase
       focusRipple
       component={Link}
