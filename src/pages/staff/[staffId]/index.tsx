@@ -272,6 +272,7 @@ const StaffInfo = ({
       image={hasAvatar ? `${CLOUD_STORAGE_URL}/staff-avatars/${id}` : undefined}
     >
       <Box
+        className='header-bg'
         sx={{
           height: 100,
           mx: {
@@ -281,7 +282,6 @@ const StaffInfo = ({
           borderRadius: {
             sm: 4,
           },
-          backgroundColor: 'headerBackground',
         }}
       />
       <Box
@@ -373,15 +373,15 @@ const StaffInfo = ({
         <Box component='section' sx={{ mb: 4 }}>
           <Typography>{description}</Typography>
           {descriptionSourceName && (
-            <Typography color='text.secondary' sx={{ mt: 2 }}>
+            <Typography className='secondary-text' sx={{ mt: 2 }}>
               Source:{' '}
               {descriptionSourceUrl ? (
                 <Link
                   href={descriptionSourceUrl}
                   target='_blank'
                   rel='noopener noreferrer'
+                  className='secondary-text'
                   sx={{
-                    color: 'text.secondary',
                     '&:hover, &:focus': {
                       textDecoration: 'underline',
                     },
