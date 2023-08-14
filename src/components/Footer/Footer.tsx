@@ -67,6 +67,7 @@ const Footer = () => {
 
   return (
     <Paper
+      component='footer'
       sx={{
         mt: 3,
         py: 3,
