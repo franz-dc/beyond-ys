@@ -482,6 +482,7 @@ const AddGame = () => {
         [
           `/games/${id}`,
           '/games',
+          '/ys-series',
           ...formattedCharacterIds.map((id) => `/characters/${id}`),
         ],
         tokenRes.token

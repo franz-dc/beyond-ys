@@ -240,7 +240,7 @@ const HomePage = () => {
           />
           <ButtonBase
             component={Link}
-            href='/games#ys-series'
+            href='/ys-series'
             disableRipple
             sx={{
               position: 'absolute',
@@ -361,7 +361,7 @@ const HomePage = () => {
             />
             <ButtonBase
               component={Link}
-              href='/games#trails-series'
+              href='/trails-series'
               disableRipple
               sx={{
                 position: 'absolute',
@@ -479,7 +479,7 @@ const HomePage = () => {
             />
             <ButtonBase
               component={Link}
-              href='/games#gagharv-trilogy'
+              href='/gagharv-trilogy'
               disableRipple
               sx={{
                 position: 'absolute',

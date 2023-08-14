@@ -20,21 +20,24 @@ import {
 
 import Link from '../Link';
 
-export interface StoryTimelineProps {
-  id: string;
-  category: string;
-}
+type StoryTimelineWrapperProps = PropsWithChildren<{
+  isVertical: boolean;
+}>;
 
-const StoryTimelineWrapper = ({ children }: PropsWithChildren) => (
+const StoryTimelineWrapper = ({
+  isVertical,
+  children,
+}: StoryTimelineWrapperProps) => (
   <Box component='section' sx={{ mb: 4 }}>
     <Typography
-      component='h2'
       variant='h2'
       sx={{
-        mb: {
-          xs: 1,
-          md: 3,
-        },
+        mb: isVertical
+          ? 1
+          : {
+              xs: 1,
+              md: 3,
+            },
       }}
     >
       Story Timeline
@@ -43,7 +46,19 @@ const StoryTimelineWrapper = ({ children }: PropsWithChildren) => (
   </Box>
 );
 
-const StoryTimeline = ({ id, category }: StoryTimelineProps) => {
+export interface StoryTimelineProps {
+  id: string;
+  category: string;
+  showAll?: boolean;
+  forceVertical?: boolean;
+}
+
+const StoryTimeline = ({
+  id,
+  category,
+  showAll,
+  forceVertical,
+}: StoryTimelineProps) => {
   const theme = useTheme();
   const mdUp = useMediaQuery(theme.breakpoints.up('md'));
 
@@ -64,7 +79,7 @@ const StoryTimeline = ({ id, category }: StoryTimelineProps) => {
   }) => {
     const gameIndex = timeline.findIndex((game) => game.ids.includes(id));
 
-    if (gameIndex === -1) return null;
+    if (!showAll && gameIndex === -1) return null;
 
     const timelineLength = timeline.length;
     const preTimelineLength = gameIndex - 2;
@@ -81,14 +96,14 @@ const StoryTimeline = ({ id, category }: StoryTimelineProps) => {
     );
 
     return (
-      <StoryTimelineWrapper>
+      <StoryTimelineWrapper isVertical={forceVertical || !mdUp}>
         <Stepper
           nonLinear
-          activeStep={gameIndex}
-          alternativeLabel={mdUp}
-          orientation={mdUp ? 'horizontal' : 'vertical'}
+          activeStep={!showAll ? gameIndex : undefined}
+          alternativeLabel={!forceVertical && mdUp}
+          orientation={!forceVertical && mdUp ? 'horizontal' : 'vertical'}
         >
-          {preTimelineLength > 0 && (
+          {!showAll && preTimelineLength > 0 && (
             <Step>
               <StepButton
                 component={Link}
@@ -122,7 +137,7 @@ const StoryTimeline = ({ id, category }: StoryTimelineProps) => {
               </StepButton>
             </Step>
           )}
-          {shortenedTimeline.map((game) => (
+          {(showAll ? timeline : shortenedTimeline).map((game) => (
             <Step key={game.ids[0]}>
               {game.ids.includes(id) ? (
                 <StepLabel
@@ -182,7 +197,7 @@ const StoryTimeline = ({ id, category }: StoryTimelineProps) => {
               )}
             </Step>
           ))}
-          {postTimelineLength > 0 && (
+          {!showAll && postTimelineLength > 0 && (
             <Step>
               <StepButton
                 component={Link}
