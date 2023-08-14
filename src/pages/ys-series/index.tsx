@@ -107,7 +107,7 @@ const YsSeries = ({ games }: Props) => {
       </Box>
       <Box component='header'>
         <Typography variant='h1'>Ys Series</Typography>
-        <Typography color='text.secondary'>イース</Typography>
+        <Typography color='text.secondary'>イースシリーズ</Typography>
       </Box>
       <Divider light sx={{ my: 2 }} />
       <Box component='section' sx={{ mb: 3 }}>
