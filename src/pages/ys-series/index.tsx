@@ -8,7 +8,7 @@ import ysLogo from '~/../public/assets/ys-logo.webp';
 import ysNapishtimMechanics from '~/../public/assets/ys-napishtim-mechanics.webp';
 import ysPartySystem from '~/../public/assets/ys-party-system.webp';
 import ysSeriesBg from '~/../public/assets/ys-series-bg.webp';
-import { GameItem, MainLayout, StoryTimeline } from '~/components';
+import { GameItem, Link, MainLayout, StoryTimeline } from '~/components';
 import { cacheCollection } from '~/configs';
 import { GameCacheSchema } from '~/schemas';
 
@@ -42,6 +42,17 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 };
 
 const YsSeries = ({ games }: Props) => {
+  const sources = [
+    {
+      name: 'Ys (series)',
+      url: 'https://isu.fandom.com/wiki/Ys_(series)',
+    },
+    {
+      name: 'Ys Simplified Timeline',
+      url: 'https://isu.fandom.com/wiki/Timeline',
+    },
+  ];
+
   return (
     <MainLayout title='Ys Series' description='TODO:'>
       <Box
@@ -265,7 +276,7 @@ const YsSeries = ({ games }: Props) => {
         </Box>
       </Box>
       <StoryTimeline id='' category='Ys Series' showAll forceVertical />
-      <Box component='section'>
+      <Box component='section' sx={{ mb: 3 }}>
         <Typography variant='h2' sx={{ mb: 2 }}>
           Games
         </Typography>
@@ -276,6 +287,20 @@ const YsSeries = ({ games }: Props) => {
             </Grid>
           ))}
         </Grid>
+      </Box>
+      <Box component='section'>
+        <Typography variant='h2' sx={{ mb: 1 }}>
+          Sources
+        </Typography>
+        <Box component='ul' sx={{ m: 0, pl: 2 }}>
+          {sources.map((source, idx) => (
+            <li key={idx}>
+              <Link href={source.url} target='_blank' rel='noopener noreferrer'>
+                {source.name}
+              </Link>
+            </li>
+          ))}
+        </Box>
       </Box>
     </MainLayout>
   );
