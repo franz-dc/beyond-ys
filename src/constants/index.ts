@@ -63,6 +63,21 @@ export const LANGUAGES = [
   })),
 ];
 
+export const CATEGORIES_WITH_PAGES = [
+  {
+    name: 'Ys Series',
+    slug: 'ys-series',
+  },
+  {
+    name: 'Trails Series',
+    slug: 'trails-series',
+  },
+  {
+    name: 'Gagharv Trilogy',
+    slug: 'gagharv-trilogy',
+  },
+];
+
 export const USER_ROLES = {
   admin: 'Admin',
   moderator: 'Moderator',

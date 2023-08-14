@@ -24,6 +24,7 @@ import {
 } from '~/components';
 import { cacheCollection, gamesCollection } from '~/configs';
 import {
+  CATEGORIES_WITH_PAGES,
   CATEGORIES_WITH_TIMELINE,
   CLOUD_STORAGE_URL,
   GAME_PLATFORMS,
@@ -204,6 +205,10 @@ const GamePage = ({
   const hasOtherInformation =
     (!!aliases && aliases.length > 0) || !!releaseDate || platforms.length > 0;
 
+  const categoryPageInfo = CATEGORIES_WITH_PAGES.find(
+    (c) => c.name === category
+  );
+
   return (
     <MainLayout
       title={name}
@@ -359,7 +364,22 @@ const GamePage = ({
                 {name}
               </Typography>
               <Typography fontSize={18} color='text.secondary' mb={2}>
-                {category}
+                {categoryPageInfo ? (
+                  <Link
+                    href={`/${categoryPageInfo.slug}`}
+                    sx={{
+                      color: 'text.secondary',
+                      outline: 'none',
+                      '&:hover, &:focus': {
+                        textDecoration: 'underline',
+                      },
+                    }}
+                  >
+                    {categoryPageInfo.name}
+                  </Link>
+                ) : (
+                  category
+                )}
                 {subcategory && (
                   <>
                     <MdCircle
