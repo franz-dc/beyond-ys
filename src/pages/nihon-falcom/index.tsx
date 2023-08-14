@@ -185,13 +185,14 @@ const NihonFalcom = () => {
         <Typography>
           Central to the game&apos;s impact is its music, a hallmark of
           Falcom&apos;s games. The evocative compositions by{' '}
-          <Link href='/staff/yuzo-koshiro'>Yuzo Koshiro</Link> and{' '}
-          <Link href='/staff/mieko-ishikawa'>Mieko Ishikawa</Link> have become
-          inseparable from the Ys experience, creating an auditory journey that
-          enhances the game&apos;s emotional resonance. This musical synergy
-          breathed life into Falcom&apos;s worlds, fostering a sense of
-          immersion that would become a defining characteristic of the
-          company&apos;s RPGs.
+          <Link href='/staff/yuzo-koshiro'>Yuzo Koshiro</Link>,{' '}
+          <Link href='/staff/mieko-ishikawa'>Mieko Ishikawa</Link>, and{' '}
+          <Link href='/staff/hideya-nagata'>Hideya Nagata</Link> from the early
+          days of the series have become inseparable from the Ys experience,
+          creating an auditory journey that enhances the game&apos;s emotional
+          resonance. This musical synergy breathed life into Falcom&apos;s
+          worlds, fostering a sense of immersion that would become a defining
+          characteristic of the company&apos;s RPGs.
         </Typography>
       </Box>
       <Box component='section' sx={{ mb: 3 }}>
