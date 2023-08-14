@@ -223,7 +223,7 @@ const YsSeries = ({ games }: Props) => {
                 As the series progressed, so did its combat mechanics. Ys II
                 introduced magical abilities, enhancing Adol&apos;s repertoire
                 of combat strategies. Subsequent titles evolved further, having
-                dedicating attacks with its unique combos and blending real-time
+                dedicated attacks with unique combos and blending real-time
                 action with tactical elements, creating a dynamic experience
                 that demanded quick thinking and precise execution.
               </Typography>
