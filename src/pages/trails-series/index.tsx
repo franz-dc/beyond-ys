@@ -30,7 +30,9 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       if (!b) return -1;
       return (b as string).localeCompare(a as string);
     })
-    .filter(([, { category }]) => category === 'Trails Series')
+    .filter(([, { category }]) =>
+      ['Trails Series', 'Ys / Trails Series'].includes(category)
+    )
     .map(([id, game]) => ({ id, ...game }));
 
   return {

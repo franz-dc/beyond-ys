@@ -563,8 +563,18 @@ const EditGame = () => {
       await revalidatePaths(
         [
           `/games/${id}`,
-          ...(isCacheDataChanged || !!coverImage
-            ? ['/games', '/ys-series']
+          ...(isCacheDataChanged || !!coverImage ? ['/games'] : []),
+          ...((isCacheDataChanged || !!coverImage) &&
+          ['Ys Series', 'Ys / Trails Series'].includes(category)
+            ? ['/ys-series']
+            : []),
+          ...((isCacheDataChanged || !!coverImage) &&
+          ['Trails Series', 'Ys / Trails Series'].includes(category)
+            ? ['/trails-series']
+            : []),
+          ...((isCacheDataChanged || !!coverImage) &&
+          category === 'Gagharv Trilogy'
+            ? ['/gagharv-trilogy']
             : []),
           ...removedCharacterIds.map((id) => `/characters/${id}`),
           ...addedCharacterIds.map((id) => `/characters/${id}`),

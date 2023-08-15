@@ -482,7 +482,13 @@ const AddGame = () => {
         [
           `/games/${id}`,
           '/games',
-          '/ys-series',
+          ...(['Ys Series', 'Ys / Trails Series'].includes(category)
+            ? ['/ys-series']
+            : []),
+          ...(['Trails Series', 'Ys / Trails Series'].includes(category)
+            ? ['/trails-series']
+            : []),
+          ...(category === 'Gagharv Trilogy' ? ['/gagharv-trilogy'] : []),
           ...formattedCharacterIds.map((id) => `/characters/${id}`),
         ],
         tokenRes.token
