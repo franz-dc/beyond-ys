@@ -54,7 +54,10 @@ const YsSeries = ({ games }: Props) => {
   ];
 
   return (
-    <MainLayout title='Ys Series' description='TODO:'>
+    <MainLayout
+      title='Ys Series'
+      description='Embark on an epic adventure alongside Adol Christin, a red-haired adventurer whose thirst for exploration and insatiable curiosity lead him to distant lands filled with mystery, danger, and heroism.'
+    >
       <Box
         className='paper-bg'
         sx={{
