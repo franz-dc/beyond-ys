@@ -24,10 +24,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
   const cachedGames = cachedGamesDoc.data() || {};
 
   const games = Object.entries(cachedGames)
-    // game sorting:
-    // 1. alphabetical
-    // 2. most recent first, empty release date last
-    .sort(([, { name: a }], [, { name: b }]) => a.localeCompare(b))
+    // game sorting:  most recent first, empty release date last
     .sort(([, { releaseDate: a }], [, { releaseDate: b }]) => {
       if (!a) return 1;
       if (!b) return -1;
