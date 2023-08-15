@@ -67,16 +67,17 @@ const StoryTimeline = ({
     id,
     timeline,
     timelineUrl,
-    resizeStepLabel,
+    resizeStepIcon,
   }: {
     id: string;
     timeline: {
       ids: string[];
       name: string;
       stepLabel: string;
+      stepSubLabel?: string;
     }[];
     timelineUrl: string;
-    resizeStepLabel?: boolean;
+    resizeStepIcon?: boolean;
   }) => {
     const gameIndex = timeline.findIndex((game) => game.ids.includes(id));
 
@@ -149,16 +150,23 @@ const StoryTimeline = ({
                     '& text': {
                       fontWeight: 'medium',
                       fontSize:
-                        resizeStepLabel && game.stepLabel.length > 2
+                        resizeStepIcon && game.stepLabel.length > 2
                           ? '0.65rem'
                           : '0.75rem',
                     },
                   }}
+                  optional={
+                    (forceVertical || !mdUp) && game.stepSubLabel ? (
+                      <Typography variant='caption'>
+                        {game.stepSubLabel}
+                      </Typography>
+                    ) : null
+                  }
                 >
                   <Typography
                     component='span'
                     color='primary.main'
-                    fontSize='inherit'
+                    fontSize={!forceVertical && mdUp ? 'inherit' : undefined}
                   >
                     {game.name}
                   </Typography>
@@ -173,6 +181,13 @@ const StoryTimeline = ({
                       color: 'text.primary',
                     },
                   }}
+                  optional={
+                    (forceVertical || !mdUp) && game.stepSubLabel ? (
+                      <Typography variant='caption'>
+                        {game.stepSubLabel}
+                      </Typography>
+                    ) : null
+                  }
                 >
                   <StepLabel
                     StepIconComponent={() => <StepIcon icon={game.stepLabel} />}
@@ -180,7 +195,7 @@ const StoryTimeline = ({
                       '& text': {
                         fontWeight: 'medium',
                         fontSize:
-                          resizeStepLabel && game.stepLabel.length > 2
+                          resizeStepIcon && game.stepLabel.length > 2
                             ? '0.65rem'
                             : '0.75rem',
                       },
@@ -189,7 +204,7 @@ const StoryTimeline = ({
                     <Typography
                       component='span'
                       color='text.primary'
-                      fontSize='inherit'
+                      fontSize={!forceVertical && mdUp ? 'inherit' : undefined}
                     >
                       {game.name}
                     </Typography>
@@ -250,7 +265,7 @@ const StoryTimeline = ({
       id,
       timeline: trailsStoryTimeline,
       timelineUrl: '/trails-series#story-timeline',
-      resizeStepLabel: true,
+      resizeStepIcon: true,
     });
   }
 
