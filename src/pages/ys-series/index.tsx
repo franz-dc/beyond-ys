@@ -76,7 +76,7 @@ const YsSeries = ({ games }: Props) => {
         <Box
           component={Image}
           src={ysSeriesBg}
-          alt='falcom hero background'
+          alt='ys hero background'
           sx={{
             position: 'absolute',
             top: 0,
