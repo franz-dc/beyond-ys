@@ -53,7 +53,10 @@ const TrailsSeries = ({ games }: Props) => {
   ];
 
   return (
-    <MainLayout title='Trails Series' description='TODO:'>
+    <MainLayout
+      title='Trails Series'
+      description='Within the sprawling landscape of RPGs, few series have achieved the intricate narrative depth and world-building prowess of the Trails (Kiseki) series. Renowned for its sprawling narratives, multi-faceted characters, and meticulous attention to detail, the Trails series has captivated players and set a new standard for storytelling in the gaming world.'
+    >
       <Box
         className='paper-bg'
         sx={{
@@ -70,7 +73,7 @@ const TrailsSeries = ({ games }: Props) => {
         <Box
           component={Image}
           src={trailsSeriesBg}
-          alt='falcom hero background'
+          alt='trails hero background'
           sx={{
             position: 'absolute',
             top: 0,
