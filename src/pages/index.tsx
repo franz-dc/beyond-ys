@@ -521,7 +521,8 @@ const HomePage = () => {
                   lineHeight: 1.3,
                 }}
               >
-                Epic fantasy journey across Gagharv&apos;s interconnected lands.
+                Epic fantasy journey across the lands surrounding the rift of
+                Gagharv.
               </Typography>
             </Box>
             <Box
