@@ -84,7 +84,6 @@ const YsSeries = ({ games }: Props) => {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            objectPosition: 'bottom 20% right',
             opacity: 0.4,
             filter: 'blur(2px) brightness(0.4)',
           }}
@@ -281,7 +280,7 @@ const YsSeries = ({ games }: Props) => {
         </Paper>
       </Box>
       <StoryTimeline id='' category='Ys Series' showAll forceVertical />
-      <Box component='section' sx={{ mb: 3 }}>
+      <Box component='section' sx={{ mt: -2, mb: 3 }}>
         <Typography variant='h2' sx={{ mb: 2 }}>
           Games
         </Typography>
