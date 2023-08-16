@@ -118,7 +118,7 @@ const GagharvTrilogy = ({ games }: Props) => {
           </Typography>
           <Typography>
             The central setting of the first game in the trilogy,{' '}
-            <Link href='the-legend-of-heroes-iii-white-witch'>
+            <Link href='/games/the-legend-of-heroes-iii-white-witch'>
               Prophecy of the Moonlight Witch
             </Link>
             , is a realm shrouded in mysticism and steeped in legends. At the
@@ -132,7 +132,7 @@ const GagharvTrilogy = ({ games }: Props) => {
           </Typography>
           <Typography>
             In{' '}
-            <Link href='the-legend-of-heroes-iv-a-tear-of-vermillion'>
+            <Link href='/games/the-legend-of-heroes-iv-a-tear-of-vermillion'>
               A Tear of Vermillion
             </Link>
             , the second installment of the Gagharv Trilogy, players are
@@ -149,7 +149,7 @@ const GagharvTrilogy = ({ games }: Props) => {
           </Typography>
           <Typography>
             The final installment,{' '}
-            <Link href='the-legend-of-heroes-v-song-of-the-ocean'>
+            <Link href='/games/the-legend-of-heroes-v-cagesong-of-the-ocean'>
               Song of the Ocean
             </Link>
             , introduces players to the isolated continent of Weltluna,
