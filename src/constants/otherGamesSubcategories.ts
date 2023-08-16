@@ -165,15 +165,15 @@ export const otherGamesSubcategories = [
     ],
   },
   {
-    id: 'horror-house-series',
-    name: 'Horror House Series',
+    id: 'occultic-mystery-adventure',
+    name: 'Occultic Mystery Adventure',
     items: [
       {
         name: 'Horror House',
         href: '/games/horror-house',
       },
       {
-        name: 'Horror House Part-II',
+        name: 'Horror House Part II',
         href: '/games/horror-house-part-ii',
       },
       {
