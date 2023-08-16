@@ -5,6 +5,7 @@ import { GenericHeader, Link, MainLayout } from '~/components';
 import { CONTRIBUTOR_PLATFORMS } from '~/constants';
 
 // cspell:disable
+import bowlOfLentilsAvatar from '../../../public/assets/bowl-of-lentils-avatar.webp';
 import franzdcAvatar from '../../../public/assets/franzdc-avatar.webp';
 import josepAvatar from '../../../public/assets/josep-avatar.webp';
 import kotoraAvatar from '../../../public/assets/kotora-avatar.webp';
@@ -35,7 +36,7 @@ const About = () => {
     {
       name: 'Josep',
       description:
-        'Owner of the Falcom Music Channel and Nihon Falcom (Sound Team J.D.K./jdk) Composer Breakdown Project.',
+        'Owner of the Falcom Music Channel and the Composer Breakdown Project.',
       avatar: josepAvatar,
       platforms: {
         youtube: {
@@ -65,6 +66,22 @@ const About = () => {
         atwiki: {
           label: '@Wiki: Falcom Staff Roll',
           link: 'https://w.atwiki.jp/falcom_staff',
+        },
+      },
+    },
+    {
+      name: 'Bowl of Lentils',
+      description:
+        "Documenter of Falcom's older games and retro games in general.",
+      avatar: bowlOfLentilsAvatar,
+      platforms: {
+        youtube: {
+          label: 'YouTube: Bowl of Lentils',
+          link: 'https://www.youtube.com/@bowloflentils',
+        },
+        atwiki: {
+          label: 'Giant Bomb: Bowl of Lentils',
+          link: 'https://www.giantbomb.com/profile/bowl-of-lentils',
         },
       },
     },
