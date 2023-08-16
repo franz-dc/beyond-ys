@@ -176,6 +176,10 @@ export const otherGamesSubcategories = [
         name: 'Horror House Part-II',
         href: '/games/horror-house-part-ii',
       },
+      {
+        name: 'Monster House',
+        href: '/games/monster-house',
+      },
     ],
   },
   {
@@ -231,10 +235,6 @@ export const otherGamesSubcategories = [
       {
         name: 'Panorama Toh',
         href: '/games/panorama-toh',
-      },
-      {
-        name: 'Monster House',
-        href: '/games/monster-house',
       },
       {
         name: "Demon's Ring",
