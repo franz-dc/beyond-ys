@@ -287,69 +287,77 @@ const AlbumInfo = ({
                     {formatReleaseYear(releaseDate as string)}
                   </span>
                 </Tooltip>
-                <MdCircle
-                  style={{
-                    display: 'inline-block',
-                    verticalAlign: 'middle',
-                    marginBottom: 2,
-                    marginLeft: '0.5rem',
-                    marginRight: '0.5rem',
-                    fontSize: '0.35rem',
-                  }}
-                />
-                <Tooltip
-                  title={
-                    <Box
-                      component='ul'
-                      sx={{
-                        listStyle: 'none',
-                        m: 0,
-                        p: 0,
+                {artists.length > 0 && (
+                  <>
+                    <MdCircle
+                      style={{
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        marginBottom: 2,
+                        marginLeft: '0.5rem',
+                        marginRight: '0.5rem',
+                        fontSize: '0.35rem',
                       }}
-                    >
-                      {artists.map((artist) => (
+                    />
+                    <Tooltip
+                      title={
                         <Box
-                          key={artist}
-                          component='li'
+                          component='ul'
                           sx={{
-                            '&:not(:last-child)': {
-                              mb: 0.5,
-                            },
+                            listStyle: 'none',
+                            m: 0,
+                            p: 0,
                           }}
                         >
-                          {artist}
+                          {artists.map((artist) => (
+                            <Box
+                              key={artist}
+                              component='li'
+                              sx={{
+                                '&:not(:last-child)': {
+                                  mb: 0.5,
+                                },
+                              }}
+                            >
+                              {artist}
+                            </Box>
+                          ))}
                         </Box>
-                      ))}
-                    </Box>
-                  }
-                  componentsProps={{
-                    tooltip: {
-                      sx: {
-                        fontSize: '0.875rem',
-                        backgroundColor: 'background.paper',
-                        // @ts-ignore
-                        boxShadow: ({ shadows }) => shadows[6],
-                      },
-                    },
-                  }}
-                >
-                  <span>
-                    {artists.length}{' '}
-                    {artists.length === 1 ? 'artist' : 'artists'}
-                  </span>
-                </Tooltip>
-                <MdCircle
-                  style={{
-                    display: 'inline-block',
-                    verticalAlign: 'middle',
-                    marginBottom: 2,
-                    marginLeft: '0.5rem',
-                    marginRight: '0.5rem',
-                    fontSize: '0.35rem',
-                  }}
-                />
-                {formattedMusic.length}{' '}
-                {formattedMusic.length === 1 ? 'track' : 'tracks'}
+                      }
+                      componentsProps={{
+                        tooltip: {
+                          sx: {
+                            fontSize: '0.875rem',
+                            backgroundColor: 'background.paper',
+                            // @ts-ignore
+                            boxShadow: ({ shadows }) => shadows[6],
+                          },
+                        },
+                      }}
+                    >
+                      <span>
+                        {artists.length}{' '}
+                        {artists.length === 1 ? 'artist' : 'artists'}
+                      </span>
+                    </Tooltip>
+                  </>
+                )}
+                {formattedMusic.length > 0 && (
+                  <>
+                    <MdCircle
+                      style={{
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        marginBottom: 2,
+                        marginLeft: '0.5rem',
+                        marginRight: '0.5rem',
+                        fontSize: '0.35rem',
+                      }}
+                    />
+                    {formattedMusic.length}{' '}
+                    {formattedMusic.length === 1 ? 'track' : 'tracks'}
+                  </>
+                )}
               </Typography>
             </Box>
           </Grid>
