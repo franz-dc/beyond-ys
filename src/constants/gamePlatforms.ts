@@ -94,7 +94,7 @@ export const GAME_PLATFORMS: Record<
   necPc: {
     // icon: SiNec,
     // iconType: 'component',
-    name: 'NEC PC (PC-88, PC-98)',
+    name: 'NEC PC (PC-88 / PC-98)',
     // width: 24,
   },
   nes: {
