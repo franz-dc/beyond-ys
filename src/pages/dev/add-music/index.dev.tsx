@@ -167,7 +167,7 @@ const AddMusic = () => {
 
     try {
       // get auth token for revalidation
-      const tokenRes = await auth.currentUser?.getIdTokenResult();
+      const tokenRes = await auth.currentUser?.getIdTokenResult(true);
 
       if (tokenRes?.claims?.role !== 'admin') {
         enqueueSnackbar('Insufficient permissions.', { variant: 'error' });

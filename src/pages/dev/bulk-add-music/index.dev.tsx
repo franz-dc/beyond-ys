@@ -85,7 +85,7 @@ const BulkAddMusic = () => {
 
     try {
       // get auth token for revalidation
-      const tokenRes = await auth.currentUser?.getIdTokenResult();
+      const tokenRes = await auth.currentUser?.getIdTokenResult(true);
 
       if (tokenRes?.claims?.role !== 'admin') {
         enqueueSnackbar('Insufficient permissions.', { variant: 'error' });
@@ -170,6 +170,9 @@ const BulkAddMusic = () => {
 
       await batch.commit();
 
+      // eslint-disable-next-line no-console
+      console.log('Music IDs', musicIds);
+
       staffIdsWithChanges = [...new Set(staffIdsWithChanges)];
       albumIdsWithChanges = [...new Set(albumIdsWithChanges)].filter(Boolean);
 
@@ -183,8 +186,6 @@ const BulkAddMusic = () => {
 
       reset();
       enqueueSnackbar('Music added successfully.', { variant: 'success' });
-      // eslint-disable-next-line no-console
-      console.log('Music IDs', musicIds);
     } catch (err) {
       enqueueSnackbar('Failed to add music.', { variant: 'error' });
       console.error(err);
