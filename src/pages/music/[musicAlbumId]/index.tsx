@@ -1,14 +1,14 @@
-import { Box, Grid, Stack, Typography } from '@mui/material';
+import { Box, Grid, Stack, Tooltip, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import type { GetStaticPaths, GetStaticProps } from 'next';
-import { MdAlbum } from 'react-icons/md';
+import { MdAlbum, MdCircle } from 'react-icons/md';
 
 import { MainLayout, MusicItem } from '~/components';
 import { cacheCollection, musicAlbumsCollection } from '~/configs';
 import { CLOUD_STORAGE_URL } from '~/constants';
 import { useMusicPlayer } from '~/hooks';
 import { MusicAlbumSchema, StaffInfoCacheSchema } from '~/schemas';
-import { formatReleaseDate } from '~/utils';
+import { formatReleaseDate, formatReleaseYear } from '~/utils';
 
 type Params = {
   musicAlbumId: string;
@@ -125,6 +125,22 @@ const AlbumInfo = ({
       };
     })
     .filter((s): s is Exclude<typeof s, null> => !!s);
+
+  // get all artists from all soundtracks
+  const artists = [
+    ...new Set(
+      formattedMusic.reduce(
+        (acc, curr) => [
+          ...acc,
+          ...curr.artists.map((a) =>
+            // get the name and remove everything after the first parenthesis
+            a.name.replace(/\s\(.*\)/, '')
+          ),
+        ],
+        [] as string[]
+      )
+    ),
+  ].sort((a, b) => a.localeCompare(b));
 
   return (
     <MainLayout title={name} image={`${CLOUD_STORAGE_URL}/album-arts/${id}`}>
@@ -254,7 +270,86 @@ const AlbumInfo = ({
                 {name}
               </Typography>
               <Typography sx={{ color: 'text.secondary' }}>
-                {formatReleaseDate(releaseDate as string)}
+                <Tooltip
+                  title={formatReleaseDate(releaseDate as string)}
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        fontSize: '0.875rem',
+                        backgroundColor: 'background.paper',
+                        // @ts-ignore
+                        boxShadow: ({ shadows }) => shadows[6],
+                      },
+                    },
+                  }}
+                >
+                  <span aria-label='release date'>
+                    {formatReleaseYear(releaseDate as string)}
+                  </span>
+                </Tooltip>
+                <MdCircle
+                  style={{
+                    display: 'inline-block',
+                    verticalAlign: 'middle',
+                    marginBottom: 2,
+                    marginLeft: '0.5rem',
+                    marginRight: '0.5rem',
+                    fontSize: '0.35rem',
+                  }}
+                />
+                <Tooltip
+                  title={
+                    <Box
+                      component='ul'
+                      sx={{
+                        listStyle: 'none',
+                        m: 0,
+                        p: 0,
+                      }}
+                    >
+                      {artists.map((artist) => (
+                        <Box
+                          key={artist}
+                          component='li'
+                          sx={{
+                            '&:not(:last-child)': {
+                              mb: 0.5,
+                            },
+                          }}
+                        >
+                          {artist}
+                        </Box>
+                      ))}
+                    </Box>
+                  }
+                  componentsProps={{
+                    tooltip: {
+                      sx: {
+                        fontSize: '0.875rem',
+                        backgroundColor: 'background.paper',
+                        // @ts-ignore
+                        boxShadow: ({ shadows }) => shadows[6],
+                      },
+                    },
+                  }}
+                >
+                  <span>
+                    {artists.length}{' '}
+                    {artists.length === 1 ? 'artist' : 'artists'}
+                  </span>
+                </Tooltip>
+                <MdCircle
+                  style={{
+                    display: 'inline-block',
+                    verticalAlign: 'middle',
+                    marginBottom: 2,
+                    marginLeft: '0.5rem',
+                    marginRight: '0.5rem',
+                    fontSize: '0.35rem',
+                  }}
+                />
+                {formattedMusic.length}{' '}
+                {formattedMusic.length === 1 ? 'track' : 'tracks'}
               </Typography>
             </Box>
           </Grid>
