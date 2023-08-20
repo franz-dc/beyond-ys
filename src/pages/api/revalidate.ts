@@ -27,6 +27,19 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader(
+      'Access-Control-Allow-Origin',
+      process.env.NEXT_PUBLIC_EDITOR_URL as string
+    );
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Authorization, Accept, Content-Type, Origin'
+    );
+
+    if (req.method === 'OPTIONS') return res.status(200).end();
+
     const { authorization } = req.headers;
     const authorizationWithoutBearer = authorization?.replace('Bearer ', '');
     if (!authorizationWithoutBearer)
