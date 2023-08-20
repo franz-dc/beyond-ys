@@ -1,4 +1,4 @@
-import { createRef, useEffect, useState } from 'react';
+import { createRef, useState } from 'react';
 
 import { CacheProvider } from '@emotion/react';
 import type { EmotionCache } from '@emotion/react';
@@ -39,22 +39,6 @@ export default function MyApp(props: MyAppProps) {
   const onClickDismiss = (key: any) => () => {
     notistackRef?.current?.closeSnackbar(key);
   };
-
-  useEffect(() => {
-    const initZod = async () => {
-      if (process.env.NODE_ENV === 'development') {
-        const z = await import('zod');
-        z.setErrorMap((issue, ctx) => {
-          if (issue.code === 'too_small' && issue.minimum === 1) {
-            return { message: 'This field is required.' };
-          }
-          return { message: ctx.defaultError };
-        });
-      }
-    };
-
-    initZod();
-  }, []);
 
   return (
     <PageProvider emotionCache={emotionCache}>
