@@ -18,7 +18,7 @@ const NihonFalcom = () => {
       id: 'toshihiro-kondo',
       name: 'Toshihiro Kondo',
       roles: [
-        'Current president of Falcom. He also does scenario writing, and game directing.',
+        'Current president of Falcom. He also does story writing and directing for games such as the Trails series.',
       ],
       hasAvatar: false,
     },
@@ -31,20 +31,20 @@ const NihonFalcom = () => {
       hasAvatar: false,
     },
     {
-      id: 'yuzo-koshiro',
-      name: 'Yuzo Koshiro',
-      roles: [
-        "One of the early composers for Falcom that left a lasting impact on the company's music.",
-      ],
-      hasAvatar: false,
-    },
-    {
       id: 'makoto-shinkai',
       name: 'Makoto Shinkai',
       roles: [
         'A former artist and animator for Falcom who is now a renowned anime director and writer.',
       ],
       hasAvatar: true,
+    },
+    {
+      id: 'yuzo-koshiro',
+      name: 'Yuzo Koshiro',
+      roles: [
+        "One of the early composers for Falcom that left a lasting impact on the company's music.",
+      ],
+      hasAvatar: false,
     },
     {
       id: 'hayato-sonoda',
@@ -58,7 +58,7 @@ const NihonFalcom = () => {
       id: 'takahiro-unisuga',
       name: 'Takahiro Unisuga',
       roles: [
-        'Once a member of Falcom Sound Team jdk who is known for his memorable compositions of various genres.',
+        'A former member of Falcom Sound Team jdk who is known for his memorable compositions of various genres.',
       ],
       hasAvatar: false,
     },
@@ -66,7 +66,7 @@ const NihonFalcom = () => {
       id: 'yukihiro-jindo',
       name: 'Yukihiro Jindo',
       roles: [
-        'An independent contractor who made a lot of iconic compositions and arrangements for Falcom.',
+        'An independent musician who made a lot of iconic and epic-sounding compositions and arrangements for Falcom.',
       ],
       hasAvatar: true,
     },
