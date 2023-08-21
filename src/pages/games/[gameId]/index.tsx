@@ -145,44 +145,61 @@ const GamePage = ({
   const formattedSoundtracks = soundtrackIds
     .map((soundtrackId) => {
       const soundtrack = cachedSoundtracks[soundtrackId];
+      if (!soundtrack) return null;
+
       const hasArrangerOrOtherArtists =
         soundtrack.arrangerIds.length > 0 || soundtrack.otherArtists.length > 0;
-
-      if (!soundtrack) return null;
+      const filteredOtherArtists = soundtrack.otherArtists.filter(
+        (otherArtist) =>
+          !soundtrack.composerIds.includes(otherArtist.staffId) ||
+          !soundtrack.arrangerIds.includes(otherArtist.staffId)
+      );
 
       return {
         ...soundtrack,
         id: soundtrackId,
         artists: [
           // populate composers
-          ...soundtrack.composerIds.map((c) => {
-            const foundStaffName = staffInfoCache[c]?.name;
+          ...soundtrack.composerIds.map((composerId) => {
+            const foundStaffName = staffInfoCache[composerId]?.name;
+            const otherRoles = soundtrack.otherArtists
+              .filter((otherArtist) => otherArtist.staffId === composerId)
+              .map((otherArtist) => otherArtist.role);
             return foundStaffName
               ? {
                   name: hasArrangerOrOtherArtists
-                    ? `${foundStaffName} (Comp.)`
+                    ? `${foundStaffName} (${['Comp.', ...otherRoles].join(
+                        ', '
+                      )})`
                     : foundStaffName,
-                  link: `/staff/${c}`,
+                  link: `/staff/${composerId}`,
                 }
               : null;
           }),
           // populate arrangers
-          ...soundtrack.arrangerIds.map((a) => {
-            const foundStaffName = staffInfoCache[a]?.name;
+          ...soundtrack.arrangerIds.map((arrangerId) => {
+            const foundStaffName = staffInfoCache[arrangerId]?.name;
+            const otherRoles = soundtrack.otherArtists
+              .filter((otherArtist) => otherArtist.staffId === arrangerId)
+              .map((otherArtist) => otherArtist.role);
             return foundStaffName
               ? {
-                  name: `${foundStaffName} (Arr.)`,
-                  link: `/staff/${a}`,
+                  name: hasArrangerOrOtherArtists
+                    ? `${foundStaffName} (${['Arr.', ...otherRoles].join(
+                        ', '
+                      )})`
+                    : foundStaffName,
+                  link: `/staff/${arrangerId}`,
                 }
               : null;
           }),
           // populate other artists
-          ...soundtrack.otherArtists.map((a) => {
-            const foundStaff = staffInfoCache[a.staffId]?.name;
+          ...filteredOtherArtists.map((otherArtist) => {
+            const foundStaff = staffInfoCache[otherArtist.staffId]?.name;
             return foundStaff
               ? {
-                  name: `${foundStaff} (${a.role || 'Other'})`,
-                  link: `/staff/${a.staffId}`,
+                  name: `${foundStaff} (${otherArtist.role || 'Other'})`,
+                  link: `/staff/${otherArtist.staffId}`,
                 }
               : null;
           }),
