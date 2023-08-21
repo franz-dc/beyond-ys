@@ -26,7 +26,7 @@ const NihonFalcom = () => {
       id: 'yoshio-kiya',
       name: 'Yoshio Kiya',
       roles: [
-        "One of the programmers in Falcom's formative years. He was the main programmer for Falcom's early games.",
+        "One of the main programmers in Falcom's early games like the Dragon Slayer series.",
       ],
       hasAvatar: false,
     },
@@ -37,6 +37,38 @@ const NihonFalcom = () => {
         "One of the early composers for Falcom that left a lasting impact on the company's music.",
       ],
       hasAvatar: false,
+    },
+    {
+      id: 'makoto-shinkai',
+      name: 'Makoto Shinkai',
+      roles: [
+        'A former artist and animator for Falcom who is now a renowned anime director and writer.',
+      ],
+      hasAvatar: true,
+    },
+    {
+      id: 'hayato-sonoda',
+      name: 'Hayato Sonoda',
+      roles: [
+        'Current leader of Falcom Sound Team jdk who is known for his expressive compositions that fits every narrative.',
+      ],
+      hasAvatar: false,
+    },
+    {
+      id: 'takahiro-unisuga',
+      name: 'Takahiro Unisuga',
+      roles: [
+        'Once a member of Falcom Sound Team jdk who is known for his memorable compositions of various genres.',
+      ],
+      hasAvatar: false,
+    },
+    {
+      id: 'yukihiro-jindo',
+      name: 'Yukihiro Jindo',
+      roles: [
+        'An independent contractor who made a lot of iconic compositions and arrangements for Falcom.',
+      ],
+      hasAvatar: true,
     },
   ];
 
