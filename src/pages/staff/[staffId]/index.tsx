@@ -197,7 +197,7 @@ const StaffInfo = ({
         soundtrack.arrangerIds.length > 0 || soundtrack.otherArtists.length > 0;
       const filteredOtherArtists = soundtrack.otherArtists.filter(
         (otherArtist) =>
-          !soundtrack.composerIds.includes(otherArtist.staffId) ||
+          !soundtrack.composerIds.includes(otherArtist.staffId) &&
           !soundtrack.arrangerIds.includes(otherArtist.staffId)
       );
 
