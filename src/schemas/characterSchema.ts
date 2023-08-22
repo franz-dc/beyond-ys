@@ -43,6 +43,8 @@ export const characterSchema = z.object({
       hasCoverImage: z.boolean(),
     })
   ),
+  // schema additions (optional)
+  aliases: z.string().min(1).array().optional(),
 });
 
 export type CharacterSchema = z.infer<typeof characterSchema>;

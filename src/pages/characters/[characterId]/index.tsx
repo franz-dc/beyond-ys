@@ -98,6 +98,7 @@ const CharacterInfo = ({
   extraImages,
   hasMainImage,
   containsSpoilers,
+  aliases,
 }: Props) => {
   const formattedGames = Object.entries(cachedGames)
     .map(([id, game]) => ({
@@ -120,6 +121,8 @@ const CharacterInfo = ({
     setPhotoIndex(-1);
     setIsGamesExpanded(false);
   }, [id]);
+
+  const hasOtherInformation = !!aliases && aliases.length > 0;
 
   return (
     <MainLayout
@@ -480,7 +483,11 @@ const CharacterInfo = ({
               )}
             </Box>
             {formattedGames.length > 0 && (
-              <Box sx={{ mb: voiceActors.length > 0 ? 3 : 0 }}>
+              <Box
+                sx={{
+                  mb: voiceActors.length > 0 || hasOtherInformation ? 3 : 0,
+                }}
+              >
                 <Typography variant='h2' sx={{ mb: 2 }}>
                   Game Appearances
                 </Typography>
@@ -525,7 +532,7 @@ const CharacterInfo = ({
               </Box>
             )}
             {voiceActors.length > 0 && (
-              <Box>
+              <Box component='section' mb={hasOtherInformation ? 3 : 0}>
                 <Typography variant='h2' sx={{ mb: 2 }}>
                   Voice Actors
                 </Typography>
@@ -632,6 +639,25 @@ const CharacterInfo = ({
                     </ButtonBase>
                   ))}
                 </Stack>
+              </Box>
+            )}
+            {hasOtherInformation && (
+              <Box component='section'>
+                <Typography variant='h2' mb={2}>
+                  Other Information
+                </Typography>
+                {aliases && aliases.length > 0 && (
+                  <Paper sx={{ mb: 1, px: 2, py: 1.5 }}>
+                    <Typography component='h3' fontWeight='bold'>
+                      Aliases
+                    </Typography>
+                    <Box component='ul' sx={{ m: 0, pl: 2 }}>
+                      {aliases.map((alias) => (
+                        <li key={alias}>{alias}</li>
+                      ))}
+                    </Box>
+                  </Paper>
+                )}
               </Box>
             )}
           </Grid>
