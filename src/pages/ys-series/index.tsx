@@ -128,12 +128,14 @@ const YsSeries = ({ games }: Props) => {
           A Symphony of Blades and Adventures
         </Typography>
         <Typography>
-          Embark on an epic adventure alongside Adol Christin, a red-haired
-          adventurer whose thirst for exploration and insatiable curiosity lead
-          him to distant lands filled with mystery, danger, and heroism. From
-          his humble beginnings on the Isle of Esteria to encounters with
-          ancient civilizations and mystical beings, the Ys series weaves a
-          tapestry of quests that capture the essence of adventure.
+          Embark on an epic adventure alongside{' '}
+          <Link href='characters/adol-christin'>Adol Christin</Link>, a
+          red-haired adventurer whose thirst for exploration and insatiable
+          curiosity lead him to distant lands filled with mystery, danger, and
+          heroism. From his humble beginnings on the Isle of Esteria to
+          encounters with ancient civilizations and mystical beings, the Ys
+          series weaves a tapestry of quests that capture the essence of
+          adventure.
         </Typography>
       </Box>
       <Box component='section' sx={{ mb: 3 }}>
@@ -179,11 +181,11 @@ const YsSeries = ({ games }: Props) => {
               <Typography>
                 In its early iterations, Adol engaged enemies by physically
                 colliding with them, a departure from traditional turn-based
-                combat. This innovation laid the foundation for the series&apos;
+                combat. This laid the foundation for the series&apos;
                 action-oriented gameplay, encouraging players to strategize
-                their movements and timing. The Bump System also introduced
-                another element of risk and reward, as players could choose to
-                avoid enemies or engage them for experience points.
+                their movements and timing by attacking off-center to prevent
+                damage from enemies. As the series progressed, the bump system
+                evolved, introducing diagonal attacks to also prevent damage.
               </Typography>
             </Grid>
           </Grid>
