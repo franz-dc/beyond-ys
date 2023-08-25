@@ -190,7 +190,7 @@ const CharacterInfo = ({
                 <Box
                   sx={{
                     width: {
-                      xs: 120,
+                      xs: 160,
                       md: 216,
                     },
                     pt: 4,
@@ -230,7 +230,7 @@ const CharacterInfo = ({
                         alignItems: 'center',
                         justifyContent: 'center',
                         height: {
-                          xs: 120,
+                          xs: 160,
                           md: 216,
                         },
                         backgroundColor: 'background.paper',
