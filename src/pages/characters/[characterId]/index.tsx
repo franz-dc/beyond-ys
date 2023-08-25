@@ -178,7 +178,7 @@ const CharacterInfo = ({
               spacing={2}
               sx={{
                 maxWidth: {
-                  md: 196,
+                  md: 232,
                 },
                 px: {
                   xs: 2,
@@ -191,7 +191,7 @@ const CharacterInfo = ({
                   sx={{
                     width: {
                       xs: 120,
-                      md: 180,
+                      md: 216,
                     },
                     pt: 4,
                     mx: {
@@ -231,7 +231,7 @@ const CharacterInfo = ({
                         justifyContent: 'center',
                         height: {
                           xs: 120,
-                          md: 180,
+                          md: 216,
                         },
                         backgroundColor: 'background.paper',
                         borderRadius: 2,
@@ -322,8 +322,8 @@ const CharacterInfo = ({
                           key={image.path}
                           focusRipple
                           sx={{
-                            width: 39, // (180 - 8 * 3) / 4
-                            height: 56,
+                            width: 48, // (180 - 8 * 3) / 4
+                            height: 64,
                             borderRadius: 1,
                           }}
                           aria-label='view character gallery image'
@@ -332,8 +332,8 @@ const CharacterInfo = ({
                             component='img'
                             src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${image.path}`}
                             sx={{
-                              width: 39,
-                              height: 56,
+                              width: 48,
+                              height: 64,
                               objectFit: 'cover',
                               objectPosition: 'top center',
                               borderRadius: 1,
@@ -351,8 +351,8 @@ const CharacterInfo = ({
                           focusRipple
                           sx={{
                             position: 'relative',
-                            width: 39, // (180 - 8 * 3) / 4
-                            height: 56,
+                            width: 48, // (180 - 8 * 3) / 4
+                            height: 64,
                             borderRadius: 1,
                           }}
                           aria-label='view character gallery image'
@@ -361,8 +361,8 @@ const CharacterInfo = ({
                             component='img'
                             src={`${CLOUD_STORAGE_URL}/character-gallery/${id}/${extraImages[3].path}`}
                             sx={{
-                              width: 39,
-                              height: 56,
+                              width: 48,
+                              height: 64,
                               objectFit: 'cover',
                               borderRadius: 1,
                               backgroundColor: 'background.paper',
