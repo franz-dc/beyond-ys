@@ -570,7 +570,7 @@ const CharacterInfo = ({
                             <Avatar
                               src={
                                 staffInfoCache[voiceActor.staffId]?.hasAvatar
-                                  ? `${CLOUD_STORAGE_URL}/staff/${voiceActor.staffId}`
+                                  ? `${CLOUD_STORAGE_URL}/staff-avatars/${voiceActor.staffId}`
                                   : undefined
                               }
                               alt={
