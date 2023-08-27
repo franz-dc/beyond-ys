@@ -56,7 +56,7 @@ const OtherGamesMenu = () => {
       <Box sx={{ width: 200 }}>
         <NavMenuList
           labelPrefix='other-games-menu'
-          subcategory={otherGamesSubcategories[8]}
+          subcategory={otherGamesSubcategories[8]!}
         />
       </Box>
     </Stack>

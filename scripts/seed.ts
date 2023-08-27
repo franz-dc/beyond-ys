@@ -83,7 +83,7 @@ const seed = async () => {
     const collectionData = firestoreData[collectionName];
 
     Object.entries(collectionData).forEach(([docId, docData]) => {
-      batches[currentBatchIndex].set(
+      batches[currentBatchIndex]!.set(
         db.collection(collectionName).doc(docId),
         convertTimestamps(docData)
       );

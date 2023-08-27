@@ -31,13 +31,13 @@ export const getStaticProps: GetStaticProps<StaffListProps> = async () => {
     .sort(([, { name: a }], [, { name: b }]) => a.localeCompare(b))
     .reduce<StaffListProps['categorizedStaffInfoCache']>(
       (acc, [id, staffMember]) => {
-        const firstLetter = staffMember.name[0].toUpperCase();
+        const firstLetter = (staffMember.name[0] ?? '').toUpperCase();
 
         if (!acc[firstLetter]) {
           acc[firstLetter] = [];
         }
 
-        acc[firstLetter].push({
+        acc[firstLetter]!.push({
           id,
           ...staffMember,
         });

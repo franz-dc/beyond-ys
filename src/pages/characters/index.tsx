@@ -35,17 +35,17 @@ export const getStaticProps: GetStaticProps<CharacterListProps> = async () => {
   const categorizedCharacters = Object.entries(charactersCache)
     .sort(([, a], [, b]) => a.name.localeCompare(b.name))
     .reduce<CategorizedCharacters>((acc, [id, { name, category, ...rest }]) => {
-      const firstLetter = name[0].toUpperCase();
+      const firstLetter = (name[0] ?? '').toUpperCase();
 
       if (!acc[category]) {
         acc[category] = {};
       }
 
-      if (!acc[category][firstLetter]) {
-        acc[category][firstLetter] = [];
+      if (!acc[category]![firstLetter]) {
+        acc[category]![firstLetter] = [];
       }
 
-      acc[category][firstLetter].push({
+      acc[category]![firstLetter]!.push({
         id,
         name,
         category,

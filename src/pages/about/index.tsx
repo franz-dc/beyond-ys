@@ -1,5 +1,5 @@
 import { Box, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 
 import { GenericHeader, Link, MainLayout } from '~/components';
 import { CONTRIBUTOR_PLATFORMS } from '~/constants';
@@ -16,7 +16,18 @@ const About = () => {
     "Welcome to Beyond Ys, a destination for the fans and people who want to know Falcom's works! This website is created to celebrate and share our love for all things Falcom.";
 
   // cspell:disable
-  const contributors = [
+  const contributors: {
+    name: string;
+    description: string;
+    avatar: StaticImageData;
+    platforms: Record<
+      string,
+      {
+        label: string;
+        link: string;
+      }
+    >;
+  }[] = [
     {
       name: 'Franz DC',
       description:
@@ -171,7 +182,7 @@ const About = () => {
                     ([platform, { label, link }]) => {
                       const platformObj =
                         CONTRIBUTOR_PLATFORMS?.[platform] ||
-                        CONTRIBUTOR_PLATFORMS?.other;
+                        CONTRIBUTOR_PLATFORMS.other!;
 
                       return (
                         <Tooltip key={platform} title={label} arrow>

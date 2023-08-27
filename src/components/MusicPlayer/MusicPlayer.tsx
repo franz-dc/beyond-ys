@@ -180,7 +180,7 @@ const MusicPlayer = ({
         setIsReady(false);
         if (isShuffleOn) {
           const randomIndex = Math.floor(Math.random() * queue.length);
-          setNowPlaying(queue[randomIndex]);
+          setNowPlaying(queue[randomIndex]!);
           break;
         } else {
           const currentIndex = queue.findIndex(
@@ -188,10 +188,10 @@ const MusicPlayer = ({
           );
           if (currentIndex === -1) return;
           if (currentIndex >= queue.length - 1) {
-            setNowPlaying(queue[0]);
+            setNowPlaying(queue[0]!);
             break;
           } else {
-            setNowPlaying(queue[currentIndex + 1]);
+            setNowPlaying(queue[currentIndex + 1]!);
             break;
           }
         }
@@ -203,7 +203,7 @@ const MusicPlayer = ({
           // if shuffle is on and loop is off, it is the same as repeat all,
           // but just shuffled
           const randomIndex = Math.floor(Math.random() * queue.length);
-          setNowPlaying(queue[randomIndex]);
+          setNowPlaying(queue[randomIndex]!);
           break;
         } else {
           const currentIndex = queue.findIndex(
@@ -212,7 +212,7 @@ const MusicPlayer = ({
           setIsReady(false);
           if (currentIndex === -1 || currentIndex >= queue.length - 1) return;
           setNowPlaying(null);
-          setNowPlaying(queue[currentIndex + 1]);
+          setNowPlaying(queue[currentIndex + 1]!);
           break;
         }
       }
@@ -237,12 +237,12 @@ const MusicPlayer = ({
     setIsReady(false);
     if (isShuffleOn) {
       const randomIndex = Math.floor(Math.random() * queue.length);
-      setNowPlaying(queue[randomIndex]);
+      setNowPlaying(queue[randomIndex]!);
     } else {
       if (currentIndex === 0) {
-        setNowPlaying(queue[queue.length - 1]);
+        setNowPlaying(queue[queue.length - 1]!);
       } else {
-        setNowPlaying(queue[currentIndex - 1]);
+        setNowPlaying(queue[currentIndex - 1]!);
       }
     }
   };
@@ -256,12 +256,12 @@ const MusicPlayer = ({
     setIsReady(false);
     if (isShuffleOn) {
       const randomIndex = Math.floor(Math.random() * queue.length);
-      setNowPlaying(queue[randomIndex]);
+      setNowPlaying(queue[randomIndex]!);
     } else {
       if (currentIndex >= queue.length - 1) {
-        setNowPlaying(queue[0]);
+        setNowPlaying(queue[0]!);
       } else {
-        setNowPlaying(queue[currentIndex + 1]);
+        setNowPlaying(queue[currentIndex + 1]!);
       }
     }
   };

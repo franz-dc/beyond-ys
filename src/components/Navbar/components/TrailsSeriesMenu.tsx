@@ -42,7 +42,7 @@ const TrailsSeriesMenu = () => {
       <Box sx={{ width: 200 }}>
         <NavMenuList
           labelPrefix='trails-series-menu'
-          subcategory={trailsSubcategories[4]}
+          subcategory={trailsSubcategories[4]!}
         />
       </Box>
     </Stack>

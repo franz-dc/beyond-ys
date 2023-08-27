@@ -50,7 +50,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
           acc[game.category] = [];
         }
 
-        acc[game.category].push({ id, ...game });
+        acc[game.category]!.push({ id, ...game });
 
         return acc;
       }, {})

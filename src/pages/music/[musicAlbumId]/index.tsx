@@ -80,10 +80,10 @@ const AlbumInfo = ({
   const formattedMusic = musicIds
     .map((musicId) => {
       const soundtrack = cachedMusic[musicId];
+      if (!soundtrack) return null;
+
       const hasArrangerOrOtherArtists =
         soundtrack.arrangerIds.length > 0 || soundtrack.otherArtists.length > 0;
-
-      if (!soundtrack) return null;
 
       return {
         ...soundtrack,
