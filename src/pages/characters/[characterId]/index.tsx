@@ -215,6 +215,7 @@ const CharacterInfo = ({
                       onClick={() => setPhotoIndex(0)}
                       sx={{
                         borderRadius: 2,
+                        width: '100%',
                       }}
                       aria-label='view main image'
                     >
@@ -222,9 +223,11 @@ const CharacterInfo = ({
                         component='img'
                         src={`${CLOUD_STORAGE_URL}/characters/${id}`}
                         alt={`${name} main image`}
-                        width='100%'
-                        height='auto'
                         sx={{
+                          width: 'auto',
+                          maxWidth: '100%',
+                          height: 'auto',
+                          maxHeight: 500,
                           transform: `scaleX(${
                             imageDirection === 'right' ? 1 : -1
                           })`,
