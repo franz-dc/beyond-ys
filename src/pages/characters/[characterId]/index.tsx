@@ -25,7 +25,11 @@ import 'yet-another-react-lightbox/plugins/counter.css';
 
 import { GameItem, Link, MainLayout } from '~/components';
 import { cacheCollection, charactersCollection } from '~/configs';
-import { CLOUD_STORAGE_URL, COUNTRIES } from '~/constants';
+import {
+  CATEGORIES_WITH_PAGES,
+  CLOUD_STORAGE_URL,
+  COUNTRIES,
+} from '~/constants';
 import {
   CharacterCacheSchema,
   CharacterSchema,
@@ -123,6 +127,10 @@ const CharacterInfo = ({
   }, [id]);
 
   const hasOtherInformation = !!aliases && aliases.length > 0;
+
+  const categoryPageInfo = CATEGORIES_WITH_PAGES.find(
+    (c) => c.name === category
+  );
 
   return (
     <MainLayout
@@ -299,7 +307,22 @@ const CharacterInfo = ({
                   >
                     <Typography variant='h1'>{name}</Typography>
                     <Typography sx={{ color: 'text.secondary' }}>
-                      {category}
+                      {categoryPageInfo ? (
+                        <Link
+                          href={`/${categoryPageInfo.slug}`}
+                          sx={{
+                            color: 'text.secondary',
+                            outline: 'none',
+                            '&:hover, &:focus': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          {categoryPageInfo.name}
+                        </Link>
+                      ) : (
+                        category
+                      )}
                     </Typography>
                   </Box>
                   <Box
@@ -453,7 +476,22 @@ const CharacterInfo = ({
             >
               <Typography variant='h1'>{name}</Typography>
               <Typography sx={{ color: 'text.secondary' }}>
-                {category}
+                {categoryPageInfo ? (
+                  <Link
+                    href={`/${categoryPageInfo.slug}`}
+                    sx={{
+                      color: 'text.secondary',
+                      outline: 'none',
+                      '&:hover, &:focus': {
+                        textDecoration: 'underline',
+                      },
+                    }}
+                  >
+                    {categoryPageInfo.name}
+                  </Link>
+                ) : (
+                  category
+                )}
               </Typography>
             </Box>
             <Box component='section' sx={{ mb: 3 }}>
