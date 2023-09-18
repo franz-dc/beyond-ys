@@ -347,6 +347,9 @@ const CharacterInfo = ({
                         <ButtonBase
                           key={image.path}
                           focusRipple
+                          onClick={() =>
+                            setPhotoIndex(hasMainImage ? idx + 1 : idx)
+                          }
                           sx={{
                             width: 48, // (180 - 8 * 3) / 4
                             height: 64,
@@ -365,9 +368,6 @@ const CharacterInfo = ({
                               borderRadius: 1,
                               backgroundColor: 'background.paper',
                             }}
-                            onClick={() =>
-                              setPhotoIndex(hasMainImage ? idx + 1 : idx)
-                            }
                             alt={`gallery image ${idx + 1}`}
                           />
                         </ButtonBase>
@@ -375,6 +375,7 @@ const CharacterInfo = ({
                       {extraImages[3] && (
                         <ButtonBase
                           focusRipple
+                          onClick={() => setPhotoIndex(hasMainImage ? 4 : 3)}
                           sx={{
                             position: 'relative',
                             width: 48, // (180 - 8 * 3) / 4
@@ -393,31 +394,29 @@ const CharacterInfo = ({
                               borderRadius: 1,
                               backgroundColor: 'background.paper',
                             }}
-                            onClick={() => setPhotoIndex(hasMainImage ? 4 : 3)}
                             alt='gallery image 4'
                           />
-                          {extraImages.length > 4 ||
-                            (true && (
-                              <Box
-                                sx={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  position: 'absolute',
-                                  top: 0,
-                                  left: 0,
-                                  width: '100%',
-                                  height: '100%',
-                                  borderRadius: 1,
-                                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                  backdropFilter: 'blur(2px)',
-                                }}
-                              >
-                                <Typography fontSize={14} fontWeight='medium'>
-                                  +{extraImages.length - 4}
-                                </Typography>
-                              </Box>
-                            ))}
+                          {extraImages.length > 4 && (
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                height: '100%',
+                                borderRadius: 1,
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                backdropFilter: 'blur(2px)',
+                              }}
+                            >
+                              <Typography fontSize={14} fontWeight='medium'>
+                                +{extraImages.length - 4}
+                              </Typography>
+                            </Box>
+                          )}
                         </ButtonBase>
                       )}
                     </Stack>
