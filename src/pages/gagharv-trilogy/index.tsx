@@ -62,6 +62,7 @@ const GagharvTrilogy = ({ games }: Props) => {
     <MainLayout
       title='Gagharv Trilogy'
       description='The Gagharv Trilogy introduces players to a fantastical realm steeped in mythology, magic, and mystery. From the outset, it captivates with its rich lore, unique cultures, and enigmatic tales that weave together to form a cohesive and engaging narrative experience.'
+      image={gagharvTrilogyBg.src}
     >
       <Box
         className='paper-bg'
