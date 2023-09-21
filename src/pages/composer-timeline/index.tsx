@@ -467,7 +467,6 @@ const ComposerTimeline = ({
                         sx={{
                           color: 'text.primary',
                           textDecoration: 'none',
-                          writingMode: 'vertical-rl',
                           textOrientation: 'mixed',
                           '&:focus .MuiTypography-root': {
                             color: 'primary.main',
@@ -481,6 +480,7 @@ const ComposerTimeline = ({
                             fontWeight: 'medium',
                             transform: 'rotate(180deg)',
                             transition: 'color 0.1s ease-in-out',
+                            writingMode: 'vertical-rl',
                           }}
                         >
                           {name}
