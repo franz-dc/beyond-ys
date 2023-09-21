@@ -391,6 +391,7 @@ const CharacterInfo = ({
                               width: 48,
                               height: 64,
                               objectFit: 'cover',
+                              objectPosition: 'top center',
                               borderRadius: 1,
                               backgroundColor: 'background.paper',
                             }}
