@@ -4,6 +4,7 @@ import { Box, Container } from '@mui/material';
 import type { BoxProps, ContainerProps } from '@mui/material';
 import Head from 'next/head';
 
+import ogImage from '~/../public/assets/og-image.webp';
 import { SITE_NAME } from '~/constants';
 
 import Footer from '../Footer';
@@ -38,7 +39,7 @@ const MainLayout = ({
       <meta name='og:title' content={title || SITE_NAME} />
       <meta name='description' content={description} />
       <meta name='og:description' content={description} />
-      {image && <meta name='og:image' content={image} />}
+      <meta name='og:image' content={image || ogImage.src} />
     </Head>
     <Navbar />
     <Container
