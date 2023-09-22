@@ -68,13 +68,13 @@ export const trailsStoryTimeline = [
   },
   {
     ids: ['the-legend-of-heroes-kuro-no-kiseki'],
-    name: 'Kuro no Kiseki',
+    name: 'Trails through Daybreak',
     stepLabel: 'K1',
     stepSubLabel: 'S.1208',
   },
   {
     ids: ['the-legend-of-heroes-kuro-no-kiseki-ii-crimson-sin'],
-    name: 'Kuro no Kiseki II: Crimson Sin',
+    name: 'Trails through Daybreak II: Crimson Sin',
     stepLabel: 'K2',
     stepSubLabel: 'S.1209',
   },

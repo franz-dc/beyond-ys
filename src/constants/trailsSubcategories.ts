@@ -63,11 +63,11 @@ export const trailsSubcategories = [
     name: 'Calvard Arc',
     items: [
       {
-        name: 'Kuro no Kiseki',
+        name: 'Trails through Daybreak',
         href: '/games/the-legend-of-heroes-kuro-no-kiseki',
       },
       {
-        name: 'Kuro no Kiseki II: Crimson Sin',
+        name: 'Trails through Daybreak II: Crimson Sin',
         href: '/games/the-legend-of-heroes-kuro-no-kiseki-ii-crimson-sin',
       },
     ],

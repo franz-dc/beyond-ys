@@ -1026,11 +1026,11 @@ export const getStaticProps: GetStaticProps = () => {
       releaseDate: '2020-08',
     },
     'the-legend-of-heroes-kuro-no-kiseki': {
-      name: 'The Legend of Heroes: Kuro no Kiseki',
+      name: 'The Legend of Heroes: Trails through Daybreak',
       releaseDate: '2021-09',
     },
     'the-legend-of-heroes-kuro-no-kiseki-ii': {
-      name: 'The Legend of Heroes: Kuro no Kiseki II',
+      name: 'The Legend of Heroes: Trails through Daybreak II',
       releaseDate: '2022-09',
     },
     'ys-x-nordics': {
