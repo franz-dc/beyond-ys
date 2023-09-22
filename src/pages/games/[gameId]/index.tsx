@@ -213,6 +213,8 @@ const GamePage = ({
 
   const [isSoundtracksExpanded, setIsSoundtracksExpanded] = useState(false);
 
+  const [isCharactersExpanded, setIsCharactersExpanded] = useState(false);
+
   // NextJS keeps the states on page change, so we need to reset it
   useEffect(() => {
     setIsCharacterSpoilersShown(false);
@@ -513,7 +515,7 @@ const GamePage = ({
         <Typography>{description}</Typography>
       </Box>
       {characterIds.length > 0 && (
-        <Box component='section' sx={{ mb: 1 }}>
+        <Box component='section' sx={{ mb: 4 }}>
           <Box
             sx={{
               mb: characterSpoilerIds.length > 0 ? 2 : 4,
@@ -536,8 +538,8 @@ const GamePage = ({
               </ButtonBase>
             )}
           </Box>
-          <Grid container spacing={2}>
-            {characterIds.map((characterId) => {
+          <Grid container spacing={2} sx={{ mb: -3 }}>
+            {characterIds.slice(0, 8).map((characterId) => {
               const foundCharacterCache = cachedCharacters[characterId];
               if (!foundCharacterCache) return null;
 
@@ -560,6 +562,59 @@ const GamePage = ({
               );
             })}
           </Grid>
+          {characterIds.length > 8 && (
+            <>
+              <Collapse in={isCharactersExpanded}>
+                <Grid container spacing={2} sx={{ pt: 5 }}>
+                  {characterIds.slice(8).map((characterId) => {
+                    const foundCharacterCache = cachedCharacters[characterId];
+                    if (!foundCharacterCache) return null;
+
+                    return (
+                      <Grid
+                        item
+                        xs={12}
+                        xs2={6}
+                        sm2={4}
+                        md={3}
+                        key={characterId}
+                      >
+                        <CharacterItem
+                          id={characterId}
+                          name={foundCharacterCache.name}
+                          accentColor={foundCharacterCache.accentColor}
+                          image={
+                            foundCharacterCache.hasAvatar
+                              ? `${CLOUD_STORAGE_URL}/character-avatars/${characterId}`
+                              : undefined
+                          }
+                          isSpoiler={characterSpoilerIds.includes(characterId)}
+                          isSpoilerShown={isCharacterSpoilersShown}
+                          sx={{ mb: 3 }}
+                        />
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </Collapse>
+              <ButtonBase
+                onClick={() => {
+                  setIsCharactersExpanded((prev) => !prev);
+                }}
+                focusRipple
+                sx={{
+                  mt: isCharactersExpanded ? -3 : 2,
+                  transition: 'margin-top 0.15s ease-in-out',
+                }}
+              >
+                <Typography color='text.secondary' fontSize={14}>
+                  {isCharactersExpanded
+                    ? 'Show less'
+                    : `Show all (+${characterIds.length - 8})`}
+                </Typography>
+              </ButtonBase>
+            </>
+          )}
         </Box>
       )}
       {/* @ts-ignore */}
