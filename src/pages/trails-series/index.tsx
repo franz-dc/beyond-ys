@@ -257,6 +257,13 @@ const TrailsSeries = ({ games }: Props) => {
         {zemuriaLocations.map((location) => (
           <ZemuriaLocation key={location.name} {...location} />
         ))}
+        <Typography>
+          Zemuria is not limited to these main regions, and there are various
+          smaller regions and unknown territories yet to be told with their own
+          unique characteristics and stories. These regions often play a
+          significant role in the overarching narrative, contributing to the
+          richness of the world.
+        </Typography>
       </Box>
       <Box component='section' sx={{ mb: 3 }}>
         <Typography variant='h2' sx={{ mb: 1 }}>
