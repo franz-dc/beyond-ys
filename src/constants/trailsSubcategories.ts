@@ -108,4 +108,4 @@ export const trailsSubcategories = [
       },
     ],
   },
-] as const;
+];

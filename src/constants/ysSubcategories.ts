@@ -120,4 +120,4 @@ export const ysSubcategories = [
       },
     ],
   },
-] as const;
+];

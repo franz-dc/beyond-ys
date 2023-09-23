@@ -11,10 +11,10 @@ const YsSeriesMenu = () => {
       spacing={2}
       divider={<Divider orientation='vertical' flexItem light />}
     >
-      <Box key={ysSubcategories[0].name} sx={{ width: 250 }}>
+      <Box key={ysSubcategories[0]!.name} sx={{ width: 250 }}>
         <NavMenuList
           labelPrefix='ys-series-menu'
-          subcategory={ysSubcategories[0]}
+          subcategory={ysSubcategories[0]!}
         />
       </Box>
       <Stack
@@ -31,10 +31,10 @@ const YsSeriesMenu = () => {
           </Box>
         ))}
       </Stack>
-      <Box key={ysSubcategories[3].name} sx={{ width: 250 }}>
+      <Box key={ysSubcategories[3]!.name} sx={{ width: 250 }}>
         <NavMenuList
           labelPrefix='ys-series-menu'
-          subcategory={ysSubcategories[3]}
+          subcategory={ysSubcategories[3]!}
         />
       </Box>
     </Stack>
