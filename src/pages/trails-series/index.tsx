@@ -1,8 +1,12 @@
-import { Box, Divider, Grid, Typography } from '@mui/material';
+import { Box, Divider, Grid, Paper, Typography } from '@mui/material';
 import { doc, getDoc } from 'firebase/firestore';
 import type { GetStaticProps } from 'next';
-import Image from 'next/image';
+import Image, { type StaticImageData } from 'next/image';
 
+import calvardEmblem from '~/../public/assets/calvard-emblem.webp';
+import crossbellEmblem from '~/../public/assets/crossbell-emblem.webp';
+import ereboniaCrest from '~/../public/assets/erebonia-crest.webp';
+import liberlCrest from '~/../public/assets/liberl-crest.webp';
 import trailsLogo from '~/../public/assets/trails-logo.webp';
 import trailsSeriesBg from '~/../public/assets/trails-series-bg.webp';
 import { GameItem, Link, MainLayout, StoryTimeline } from '~/components';
@@ -36,6 +40,93 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     props: { games },
   };
 };
+
+const zemuriaLocations = [
+  {
+    name: 'Liberl Kingdom',
+    description:
+      "Liberl is often the starting point for new players, and it's a kingdom characterized by lush forests, picturesque landscapes, and advanced orbal technology. The Liberl Arc introduces players to the world of bracers and their role in maintaining peace and order.",
+    image: liberlCrest,
+  },
+  {
+    name: 'Crossbell State',
+    description:
+      'Crossbell is a bustling metropolis at the heart of Zemuria, known for its technological advancements and complex political landscape. This arc delves into themes of corruption, espionage, and the impact of power struggles on the lives of ordinary citizens.',
+    image: crossbellEmblem,
+  },
+  {
+    name: 'Erebonian Empire',
+    description:
+      'The Erebonian Empire is a powerful nation with a rich history, towering cities, and a strict class system. The Erebonia Arc explores themes of social disparity, imperialism, and the consequences of wielding great power.',
+    image: ereboniaCrest,
+  },
+  {
+    name: 'Republic of Calvard',
+    description:
+      'Calvard, a former monarchy, is a nation of diverse cultures and traditions. The Calvard Arc explores the impact of war on the lives of ordinary citizens, while giving players a new real-time combat system to master.',
+    image: calvardEmblem,
+  },
+];
+
+const ZemuriaLocation = ({
+  name,
+  description,
+  image,
+}: {
+  name: string;
+  description: string;
+  image: StaticImageData;
+}) => (
+  <Paper component='section' sx={{ mb: 2, p: 2 }}>
+    <Grid
+      container
+      spacing={2}
+      flexDirection={{
+        xs: 'column-reverse',
+        sm: 'row',
+      }}
+    >
+      <Grid item xs={12} sm>
+        <Typography
+          variant='h3'
+          sx={{
+            mb: {
+              xs: 2,
+              sm: 1,
+            },
+            textAlign: {
+              xs: 'center',
+              sm: 'left',
+            },
+          }}
+        >
+          {name}
+        </Typography>
+        <Typography>{description}</Typography>
+      </Grid>
+      <Grid item xs={12} sm='auto'>
+        <Box
+          component={Image}
+          src={image}
+          alt='liberl crest'
+          sx={{
+            display: 'block',
+            width: 100,
+            height: 'auto',
+            mx: {
+              xs: 'auto',
+              sm: 0,
+            },
+            mb: {
+              xs: -1,
+              sm: 0,
+            },
+          }}
+        />
+      </Grid>
+    </Grid>
+  </Paper>
+);
 
 const TrailsSeries = ({ games }: Props) => {
   const sources = [
@@ -151,6 +242,36 @@ const TrailsSeries = ({ games }: Props) => {
           adaptations strive to capture the essence of the games&apos;
           storytelling while presenting them in a manner that complements the
           strengths of animation.
+        </Typography>
+      </Box>
+      <Box component='section' sx={{ mb: 3 }}>
+        <Typography variant='h2' sx={{ mb: 1 }}>
+          Navigating the Vast World of Zemuria
+        </Typography>
+        <Typography gutterBottom>
+          In the expansive world of the Trails series, the continent of Zemuria
+          takes center stage. A land filled with diverse landscapes, cultures,
+          and political intrigues, Zemuria serves as the backdrop for the epic
+          tales woven throughout the series.
+        </Typography>
+        {zemuriaLocations.map((location) => (
+          <ZemuriaLocation key={location.name} {...location} />
+        ))}
+      </Box>
+      <Box component='section' sx={{ mb: 3 }}>
+        <Typography variant='h2' sx={{ mb: 1 }}>
+          Where do I start?
+        </Typography>
+        <Typography>
+          The series is divided into multiple interconnected story arcs, each
+          contributing to an epic, overarching narrative. It is recommended to
+          play the games in release order (Liberl &gt; Crossbell &gt; Erebonia
+          &gt; Calvard) to fully appreciate the story and world-building. Your
+          journey begins with{' '}
+          <Link href='/games/the-legend-of-heroes-trails-in-the-sky'>
+            Trails in the Sky
+          </Link>
+          !
         </Typography>
       </Box>
       <StoryTimeline id='' category='Trails Series' showAll forceVertical />
