@@ -646,8 +646,8 @@ const HomePage = () => {
                     lineHeight: 1.3,
                   }}
                 >
-                  Series from Xanadu, Zwei!!, Dragon Quest, and more great games
-                  made by Falcom!
+                  Series from Xanadu, Zwei!!, Dragon Slayer, and more great
+                  games made by Falcom!
                 </Typography>
               </Box>
               <Box
