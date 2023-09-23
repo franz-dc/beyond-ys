@@ -21,10 +21,15 @@ interface NavMenuListProps {
   subcategory: {
     id: string;
     name: string;
-    items: {
-      name: string;
-      href: string;
-    }[];
+    items:
+      | {
+          name: string;
+          href: string;
+        }[]
+      | readonly {
+          name: string;
+          href: string;
+        }[];
     hideSubheader?: boolean;
   };
 }

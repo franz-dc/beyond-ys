@@ -69,6 +69,16 @@ export const ysSubcategories = [
     ],
   },
   {
+    id: 'spin-offs',
+    name: 'Spin-offs',
+    items: [
+      {
+        name: 'Ys vs. Trails in the Sky: Alternative Saga',
+        href: '/games/ys-vs-trails-in-the-sky-alternative-saga',
+      },
+    ],
+  },
+  {
     id: 'non-canon',
     name: 'Non-canon',
     items: [
@@ -93,10 +103,6 @@ export const ysSubcategories = [
         href: '/games/ys-online-the-call-of-solum',
       },
       {
-        name: 'Ys vs. Trails in the Sky: Alternative Saga',
-        href: '/games/ys-vs-trails-in-the-sky-alternative-saga',
-      },
-      {
         name: 'Ys Nexus',
         href: '/games/ys-nexus',
       },
@@ -114,4 +120,4 @@ export const ysSubcategories = [
       },
     ],
   },
-];
+] as const;

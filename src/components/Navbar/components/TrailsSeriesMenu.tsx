@@ -39,12 +39,20 @@ const TrailsSeriesMenu = () => {
           </Box>
         ))}
       </Stack>
-      <Box sx={{ width: 200 }}>
-        <NavMenuList
-          labelPrefix='trails-series-menu'
-          subcategory={trailsSubcategories[4]!}
-        />
-      </Box>
+      <Stack
+        direction='column'
+        spacing={2}
+        divider={<Divider light sx={{ pt: 1 }} />}
+      >
+        {trailsSubcategories.slice(4, 6).map((subcategory) => (
+          <Box key={subcategory.name} sx={{ width: 200 }}>
+            <NavMenuList
+              labelPrefix='trails-games-menu'
+              subcategory={subcategory}
+            />
+          </Box>
+        ))}
+      </Stack>
     </Stack>
   );
 };

@@ -11,11 +11,32 @@ const YsSeriesMenu = () => {
       spacing={2}
       divider={<Divider orientation='vertical' flexItem light />}
     >
-      {ysSubcategories.map((subcategory) => (
-        <Box key={subcategory.name} sx={{ width: 250 }}>
-          <NavMenuList labelPrefix='ys-series-menu' subcategory={subcategory} />
-        </Box>
-      ))}
+      <Box key={ysSubcategories[0].name} sx={{ width: 250 }}>
+        <NavMenuList
+          labelPrefix='ys-series-menu'
+          subcategory={ysSubcategories[0]}
+        />
+      </Box>
+      <Stack
+        direction='column'
+        spacing={2}
+        divider={<Divider light sx={{ pt: 1 }} />}
+      >
+        {ysSubcategories.slice(1, 3).map((subcategory) => (
+          <Box key={subcategory.name} sx={{ width: 200 }}>
+            <NavMenuList
+              labelPrefix='trails-games-menu'
+              subcategory={subcategory}
+            />
+          </Box>
+        ))}
+      </Stack>
+      <Box key={ysSubcategories[3].name} sx={{ width: 250 }}>
+        <NavMenuList
+          labelPrefix='ys-series-menu'
+          subcategory={ysSubcategories[3]}
+        />
+      </Box>
     </Stack>
   );
 };

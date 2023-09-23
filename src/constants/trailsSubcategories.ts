@@ -81,12 +81,18 @@ export const trailsSubcategories = [
         href: '/games/ys-vs-trails-in-the-sky-alternative-saga',
       },
       {
-        name: 'Yume no Kiseki',
-        href: '/games/the-legend-of-heroes-yume-no-kiseki',
-      },
-      {
         name: 'The Legend of Nayuta: Boundless Trails',
         href: '/games/the-legend-of-nayuta-boundless-trails',
+      },
+    ],
+  },
+  {
+    id: 'non-canon',
+    name: 'Non-canon',
+    items: [
+      {
+        name: 'Yume no Kiseki',
+        href: '/games/the-legend-of-heroes-yume-no-kiseki',
       },
       {
         name: 'Akatsuki no Kiseki',
@@ -102,4 +108,4 @@ export const trailsSubcategories = [
       },
     ],
   },
-];
+] as const;
