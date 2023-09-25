@@ -1,6 +1,8 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
+  Alert,
+  AlertTitle,
   Box,
   ButtonBase,
   Collapse,
@@ -139,6 +141,7 @@ const GamePage = ({
   hasBannerImage,
   hasCoverImage,
   aliases,
+  noLocalizations,
 }: ExtendedGameSchema) => {
   const { setNowPlaying, setQueue } = useMusicPlayer();
 
@@ -234,6 +237,14 @@ const GamePage = ({
       description={description}
       image={`${CLOUD_STORAGE_URL}/game-covers/${id}`}
     >
+      {noLocalizations && (
+        <Alert severity='info' sx={{ mb: 2 }}>
+          <AlertTitle>
+            This game has not been localized to English yet.
+          </AlertTitle>
+          Its availability in languages other than the original remains pending.
+        </Alert>
+      )}
       <Box
         className='header-bg'
         sx={{

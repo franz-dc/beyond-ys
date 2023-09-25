@@ -26,6 +26,7 @@ export const gameSchema = z.object({
   cachedCharacters: z.record(characterCacheSchema),
   // schema additions (optional)
   aliases: z.string().min(1).array().optional(),
+  noLocalizations: z.boolean().optional(),
 });
 
 export type GameSchema = z.infer<typeof gameSchema>;
