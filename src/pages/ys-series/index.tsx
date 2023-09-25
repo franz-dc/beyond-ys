@@ -279,6 +279,20 @@ const YsSeries = ({ games }: Props) => {
           </Grid>
         </Paper>
       </Box>
+      <Box component='section' sx={{ mb: 3 }}>
+        <Typography variant='h2' sx={{ mb: 1 }}>
+          Where do I start?
+        </Typography>
+        <Typography>
+          Every entry in the Ys series is a self-contained story, so you can
+          start anywhere you want. However, if you want to experience the
+          series&apos; evolution, it is recommended to play the games in release
+          order, starting with the first game,{' '}
+          <Link href='/games/ys-i-ancient-ys-vanished-omen'>Ys I</Link>. There
+          are remakes for the earlier titles, so you can play with modern
+          graphics and gameplay, making it easier to get into the series.
+        </Typography>
+      </Box>
       <StoryTimeline id='' category='Ys Series' showAll forceVertical />
       <Box component='section' sx={{ mt: -2, mb: 3 }}>
         <Typography variant='h2' sx={{ mb: 2 }}>
