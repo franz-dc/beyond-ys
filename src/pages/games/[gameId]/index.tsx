@@ -243,6 +243,7 @@ const GamePage = ({
             This game has not been localized to English yet.
           </AlertTitle>
           Its availability in languages other than the original remains pending.
+          Fan translations may or may not be available.
         </Alert>
       )}
       <Box
