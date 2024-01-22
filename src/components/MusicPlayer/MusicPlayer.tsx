@@ -668,6 +668,10 @@ const MusicPlayer = ({
                       color: 'transparent',
                     }}
                     unoptimized
+                    onError={(e) => {
+                      // hide broken image icon
+                      e.currentTarget.style.display = 'none';
+                    }}
                   />
                 )}
               </Box>
