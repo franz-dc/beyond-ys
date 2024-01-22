@@ -84,37 +84,44 @@ const MusicItem = ({
           <Typography
             sx={{
               color: nowPlaying?.id === id ? 'primary.main' : 'text.secondary',
-              opacity: isHovered || nowPlaying?.id === id ? 0 : 1,
+              opacity: !!youtubeId
+                ? isHovered || nowPlaying?.id === id
+                  ? 0
+                  : 1
+                : 1,
               userSelect: 'none',
             }}
           >
             {trackNumber}
           </Typography>
-          <Box
-            sx={{
-              position: 'absolute',
-              display: isHovered || nowPlaying?.id === id ? 'block' : 'none',
-            }}
-          >
-            <IconButton
-              size='small'
-              disabled={nowPlaying?.id === id}
-              onClick={() => {
-                if (nowPlaying?.id === id) return;
-                onPlay?.();
+          {!!youtubeId && (
+            <Box
+              sx={{
+                position: 'absolute',
+                display: isHovered || nowPlaying?.id === id ? 'block' : 'none',
               }}
             >
-              <Box
-                component={MdPlayArrow}
-                sx={{
-                  color:
-                    nowPlaying?.id === id ? 'primary.main' : 'text.primary',
-                  width: 28,
-                  height: 28,
+              <IconButton
+                size='small'
+                disabled={nowPlaying?.id === id}
+                onClick={() => {
+                  if (nowPlaying?.id === id) return;
+                  onPlay?.();
                 }}
-              />
-            </IconButton>
-          </Box>
+                aria-label='play'
+              >
+                <Box
+                  component={MdPlayArrow}
+                  sx={{
+                    color:
+                      nowPlaying?.id === id ? 'primary.main' : 'text.primary',
+                    width: 28,
+                    height: 28,
+                  }}
+                />
+              </IconButton>
+            </Box>
+          )}
         </Box>
         <Box
           sx={{
