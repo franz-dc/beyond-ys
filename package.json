@@ -66,5 +66,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.8",
     "ts-node": "^10.9.1"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }

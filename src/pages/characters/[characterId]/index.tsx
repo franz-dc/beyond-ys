@@ -19,6 +19,7 @@ import { ReactCountryFlag } from 'react-country-flag';
 import { MdNoAccounts } from 'react-icons/md';
 import { Lightbox } from 'yet-another-react-lightbox';
 import { Captions, Counter } from 'yet-another-react-lightbox/plugins';
+
 import 'yet-another-react-lightbox/styles.css';
 import 'yet-another-react-lightbox/plugins/captions.css';
 import 'yet-another-react-lightbox/plugins/counter.css';
