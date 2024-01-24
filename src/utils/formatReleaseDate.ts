@@ -17,5 +17,5 @@ export const formatReleaseDate = (dateStr: string) => {
     return `${day} ${month} ${year}`;
   }
 
-  return 'Unknown';
+  return 'Unknown release date';
 };
