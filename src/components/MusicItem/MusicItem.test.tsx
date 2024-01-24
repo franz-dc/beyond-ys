@@ -24,7 +24,7 @@ describe('MusicItem', () => {
       )
     ).toBeDefined();
   });
-  it('should render without artists', () => {
+  it('should show unknown composer if without artists', () => {
     render(
       <MusicItem
         id='id'
@@ -49,7 +49,7 @@ describe('MusicItem', () => {
     );
     expect(screen.getByLabelText('play')).toBeDefined();
   });
-  it('should not have a play button if no youtubeId ', () => {
+  it('should not have a play button if no youtubeId', () => {
     render(
       <MusicItem
         id='id'
