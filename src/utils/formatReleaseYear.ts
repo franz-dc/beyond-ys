@@ -6,5 +6,5 @@ export const formatReleaseYear = (dateStr: string) => {
 
   if (dateStr.length >= 4) return year.toString();
 
-  return 'Unknown';
+  return 'Unknown release year';
 };
