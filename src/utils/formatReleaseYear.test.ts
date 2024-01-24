@@ -1,5 +1,3 @@
-import { describe, expect, it } from 'vitest';
-
 import { formatReleaseYear } from './formatReleaseYear';
 
 describe('formatReleaseYear', () => {

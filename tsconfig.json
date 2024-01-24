@@ -22,14 +22,14 @@
     ],
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+    "types": ["vitest/globals"]
   },
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"
     }
   },
-  "types": ["vitest/globals"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }
