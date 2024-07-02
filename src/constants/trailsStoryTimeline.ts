@@ -78,4 +78,10 @@ export const trailsStoryTimeline = [
     stepLabel: 'K2',
     stepSubLabel: 'S.1209',
   },
+  {
+    ids: ['the-legend-of-heroes-kai-no-kiseki-farewell-o-zemuria'],
+    name: 'Kai no Kiseki -Farewell, O Zemuria-',
+    stepLabel: 'K3',
+    stepSubLabel: 'S.1209',
+  },
 ];

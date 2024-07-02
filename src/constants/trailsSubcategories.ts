@@ -70,6 +70,10 @@ export const trailsSubcategories = [
         name: 'Trails through Daybreak II: Crimson Sin',
         href: '/games/the-legend-of-heroes-kuro-no-kiseki-ii-crimson-sin',
       },
+      {
+        name: 'Kai no Kiseki -Farewell, O Zemuria-',
+        href: '/games/the-legend-of-heroes-kai-no-kiseki-farewell-o-zemuria',
+      },
     ],
   },
   {
